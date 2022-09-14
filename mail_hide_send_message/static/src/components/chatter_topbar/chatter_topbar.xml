@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-inherit="mail.ChatterTopbar" t-inherit-mode="extension">
+        <xpath expr="//button[hasclass('o_ChatterTopbar_buttonSendMessage')]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+    </t>
+</templates>
