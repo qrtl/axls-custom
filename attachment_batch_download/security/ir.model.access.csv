@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_generate_model_download_user,generate_model_download_user,model_generate_model_download,base.group_user,0,0,0,0
+access_generate_model_download_manager,generate_model_download_manager,model_generate_model_download,base.group_erp_manager,1,1,1,1
