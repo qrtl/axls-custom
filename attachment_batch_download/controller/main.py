@@ -21,8 +21,17 @@ class Binary(http.Controller):
         file_dict = {}
         for attachment_id in attachment_ids:
             file_store = attachment_id.store_fname
+            document = request.env[attachment_id.res_model].search(
+                [("id", "=", attachment_id.res_id)]
+            )
             if file_store:
-                file_name = attachment_id.name
+                document_name = "[" + document.name.replace("/", "_") + "]"
+                date = "[" + datetime.today().strftime("%Y-%m-%d") + "]"
+                partner_name = document.partner_id.name
+                name_lst = [partner_name, attachment_id.name]
+                if not partner_name:
+                    name_lst = [attachment_id.name]
+                file_name = document_name + date + "_".join(name_lst)
                 file_path = attachment_id._full_path(file_store)
                 file_dict["%s:%s" % (file_store, file_name)] = dict(
                     path=file_path, name=file_name
