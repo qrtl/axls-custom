@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_generate_model_download"
+        name="Generate Model Download"
+        parent="base.menu_custom"
+        sequence="50"
+    />
+    <record model="ir.ui.view" id="view_generate_model_download_form">
+        <field name="name">generate.model.download.form</field>
+        <field name="model">generate.model.download</field>
+        <field name="arch" type="xml">
+            <form string="Generate Model Download">
+                <header>
+                    <button
+                        string="Generate"
+                        name="generate"
+                        type="object"
+                        states="draft"
+                        class="oe_highlight"
+                    />
+                    <button
+                        string="Remove Download"
+                        name="remove"
+                        type="object"
+                        states="generated"
+                    />
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <group string="Generate Model Download">
+                        <group colspan="1">
+                            <field name="name" required="1" />
+                            <field name="model_id" />
+                            <field
+                                name="action_id"
+                                readonly="1"
+                                groups="base.group_no_one"
+                            />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_generate_model_download_tree">
+        <field name="name">generate.model.download.tree</field>
+        <field name="model">generate.model.download</field>
+        <field name="arch" type="xml">
+            <tree
+                decoration-info="state == 'draft'"
+                decoration-bf="state == 'generated'"
+            >
+                <field name="name" />
+                <field name="model_id" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_generate_model_download_search" model="ir.ui.view">
+        <field name="name">generate.model.download.search</field>
+        <field name="model">generate.model.download</field>
+        <field name="arch" type="xml">
+            <search string="Generate Model Download">
+                <field name="name" />
+                <filter
+                    name="state_draft"
+                    domain="[('state','=','draft')]"
+                    string="Draft"
+                />
+                <filter
+                    name="state_generated"
+                    domain="[('state','=','generated')]"
+                    string="Generated"
+                />
+                <field name="model_id" />
+                <group expand="0" string="Group By...">
+                    <filter
+                        name="group_by_state"
+                        string="State"
+                        domain="[]"
+                        context="{'group_by':'state'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_generate_model_download">
+        <field name="name">Generate Model Download</field>
+        <field name="res_model">generate.model.download</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="view_generate_model_download_search" />
+    </record>
+    <menuitem
+        id="menu_generate_model_download_list"
+        parent="menu_generate_model_download"
+        action="action_generate_model_download"
+    />
+</odoo>
