@@ -7,7 +7,7 @@
 
 <!-- /!\ do not modify above this line -->
 
-# Custom modules for AXLS
+# AXLS Custom
 
 None
 

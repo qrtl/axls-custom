@@ -15,7 +15,7 @@ org_name: Quartile Limited
 org_slug: qrtl
 rebel_module_groups: []
 repo_description: null
-repo_name: Custom modules for AXLS
+repo_name: AXLS Custom
 repo_slug: axls-custom
 repo_website: https://www.quartile.co
 travis_apt_packages: []
