@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<!--
+    Copyright 2022 Axelspace
+    License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record model="ir.cron" id="ir_cron_products_if_every_day">
+        <field name="name">Product interface daily</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="state">code</field>
+        <field name="nextcall">2019-01-01 00:01:00</field>
+        <field name="doall" eval="False" />
+        <field name="model_id" ref="ax_product_if.model_res_products_if_provider" />
+        <field name="code">model._scheduled_update()</field>
+    </record>
+</odoo>

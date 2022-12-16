@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     Other proprietary. -->
+<odoo noupdate="1">
+    <record id="res_products_rate_provider_multicompany" model="ir.rule">
+        <field name="name">Products Interface Provider multi-company</field>
+        <field name="model_id" ref="model_res_products_if_provider" />
+        <field eval="True" name="global" />
+        <field name="domain_force"> ['|',('company_id','=',False),('company_id','in',company_ids)]
+        </field>
+    </record>
+</odoo>

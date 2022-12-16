@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_products_if_update_service_admin,res.products.if.provider,model_res_products_if_provider,base.group_system,1,1,1,1
+access_res_products_if_update_service_manager,res.products.if.provider,model_res_products_if_provider,purchase.group_purchase_manager,1,0,0,0
+access_res_products_if_update_wizard,access_res_products_if_update_wizard,model_res_products_if_update_wizard,purchase.group_purchase_manager,1,1,1,1

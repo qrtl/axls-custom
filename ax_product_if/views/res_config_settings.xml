@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     Other proprietary. -->
+<odoo>
+
+    <record model="ir.ui.view" id="ax_res_config_settings_form_view">
+        <field name="name">res.config.settings.form (in ax_product_if)</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//widget[@name='res_config_dev_tool']" position="before">
+                <h2>Product data interface</h2>
+                <div class="row mt16 o_settings_container" name="prod_interface">
+                    <div class="col-12 col-lg-6 o_setting_box" id="prod_interface_setting">
+                        <div class="o_setting_left_pane">
+                            <field name="product_interface" />
+                        </div>
+                        <div class="o_setting_right_pane" id="prod_interface_settings">
+                            <label for="product_interface" />
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img" />
+                            <div class="text-muted">
+                                Set the location of interface file directory path
+                            </div>
+                            <div class="content-group" attrs="{'invisible': [('product_interface','=',False)]}">
+                                <div class="mt16 row">
+                                    <label for="product_interface_location" string="File location" class="col-3 col-lg-3 o_light_label" />
+                                    <field name="product_interface_location" class="oe_inline" required="1" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+
+</odoo>

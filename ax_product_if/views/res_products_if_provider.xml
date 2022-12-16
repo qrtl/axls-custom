@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     Other proprietary. -->
+<odoo>
+    <record model="ir.ui.view" id="res_products_if_provider_filter">
+        <field name="name">res.products.if.provider.filter (in ax_product_if)</field>
+        <field name="model">res.products.if.provider</field>
+        <field name="arch" type="xml">
+            <search string="Product Interface Providers">
+                <field name="service" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <filter name="active" string="Archived" domain="[('active', '=', False)]" />
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="res_products_if_provider_form_view">
+        <field name="name">res.products.if.provider.form (in ax_product_if)</field>
+        <field name="model">res.products.if.provider</field>
+        <field name="arch" type="xml">
+            <form string="Product Interface Provider">
+                <header>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}" />
+
+                    <group name="options">
+                        <group>
+                            <field name="active" invisible="1" />
+                            <field name="service" />
+                        </group>
+                        <group groups="base.group_multi_company">
+                            <field name="company_id" />
+                        </group>
+                        <group>
+                            <label for="interval_number" />
+                            <div class="o_row">
+                                <field name="interval_number" class="ml8" />
+                                <field name="interval_type" />
+                            </div>
+                        </group>
+                        <group>
+                            <field name="last_successful_run" />
+                        </group>
+                        <group>
+                            <field name="next_run" />
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+    <record id="action_res_products_if_provider_update_wizard" model="ir.actions.server">
+        <field name="name">Update Products Wizard</field>
+        <field name="type">ir.actions.server</field>
+        <field name="model_id" ref="ax_product_if.model_res_products_if_provider" />
+        <field name="binding_model_id" ref="ax_product_if.model_res_products_if_provider" />
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                action = {
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'res.products.if.update.wizard',
+                    'views': [[False, 'form']],
+                    'target': 'new',
+                    'context': {
+                        'default_provider_ids': [(6, False, records.ids)],
+                    },
+                }
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="res_products_if_provider_tree_view">
+        <field name="name">res.products.if.provider.tree (in ax_product_if)</field>
+        <field name="model">res.products.if.provider</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="service" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="update_schedule" />
+                <field name="next_run" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="res_products_if_provider_act_window">
+        <field name="name">Products Interface Provider</field>
+        <field name="res_model">res.products.if.provider</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record model="ir.ui.menu" id="res_products_if_provider_menu">
+        <field name="name">Products Interface</field>
+        <field name="parent_id" ref="purchase.menu_purchase_config" />
+        <field name="action" ref="res_products_if_provider_act_window" />
+        <field name="sequence" eval="16" />
+    </record>
+
+</odoo>
