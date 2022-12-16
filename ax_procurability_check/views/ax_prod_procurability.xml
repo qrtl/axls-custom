@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     License Other proprietary. -->
+<odoo>
+
+  <record model="ir.ui.view" id="ax_prod_procurability_form_view">
+    <field name="name">ax_prod_procurability.form</field>
+    <field name="model">ax_prod_procurability</field>
+    <field name="arch" type="xml">
+      <form>
+        <header>
+        </header>
+        <sheet>
+          <widget
+            name="web_ribbon"
+            title="Production"
+            bg_color="bg-success"
+            attrs="{'invisible': [('lifecycle', '!=', 'prod')]}"
+          />
+          <widget
+            name="web_ribbon"
+            title="NEW"
+            bg_color="bg-success"
+            attrs="{'invisible': [('lifecycle', '!=', 'new')]}"
+          />
+          <widget
+            name="web_ribbon"
+            title="Obsolete"
+            bg_color="bg-danger"
+            attrs="{'invisible': [('lifecycle', '!=', 'obs')]}"
+          />
+          <widget
+            name="web_ribbon"
+            title="EOL"
+            bg_color="bg-warning"
+            attrs="{'invisible': [('lifecycle', '!=', 'eol')]}"
+          />
+          <widget
+            name="web_ribbon"
+            title="NRND"
+            bg_color="bg-warning"
+            attrs="{'invisible': [('lifecycle', '!=', 'nrnd')]}"
+          />
+          <widget
+            name="web_ribbon"
+            title="Unknown"
+            bg_color="bg-primary"
+            attrs="{'invisible': [('lifecycle', '!=', 'unknown')]}"
+          />
+          <group name="information">
+            <group>
+              <field name="product_id" options="{'no_create_edit': True}" />
+              <field name="categ_id" options="{'no_create_edit': True}" />
+              <field name="product_name" />
+              <field name="default_code" />
+              <field
+                name="lifecycle"
+                optional="show"
+                widget="badge"
+                decoration-success="lifecycle == 'prod' or lifecycle=='new'"
+                decoration-warning="lifecycle == 'nrnd' or lifecycle=='eol'"
+                decoration-danger="lifecycle == 'obs'"
+              />
+              <field name="lifecycle_m" />
+              <field name="stock_status" />
+              <field name="searched_pn" />
+              <field name="octopart_url" widget="url" />
+            </group>
+            <group>
+              <field name="do_auto_check" />
+              <field name="write_date" modifiers="{'readonly':true}" />
+              <field name="last_auto_update" modifiers="{'readonly':true}" />
+              <field name="write_uid" />
+            </group>
+          </group>
+        </sheet>
+        <div class="oe_chatter">
+          <field name="message_follower_ids" widget="mail_followers" />
+          <field name="message_ids" widget="mail_thread" />
+        </div>
+      </form>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="ax_prod_procurability_search_view">
+    <field name="name">ax_prod_procurability.search</field>
+    <field name="model">ax_prod_procurability</field>
+    <field name="arch" type="xml">
+      <search>
+        <field name="product_id" />
+        <field name="default_code" />
+        <separator />
+        <filter
+          string="Electrical"
+          name="categ_id"
+          domain="[('categ_id','like', 'Electrical')]"
+        />
+        <filter
+          string="Mechanical"
+          name="categ_id"
+          domain="[('categ_id','like', 'Mechanical')]"
+        />
+        <separator />
+        <filter
+          string="Do auto check"
+          name="do_auto_check"
+          domain="[('do_auto_check','=', True)]"
+        />
+        <filter
+          string="Do not auto check"
+          name="do_auto_check"
+          domain="[('do_auto_check','=', False)]"
+        />
+        <separator />
+        <filter
+          string="Production / New"
+          name="lifecycle"
+          domain="['|',('lifecycle','=','prod'),('lifecycle','=','new')]"
+        />
+        <filter string="EOL" name="lifecycle" domain="[('lifecycle','=','eol')]" />
+        <filter string="NRND" name="lifecycle" domain="[('lifecycle','=','nrnd')]" />
+        <filter string="OBS" name="lifecycle" domain="[('lifecycle','=','obs')]" />
+        <filter
+          string="Unkown"
+          name="lifecycle"
+          domain="[('lifecycle','=','unknown')]"
+        />
+        <separator />
+        <group expand="0" string="Group By">
+          <filter
+            string="Lifecycle(Auto)"
+            name="lifecycle"
+            context="{'group_by':'lifecycle'}"
+          />
+          <filter
+            string="Lifecycle(Manual)"
+            name="lifecycle_m"
+            context="{'group_by':'lifecycle_m'}"
+          />
+          <filter
+            string="Do auto check"
+            name="do_auto_check"
+            context="{'group_by':'do_auto_check'}"
+          />
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="ax_prod_procurability_tree_view">
+    <field name="name">ax_prod_procurability.tree</field>
+    <field name="model">ax_prod_procurability</field>
+    <field name="arch" type="xml">
+      <tree>
+        <header>
+        </header>
+        <field name="product_id" />
+        <field name="categ_id" />
+        <field name="do_auto_check" />
+        <field
+          name="lifecycle"
+          optional="show"
+          widget="badge"
+          decoration-success="lifecycle == 'prod' or lifecycle=='new'"
+          decoration-warning="lifecycle == 'nrnd' or lifecycle=='eol'"
+          decoration-danger="lifecycle == 'obs'"
+        />
+        <field
+          name="lifecycle_m"
+          optional="show"
+          widget="badge"
+          decoration-success="lifecycle_m == 'prod' or lifecycle_m=='new'"
+          decoration-warning="lifecycle_m == 'nrnd' or lifecycle_m=='eol'"
+          decoration-danger="lifecycle_m == 'obs'"
+        />
+        <field
+          name="stock_status"
+          optional="show"
+          widget="badge"
+          decoration-success="stock_status == 'extavl'"
+          decoration-warning="stock_status == 'extodr' or stock_status=='extnavl'"
+          decoration-info="stock_status == 'simavl' or stock_status=='simodr' or stock_status=='simnavl'"
+        />
+        <field name="write_date" optional="show" />
+        <field name="last_auto_update" optional="show" />
+      </tree>
+    </field>
+  </record>
+
+  <record model="ir.actions.act_window" id="ax_prod_procurability_act_window">
+    <field name="name">Product Procurability</field>
+    <field name="res_model">ax_prod_procurability</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[]</field>
+    <field name="context">{}</field>
+  </record>
+
+  <record model="ir.ui.menu" id="ax_prod_procurability_menu">
+    <field name="name">Procurability</field>
+    <field name="action" ref="ax_prod_procurability_act_window" />
+    <field name="parent_id" ref="purchase.menu_purchase_products" />
+    <field name="sequence" eval="512" />
+  </record>
+
+</odoo>

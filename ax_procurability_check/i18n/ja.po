@@ -1,0 +1,559 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ax_procurability_check
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 14.0-20221104\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-15 01:15+0000\n"
+"PO-Revision-Date: 2022-11-15 01:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_needaction
+msgid "Action Needed"
+msgstr "対応が必要"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability_update_wizard__process_flg__addupd
+msgid "Add new item and update"
+msgstr "新規アイテムを追加して更新"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_wizard_form
+msgid ""
+"Add new item and update: Add new procurability check item and update info."
+msgstr "新規アイテムを追加して更新:新しい調達性の確認アイテムを追加して更新する"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability_update_wizard__process_flg__addonly
+msgid "Add new item only"
+msgstr "新規アイテム追加のみ実行"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_wizard_form
+msgid "Add new item only: Add new procurability check item to the list."
+msgstr "新規アイテム追加のみ実行:新しい調達性の確認アイテムを追加する"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_attachment_count
+msgid "Attachment Count"
+msgstr "添付数"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__do_auto_check
+msgid "Auto Check"
+msgstr "自動更新"
+
+#. module: ax_procurability_check
+#: model:ir.model,name:ax_procurability_check.model_ax_prod_procurability
+msgid "Ax product procurability information"
+msgstr "Axelspace部品の調達性情報"
+
+#. module: ax_procurability_check
+#: model:ir.actions.act_window,name:ax_procurability_check.action_wizard_update_info
+msgid "Batch Update"
+msgstr "一括更新"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_wizard_form
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_res_config_settings_procurable_form_view
+msgid "Client ID"
+msgstr "ID"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_company__octopart_client_id
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_config_settings__octopart_client_id
+msgid "Client ID for Octopart API"
+msgstr "Octopart APIクライアントID"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_res_config_settings_procurable_form_view
+msgid "Client Secret"
+msgstr "シークレット"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_company__octopart_client_secret
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_config_settings__octopart_client_secret
+msgid "Client secret for Octopart API"
+msgstr "Octopart APIクライアントシークレット"
+
+#. module: ax_procurability_check
+#: model:ir.model,name:ax_procurability_check.model_res_company
+msgid "Companies"
+msgstr "会社"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__company_id
+msgid "Company"
+msgstr "会社"
+
+#. module: ax_procurability_check
+#: model:ir.model,name:ax_procurability_check.model_res_config_settings
+msgid "Config Settings"
+msgstr "コンフィグ設定"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__create_uid
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability_update_wizard__create_uid
+msgid "Created by"
+msgstr "作成者"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__create_date
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability_update_wizard__create_date
+msgid "Created on"
+msgstr "作成日"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__display_name
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability_update_wizard__display_name
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_template__display_name
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_company__display_name
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Do auto check"
+msgstr "自動更新対象"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Do not auto check"
+msgstr "自動更新対象外"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle__eol
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle_m__eol
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_form_view
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "EOL"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Electrical"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__stock_status__extavl
+msgid "Exactly Available"
+msgstr "部品番号一致在庫有"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__stock_status__extnavl
+msgid "Exactly but Not Available"
+msgstr "部品番号一致在庫なし"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__stock_status__extodr
+msgid "Exactly but OnOrder"
+msgstr "部品番号一致発注可能"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_follower_ids
+msgid "Followers"
+msgstr "フォロワー"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_channel_ids
+msgid "Followers (Channels)"
+msgstr "フォロワー(チャンネル)"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "フォロワー(パートナー)"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Group By"
+msgstr "グループ化"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__id
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability_update_wizard__id
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_template__id
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_company__id
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_config_settings__id
+msgid "ID"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__message_needaction
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "チェックされている場合、新しいメッセージをお知らせ"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__message_has_error
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "チェックされている場合、メッセージ送信でエラー発生"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__default_code
+msgid "Internal Reference"
+msgstr "AX部品番号"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_is_follower
+msgid "Is Follower"
+msgstr "フォロワー"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__last_auto_update
+msgid "Last Auto Update"
+msgstr "最終自動更新日"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability____last_update
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability_update_wizard____last_update
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_template____last_update
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_company____last_update
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_config_settings____last_update
+msgid "Last Modified on"
+msgstr "最終変更日"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__write_uid
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability_update_wizard__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__write_date
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability_update_wizard__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_product__lifecycle_m
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_template__lifecycle_m
+msgid "LifeCycle(Manual)"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__lifecycle
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_product__lifecycle
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_template__lifecycle
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Lifecycle(Auto)"
+msgstr "ライフサイクル(自動)"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__lifecycle_m
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Lifecycle(Manual)"
+msgstr "ライフサイクル(手動)"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "添付"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Mechanical"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_has_error
+msgid "Message Delivery error"
+msgstr "送信エラー"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_ids
+msgid "Messages"
+msgstr "メッセージ"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle__new
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle_m__new
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_form_view
+msgid "NEW"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle__nrnd
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle_m__nrnd
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_form_view
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "NRND"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__name
+msgid "Name"
+msgstr "名称"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__stock_status__notfnd
+msgid "Not Found"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_needaction_counter
+msgid "Number of Actions"
+msgstr "アクションの数"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_has_error_counter
+msgid "Number of errors"
+msgstr "エラーの数"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "アクションが必要なメッセージの数"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "送信エラーのあるメッセージ数"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_config_settings__octopart_update_once
+#: model:ir.model.fields,help:ax_procurability_check.field_res_company__octopart_update_once
+#: model:ir.model.fields,help:ax_procurability_check.field_res_config_settings__octopart_update_once
+msgid "Number of records to be updated at once"
+msgstr "一回の更新で処理する件数"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__message_unread_counter
+msgid "Number of unread messages"
+msgstr "未読数"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "OBS"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle__obs
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle_m__obs
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_form_view
+msgid "Obsolete"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_wizard_form
+msgid "Please set the processing type flag and click update button."
+msgstr "処理方法を選んでアップデートボタンを押してください。"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability_update_wizard__process_flg
+msgid "Processing Type"
+msgstr "処理方法"
+
+#. module: ax_procurability_check
+#: model:ir.ui.menu,name:ax_procurability_check.ax_prod_procurability_menu
+msgid "Procurability"
+msgstr "調達可能性"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_product_supplier_procurability_view
+msgid "Procurability Information"
+msgstr "調達可能性情報"
+
+#. module: ax_procurability_check
+#: model:ir.model,name:ax_procurability_check.model_ax_prod_procurability_update_wizard
+msgid "Procurability Update Wizard"
+msgstr "調達可能性更新ウィザード"
+
+#. module: ax_procurability_check
+#: model:ir.ui.menu,name:ax_procurability_check.ax_prod_procurability_wizard_menu
+msgid "Procurability Update(Manual)"
+msgstr "調達可能性情報更新(手動)"
+
+#. module: ax_procurability_check
+#: model:ir.actions.server,name:ax_procurability_check.ir_cron_procurability_check_ir_actions_server
+#: model:ir.cron,cron_name:ax_procurability_check.ir_cron_procurability_check
+#: model:ir.cron,name:ax_procurability_check.ir_cron_procurability_check
+msgid "Procurability update"
+msgstr "調達可能性情報更新"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_product__procure_info_id
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_template__procure_info_id
+msgid "Procure Info"
+msgstr "調達可能性情報"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__product_id
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__categ_id
+msgid "Product Category"
+msgstr "プロダクトカテゴリ"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__product_name
+msgid "Product Name"
+msgstr "プロダクト名"
+
+#. module: ax_procurability_check
+#: model:ir.actions.act_window,name:ax_procurability_check.ax_prod_procurability_act_window
+msgid "Product Procurability"
+msgstr "調達可能性"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_res_config_settings_procurable_form_view
+msgid "Product Procurability API settings"
+msgstr "調達可能性情報API設定"
+
+#. module: ax_procurability_check
+#: model:ir.model,name:ax_procurability_check.model_product_template
+msgid "Product Template"
+msgstr "プロダクトテンプレート"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle__prod
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle_m__prod
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_form_view
+msgid "Production"
+msgstr "製造中"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Production / New"
+msgstr ""
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS送信エラー"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__searched_pn
+msgid "Searched P/N"
+msgstr "検索した部品番号"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__categ_id
+msgid "Select category for the current product"
+msgstr "現在のプロダクトのカテゴリを選択"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_res_company__octopart_client_id
+msgid "Set client ID"
+msgstr "クライアントIDを設定"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_res_config_settings__octopart_client_id
+msgid "Set client id which is issued on nexar api settings page"
+msgstr "Nexar API のページにて発行したクライアントID"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_res_company__octopart_client_secret
+msgid "Set client secret"
+msgstr "クライアントシークレットを設定"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_res_config_settings__octopart_client_secret
+msgid "Set client secret which is issued on nexar api settings page"
+msgstr "Nexar API のページにて発行したクライアントシークレット"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__stock_status__simavl
+msgid "Similar Available"
+msgstr "類似部品番号在庫有"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__stock_status__simnavl
+msgid "Similar but Not Available"
+msgstr "類似部品番号在庫なし"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__stock_status__simodr
+msgid "Similar but On Order"
+msgstr "類似部品番号注文可能"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__stock_status
+msgid "Stock Availability"
+msgstr "在庫状況"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_product__octopart_url
+#: model:ir.model.fields,field_description:ax_procurability_check.field_product_template__octopart_url
+msgid "Stock Info URL"
+msgstr "在庫情報へのURL"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__octopart_url
+msgid "Stock info URL"
+msgstr "在庫情報リンク"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle__unknown
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__lifecycle_m__unknown
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability__stock_status__unknown
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_form_view
+msgid "Unknown"
+msgstr "不明"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_search_view
+msgid "Unkown"
+msgstr "不明"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_unread
+msgid "Unread Messages"
+msgstr "未読メッセージ"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "未読メッセージ数"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_wizard_form
+msgid "Update"
+msgstr "一括更新"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_res_company__octopart_update_once
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_res_config_settings_procurable_form_view
+msgid "Update Once"
+msgstr "更新アイテム数"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields.selection,name:ax_procurability_check.selection__ax_prod_procurability_update_wizard__process_flg__updonly
+msgid "Update only"
+msgstr "更新のみ"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_wizard_form
+msgid "Update only: Update procurability info for current items."
+msgstr "更新のみ: 調達可能性の情報のみ更新"
+
+#. module: ax_procurability_check
+#: model_terms:ir.ui.view,arch_db:ax_procurability_check.ax_prod_procurability_wizard_form
+msgid "Update procurability information"
+msgstr "調達可能性情報の更新"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,field_description:ax_procurability_check.field_ax_prod_procurability__website_message_ids
+msgid "Website Messages"
+msgstr "ウェブサイトのメッセージ"
+
+#. module: ax_procurability_check
+#: model:ir.model.fields,help:ax_procurability_check.field_ax_prod_procurability__website_message_ids
+msgid "Website communication history"
+msgstr "ウェブサイトのコミュニケーション履歴"

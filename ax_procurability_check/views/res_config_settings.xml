@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     License Other proprietary. -->
+<odoo>
+
+    <record model="ir.ui.view" id="ax_res_config_settings_procurable_form_view">
+        <field name="name">res.config.settings.form (in ax_prod_procurability)</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//widget[@name='res_config_dev_tool']" position="before">
+                <h2>Product Procurability API settings</h2>
+                <div class="row mt16 o_settings_container" name="ax_prod_proc_setting_container" modifiers="{}">
+                    <div class="col-12 col-lg-6 o_setting_box" id="procuability_api_setting" modifiers="{}">
+                        <group>
+                            <div class="o_setting_right_pane" modifiers="{}">
+                                <div class="mt16 row" modifiers="{}">
+                                    <label for="octopart_client_id" string="Client ID" class="col-3 col-lg-3 o_light_label" />
+                                    <field name="octopart_client_id" class="oe_inline" required="1" />
+                                </div>
+                                <div class="mt16 row" modifiers="{}">
+                                    <label for="octopart_client_secret" string="Client Secret" class="col-3 col-lg-3 o_light_label" />
+                                    <field name="octopart_client_secret" class="oe_inline" required="1" password="True" />
+                                </div>
+                            </div>
+                        </group>
+                        <group>
+                            <div class="o_setting_right_pane" modifiers="{}">
+                                <div class="mt16 row" modifiers="{}">
+                                    <label for="octopart_update_once" string="Update Once" class="col-3 col-lg-3 o_light_label" />
+                                    <field name="octopart_update_once" class="oe_inline" required="1" />
+                                </div>
+                            </div>
+                        </group>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+
+</odoo>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     License Other proprietary. -->
+<odoo noupdate="1">
+
+    <!-- TODO
+    <record model="ax_prod_procurability" id="ax_prod_procurability_demo_1">
+       <field name="name">...</field>
+    </record>
+    -->
+
+</odoo>

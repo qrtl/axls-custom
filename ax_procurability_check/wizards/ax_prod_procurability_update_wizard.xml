@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     License Other proprietary. -->
+<odoo>
+    <record id="ax_prod_procurability_wizard_form" model="ir.ui.view">
+        <field name="name">ax_prod_procurability.update.wizard.form</field>
+        <field name="model">ax_prod_procurability.update.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Update procurability information">
+                <sheet>
+                    <group>
+                        <field name="process_flg" />
+                    </group>
+                    <group>
+                        <div class="ax_wizard_msg1" colspan="2">
+                            Please set the processing type flag and click update button.
+                        </div>
+                    </group>
+                    <group>
+                        <div class="ax_wizard_msg2" colspan="2">
+                            <ol>
+                                <li
+                >Add new item only: Add new procurability check item to the list.</li>
+                                <li
+                >Add new item and update: Add new procurability check item and update info.</li>
+                                <li
+                >Update only: Update procurability info for current items.</li>
+                            </ol>
+                        </div>
+                    </group>
+                </sheet>
+                <footer>
+                    <button
+            string="Update"
+            name="action_update"
+            default_focus="1"
+            class="btn-primary"
+            type="object"
+          />
+                    <button string="Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_wizard_update_info">
+        <field name="name">Batch Update</field>
+        <field name="res_model">ax_prod_procurability.update.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+
+    <record model="ir.ui.menu" id="ax_prod_procurability_wizard_menu">
+        <field name="name">Procurability Update(Manual)</field>
+        <field name="action" ref="action_wizard_update_info" />
+        <field name="parent_id" ref="purchase.menu_product_in_config_purchase" />
+    </record>
+
+</odoo>

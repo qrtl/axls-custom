@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     License Other proprietary. -->
+<odoo>
+
+    <record model="ir.model.access" id="ax_acl_prod_procurability_admin">
+        <field name="name">Product procurability admin</field>
+        <field name="model_id" ref="model_ax_prod_procurability" />
+        <!-- Purchase administrators can be used  -->
+        <field name="group_id" ref="purchase.group_purchase_manager" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record model="ir.model.access" id="ax_acl_prod_procurability_create">
+        <field name="name">Product procurability create</field>
+        <field name="model_id" ref="model_ax_prod_procurability" />
+        <!-- 新規レコード追加は基本的にバッチ実行(システム)のみ  -->
+        <field name="group_id" ref="base.group_erp_manager" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record model="ir.model.access" id="ax_acl_prod_procurability_upd_wiz_admin">
+        <field name="name">Product procurability update wiard</field>
+        <field
+      name="model_id"
+      ref="ax_procurability_check.model_ax_prod_procurability_update_wizard"
+    />
+        <!-- Purchase administrators can be used  -->
+        <field name="group_id" ref="purchase.group_purchase_manager" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_unlink" eval="1" />
+    </record>
+
+    <record model="ir.model.access" id="ax_acl_prod_procurability_user">
+        <field name="name">Product procurability user</field>
+        <field name="model_id" ref="model_ax_prod_procurability" />
+        <!-- Purchase user can be used  -->
+        <field name="group_id" ref="purchase.group_purchase_user" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_write" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+
+</odoo>

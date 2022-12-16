@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     License Other proprietary. -->
+<odoo>
+
+    <record model="ir.ui.view" id="ax_product_supplier_procurability_view">
+        <field name="name">product.template.form (in ax_procurability_check)</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="purchase.view_product_supplier_inherit" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='bill']" position="after">
+                <group string="Procurability Information" name="procurability">
+                    <field name="procure_info_id" />
+                    <field name="lifecycle" optional="show" widget="badge" decoration-success="lifecycle == 'prod' or lifecycle=='new'" decoration-warning="lifecycle == 'nrnd' or lifecycle=='eol'" decoration-danger="lifecycle == 'obs'" />
+                    <field name="lifecycle_m" optional="show" widget="badge" decoration-success="lifecycle_m == 'prod' or lifecycle_m=='new'" decoration-warning="lifecycle_m == 'nrnd' or lifecycle_m=='eol'" decoration-danger="lifecycle_m == 'obs'" />
+                    <field name="octopart_url" widget="url" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

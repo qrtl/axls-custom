@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<!--
+    Copyright 2022 Axelspace
+    License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+-->
+<odoo>
+    <record model="ir.cron" id="ir_cron_procurability_check">
+        <field name="name">Procurability update</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="numbercall">-1</field>
+        <field name="active">False</field>
+        <field name="state">code</field>
+        <field name="nextcall">2022-01-01 00:12:25</field>
+        <field name="doall" eval="False" />
+        <field
+      name="model_id"
+      ref="ax_procurability_check.model_ax_prod_procurability"
+    />
+        <field name="code">model._update_execute()</field>
+    </record>
+</odoo>
