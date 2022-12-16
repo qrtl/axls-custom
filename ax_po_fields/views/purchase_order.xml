@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Axelspace
+     License Other proprietary. -->
+<odoo>
+
+    <record model="ir.ui.view" id="ax_purchase_order_form_view_inherit">
+        <field name="name">ax.purchase.order.form.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='currency_id']" position="after">
+                <field name="x_purchase_wf_number" attrs="{'invisible':[['state','in',['draft','sent']]],'required':[['state','not in',['draft','sent']]]}" />
+                <field name="x_purchase_prodorder_number" attrs="{'required':[['state','not in',['draft','sent']]]}" />
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="x_subsidy_summary" />
+            </xpath>
+            <xpath expr="//field[@name='taxes_id']" position="after">
+                <field name="x_purchase_subsidy" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="ax_purchase_order_tree_view_inherit">
+        <field name="name">ax.purchase.order.tree.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="x_subsidy_summary" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="ax_purchase_order_view_tree_inherit">
+        <field name="name">ax.purchase.order.view.tree.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_status']" position="after">
+                <field name="x_subsidy_summary" optional="show" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

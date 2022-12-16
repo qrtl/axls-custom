@@ -1,0 +1,56 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ax_po_fields
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0-20221116\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-16 07:16+0000\n"
+"PO-Revision-Date: 2022-12-16 07:16+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: ax_po_fields
+#: model:ir.model.fields,field_description:ax_po_fields.field_purchase_order__x_purchase_prodorder_number
+msgid "Production Order (Seiban)"
+msgstr "製番"
+
+#. module: ax_po_fields
+#: model:ir.model,name:ax_po_fields.model_purchase_order
+msgid "Purchase Order"
+msgstr "購買オーダ"
+
+#. module: ax_po_fields
+#: model:ir.model,name:ax_po_fields.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "購買オーダ明細"
+
+#. module: ax_po_fields
+#: model:ir.model.fields,help:ax_po_fields.field_purchase_order__x_purchase_wf_number
+msgid "Purchase WF number for this PO"
+msgstr "WF番号"
+
+#. module: ax_po_fields
+#: model:ir.model.fields,help:ax_po_fields.field_purchase_order__x_purchase_prodorder_number
+msgid "Seiban for this PO"
+msgstr "製番"
+
+#. module: ax_po_fields
+#: model:ir.model.fields,field_description:ax_po_fields.field_purchase_order__x_subsidy_summary
+msgid "Subsidies"
+msgstr "Subsidies"
+
+#. module: ax_po_fields
+#: model:ir.model.fields,field_description:ax_po_fields.field_purchase_order_line__x_purchase_subsidy
+msgid "Subsidy"
+msgstr "Subsidy"
+
+#. module: ax_po_fields
+#: model:ir.model.fields,field_description:ax_po_fields.field_purchase_order__x_purchase_wf_number
+msgid "WF Number"
+msgstr "WF番号"
