@@ -1,0 +1,1 @@
+git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/currency_rate_update
