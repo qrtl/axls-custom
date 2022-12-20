@@ -19,7 +19,7 @@ Currency Rate Update Mizuho
 
 |badge1| |badge2| |badge3| 
 
-This module provides to update the currency exchange rate from the provider **Mizuho Bank**.
+This module adds the provider **Mizuho Bank** to update currency rates.
 
 **Table of contents**
 
@@ -42,6 +42,7 @@ Credits
 Authors
 ~~~~~~~
 
+* Axelspace
 * Quartile Limited
 
 Maintainers
