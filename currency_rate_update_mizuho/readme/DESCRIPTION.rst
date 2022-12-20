@@ -1,1 +1,1 @@
-This module provides to update the currency exchange rate from the provider **Mizuho Bank**.
+This module adds the provider **Mizuho Bank** to update currency rates.
