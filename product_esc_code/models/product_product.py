@@ -10,19 +10,23 @@ class ProductProduct(models.Model):
     esc_code = fields.Char(related="product_tmpl_id.esc_code")
 
     def name_get(self):
-        # Prefetch the fields used by the `name_get`, so `browse` doesn't fetch other fields
-        self.browse(self.ids).read(["name", "default_code", "esc_code"])
-        return [
-            (
-                template.id,
-                "%s%s"
-                % (
-                    "[%s/%s] " % (template.default_code, template.esc_code or ""),
-                    template.name,
-                ),
-            )
-            for template in self
-        ]
+        res = super().name_get()
+        name_list = []
+        for rec in res:
+            product = self.browse(rec[0])
+            esc_code = product.esc_code
+            if not esc_code:
+                name_list.append(rec)
+                continue
+            name = rec[1]
+            if not product.default_code:
+                name = "[" + esc_code + "] " + name
+                name_list.append((rec[0], name))
+                continue
+            pos = name.find("]")
+            name = name[:pos] + "/" + esc_code + name[pos:]
+            name_list.append((rec[0], name))
+        return name_list
 
     @api.model
     def _name_search(
