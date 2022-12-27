@@ -1,0 +1,37 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_order_supplier_phone
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-14 06:17+0000\n"
+"PO-Revision-Date: 2022-09-14 06:17+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_order_supplier_phone
+#: model:ir.model.fields,field_description:purchase_order_supplier_phone.field_purchase_order__supplier_mobile
+msgid "Mobile"
+msgstr "携帯電話"
+
+#. module: purchase_order_supplier_phone
+#: model:ir.model.fields,field_description:purchase_order_supplier_phone.field_purchase_order__supplier_phone
+msgid "Phone"
+msgstr "電話"
+
+#. module: purchase_order_supplier_phone
+#: model:ir.model,name:purchase_order_supplier_phone.model_purchase_order
+msgid "Purchase Order"
+msgstr "購買オーダ"
+
+#. module: purchase_order_supplier_phone
+#: model_terms:ir.ui.view,arch_db:purchase_order_supplier_phone.view_purchase_order_filter
+#: model_terms:ir.ui.view,arch_db:purchase_order_supplier_phone.view_purchase_order_view_search
+msgid "Supplier Phone/Mobile"
+msgstr "電話/携帯電話(仕入先)"
