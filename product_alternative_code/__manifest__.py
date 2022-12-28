@@ -5,9 +5,9 @@
     "version": "16.0.1.0.0",
     "author": "Quartile Limited",
     "website": "https://www.quartile.co",
-    "category": "Purchase",
+    "category": "Product",
     "license": "LGPL-3",
-    "depends": ["stock"],
+    "depends": ["product"],
     "data": [
         "views/product_template_views.xml",
     ],
