@@ -7,4 +7,4 @@ from odoo import fields, models
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    esc_code = fields.Char()
+    alt_code = fields.Char("Alternative Code", help="Alternative product code.")

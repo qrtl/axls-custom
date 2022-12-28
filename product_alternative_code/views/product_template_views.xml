@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="product.product_template_tree_view" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='default_code']" position="after">
-                <field name="esc_code" />
+                <field name="alt_code" optional="show" />
             </xpath>
         </field>
     </record>
@@ -16,7 +16,7 @@
         <field name="inherit_id" ref="product.product_template_only_form_view" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='default_code']" position="after">
-                <field name="esc_code" />
+                <field name="alt_code" />
             </xpath>
         </field>
     </record>
