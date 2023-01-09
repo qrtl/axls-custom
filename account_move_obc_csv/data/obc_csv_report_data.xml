@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="report_obc_csv" model="ir.actions.report">
+        <field name="name">OBC CSV</field>
+        <field name="model">account.move</field>
+        <field name="report_type">csv</field>
+        <field name="encoding">cp932</field>
+        <field name="report_name">account_move_obc_csv.report_obc_csv</field>
+        <field name="report_file">account_move_obc_csv.report_obc_csv</field>
+        <field name="print_report_name">'OBC_%s' % (time.strftime('%Y%m%d'))</field>
+        <field name="binding_model_id" ref="model_account_move" />
+    </record>
+</odoo>
