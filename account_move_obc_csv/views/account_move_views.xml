@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="name">stock.picking.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='scheduled_date']" position="before">
+                <field
+                    name="is_exported"
+                    attrs="{'invisible':[('picking_type_code','!=','outgoing')]}"
+                />
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page
+                    string="Yamato Settings"
+                    attrs="{'invisible':[('picking_type_code','!=','outgoing')]}"
+                >
+                    <group>
+                        <group>
+                            <field name="yamato_carrier_code" />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="vpicktree_outgoing" model="ir.ui.view">
+        <field name="name">vpicktree.outgoing</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree" />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="is_exported" />
+            </xpath>
+        </field>
+    </record>
+    <record id="view_picking_internal_search" model="ir.ui.view">
+        <field name="name">stock.picking.internal.search</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='late']" position="before">
+                <filter
+                    name="exported"
+                    string="Exported"
+                    domain="[('is_exported','=',True)]"
+                />
+                <filter
+                    name="not_exported"
+                    string="Not exported"
+                    domain="[('is_exported','=',False)]"
+                />
+                <separator />
+            </xpath>
+        </field>
+    </record>
+</odoo>
