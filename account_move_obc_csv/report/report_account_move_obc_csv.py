@@ -62,20 +62,34 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def _get_report_vals_dict(self, record):
         labels = self._get_field_dict()
+        tax_accounts = (
+            self.env["account.tax.repartition.line"]
+            .search([("account_id", "!=", False)])
+            .mapped("account_id")
+        )
+        # Sort lines so that the tax line(s) will come at the end of a journal entry
+        move_lines = record.line_ids.filtered(
+            lambda x: x.account_id not in tax_accounts
+        ).sorted(lambda x: abs(x.balance), reverse=True)
+        move_lines += record.line_ids.filtered(lambda x: x.account_id in tax_accounts)
         vals_dict = defaultdict(dict)
-        move_lines = record.line_ids.sorted(lambda x: abs(x.balance), reverse=True)
         first_debit, first_credit = True, True
         line_count = 1
         for line in move_lines:
-            account_code, subaccount_code = "", ""
+            account_code = line.account_id.code
+            subaccount_code = ""
             if "." in account_code:
-                account_code, subaccount_code = line.account_id.code.split(".")
+                # maxsplit=1 - we assume that an account code should contain only one
+                # period (".") at most.
+                account_code, subaccount_code = account_code.split(".", 1)
             tax = line.tax_ids[:1]
             analytic_lines = line.analytic_line_ids
-            project_line = analytic_lines.filtered(lambda x: x.plan_type == "project")[
-                :1
-            ]
-            project_account = project_line.account_id
+            project_account = analytic_lines.filtered(
+                lambda x: x.plan_type == "project"
+            ).account_id[:1]
+            department_account = analytic_lines.filtered(
+                lambda x: x.plan_type == "department"
+            ).account_id[:1]
             first_line = False
             if (line.debit and first_debit) or (line.credit and first_credit):
                 first_line = True
@@ -87,30 +101,30 @@ class AccountMoveObcCsv(models.AbstractModel):
             if line.debit:
                 vals[labels[2]] = account_code
                 vals[labels[3]] = line.debit
-                vals[labels[7]] = ""  # debit department
+                vals[labels[7]] = department_account.name or ""
                 vals[labels[8]] = subaccount_code or ""
-                vals[labels[9]] = ""  # debit consumption tax categ
-                vals[labels[10]] = ""  # debit consumption tax rate type
+                vals[labels[9]] = ""  # TODO: debit consumption tax categ
+                vals[labels[10]] = ""  # TODO: debit consumption tax rate type
                 vals[labels[11]] = (
                     tax and tax.amount or ""
                 )  # debit consumption tax rate
                 vals[labels[12]] = line.partner_id.ref or ""  # debit partner code
                 vals[labels[13]] = project_account.name or ""
-                vals[labels[14]] = ""  # debit consumption tax amount
+                vals[labels[14]] = ""  # TODO: debit consumption tax amount
                 first_debit = False
             if line.credit:
                 vals[labels[4]] = account_code or ""
                 vals[labels[5]] = line.credit
-                vals[labels[15]] = ""  # credit department
+                vals[labels[15]] = department_account.name or ""
                 vals[labels[16]] = subaccount_code or ""
-                vals[labels[17]] = ""  # credit consumption tax categ
-                vals[labels[18]] = ""  # credit consumption tax rate type
+                vals[labels[17]] = ""  # TODO: credit consumption tax categ
+                vals[labels[18]] = ""  # TODO: credit consumption tax rate type
                 vals[labels[19]] = (
                     tax and tax.amount or ""
                 )  # credit consumption tax rate
                 vals[labels[20]] = line.partner_id.ref or ""  # credit partner code
                 vals[labels[21]] = project_account.name or ""
-                vals[labels[22]] = ""  # credit consumption tax amount
+                vals[labels[22]] = ""  # TODO: credit consumption tax amount
                 first_credit = False
             vals_dict[line_num] = vals
             line_count += 1
