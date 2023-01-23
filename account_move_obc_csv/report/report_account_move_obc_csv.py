@@ -25,18 +25,20 @@ class AccountMoveObcCsv(models.AbstractModel):
             9: "GL0012004",  # debit consumption tax categ
             10: "GL0012015",  # debit consumption tax rate type
             11: "GL0012005",  # debit consumption tax rate
-            12: "GL0012009",  # debit partner code
-            13: "GL0012012",  # debit project
-            14: "GL0012102",  # debit consumption tax amount
-            15: "GL0013001",  # credit department
-            16: "GL0013003",  # credit sub-account
-            17: "GL0013004",  # credit consumption tax categ
-            18: "GL0013015",  # credit consumption tax rate type
-            19: "GL0013005",  # credit consumption tax rate
-            20: "GL0013009",  # credit partner code
-            21: "GL0013012",  # credit project
-            22: "GL0013102",  # credit consumption tax amount
-            23: "GL0011001",  # remarks
+            12: "GL0012007",  # debit consumption tax auto calc
+            13: "GL0012009",  # debit partner code
+            14: "GL0012012",  # debit project
+            15: "GL0012102",  # debit consumption tax amount
+            16: "GL0013001",  # credit department
+            17: "GL0013003",  # credit sub-account
+            18: "GL0013004",  # credit consumption tax categ
+            19: "GL0013015",  # credit consumption tax rate type
+            20: "GL0013005",  # credit consumption tax rate
+            21: "GL0013007",  # credit consumption tax auto calc
+            22: "GL0013009",  # credit partner code
+            23: "GL0013012",  # credit project
+            24: "GL0013102",  # credit consumption tax amount
+            25: "GL0011001",  # remarks
         }
         return labels
 
@@ -62,16 +64,11 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def _get_report_vals_dict(self, record):
         labels = self._get_field_dict()
-        tax_accounts = (
-            self.env["account.tax.repartition.line"]
-            .search([("account_id", "!=", False)])
-            .mapped("account_id")
-        )
         # Sort lines so that the tax line(s) will come at the end of a journal entry
-        move_lines = record.line_ids.filtered(
-            lambda x: x.account_id not in tax_accounts
-        ).sorted(lambda x: abs(x.balance), reverse=True)
-        move_lines += record.line_ids.filtered(lambda x: x.account_id in tax_accounts)
+        move_lines = record.line_ids.filtered(lambda x: not x.tax_line_id).sorted(
+            lambda x: abs(x.balance), reverse=True
+        )
+        move_lines += record.line_ids.filtered(lambda x: x.tax_line_id)
         vals_dict = defaultdict(dict)
         first_debit, first_credit = True, True
         line_count = 1
@@ -84,6 +81,8 @@ class AccountMoveObcCsv(models.AbstractModel):
                 account_code, subaccount_code = account_code.split(".", 1)
             tax = line.tax_ids[:1]
             analytic_lines = line.analytic_line_ids
+            # We assume that there should be only one project/department per journal
+            # item if any.
             project_account = analytic_lines.filtered(
                 lambda x: x.plan_type == "project"
             ).account_id[:1]
@@ -97,34 +96,34 @@ class AccountMoveObcCsv(models.AbstractModel):
             vals = vals_dict[1] if first_line else {}
             vals[labels[1]] = record.date
             vals[labels[6]] = record.name
-            vals[labels[23]] = line.name
+            vals[labels[25]] = line.name
             if line.debit:
                 vals[labels[2]] = account_code
                 vals[labels[3]] = line.debit
-                vals[labels[7]] = department_account.name or ""
+                vals[labels[7]] = department_account.name or "0000"
                 vals[labels[8]] = subaccount_code or ""
-                vals[labels[9]] = ""  # TODO: debit consumption tax categ
-                vals[labels[10]] = ""  # TODO: debit consumption tax rate type
+                vals[labels[9]] = tax.obc_tax_category or ""
+                vals[labels[10]] = tax.obc_tax_rate_type or ""
                 vals[labels[11]] = (
                     tax and tax.amount or ""
                 )  # debit consumption tax rate
-                vals[labels[12]] = line.partner_id.ref or ""  # debit partner code
-                vals[labels[13]] = project_account.name or ""
-                vals[labels[14]] = ""  # TODO: debit consumption tax amount
+                vals[labels[12]] = 0  # No tax calculation
+                vals[labels[13]] = line.partner_id.ref or ""  # debit partner code
+                vals[labels[14]] = project_account.name or ""
                 first_debit = False
             if line.credit:
                 vals[labels[4]] = account_code or ""
                 vals[labels[5]] = line.credit
-                vals[labels[15]] = department_account.name or ""
-                vals[labels[16]] = subaccount_code or ""
-                vals[labels[17]] = ""  # TODO: credit consumption tax categ
-                vals[labels[18]] = ""  # TODO: credit consumption tax rate type
-                vals[labels[19]] = (
+                vals[labels[16]] = department_account.name or "0000"
+                vals[labels[17]] = subaccount_code or ""
+                vals[labels[18]] = tax.obc_tax_category or ""
+                vals[labels[19]] = tax.obc_tax_rate_type or ""
+                vals[labels[20]] = (
                     tax and tax.amount or ""
                 )  # credit consumption tax rate
-                vals[labels[20]] = line.partner_id.ref or ""  # credit partner code
-                vals[labels[21]] = project_account.name or ""
-                vals[labels[22]] = ""  # TODO: credit consumption tax amount
+                vals[labels[21]] = 0  # No tax calculation
+                vals[labels[22]] = line.partner_id.ref or ""  # credit partner code
+                vals[labels[23]] = project_account.name or ""
                 first_credit = False
             vals_dict[line_num] = vals
             line_count += 1
