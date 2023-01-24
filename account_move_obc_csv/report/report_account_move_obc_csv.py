@@ -64,6 +64,7 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def _get_report_vals_dict(self, record):
         labels = self._get_field_dict()
+        accounting_date = record.date.strftime("%Y/%m/%d")
         # Sort lines so that the tax line(s) will come at the end of a journal entry
         move_lines = record.line_ids.filtered(lambda x: not x.tax_line_id).sorted(
             lambda x: abs(x.balance), reverse=True
@@ -94,7 +95,7 @@ class AccountMoveObcCsv(models.AbstractModel):
                 first_line = True
             line_num = 1 if first_line else line_count
             vals = vals_dict[1] if first_line else {}
-            vals[labels[1]] = record.date
+            vals[labels[1]] = accounting_date
             vals[labels[6]] = record.name
             vals[labels[25]] = line.name
             if line.debit:
@@ -102,27 +103,31 @@ class AccountMoveObcCsv(models.AbstractModel):
                 vals[labels[3]] = line.debit
                 vals[labels[7]] = department_account.name or "0000"
                 vals[labels[8]] = subaccount_code or ""
-                vals[labels[9]] = tax.obc_tax_category or ""
-                vals[labels[10]] = tax.obc_tax_rate_type or ""
-                vals[labels[11]] = (
-                    tax and tax.amount or ""
-                )  # debit consumption tax rate
+                vals[labels[9]] = (
+                    tax.obc_tax_category or line.tax_line_id.obc_tax_category or ""
+                )
+                vals[labels[10]] = (
+                    tax.obc_tax_rate_type or line.tax_line_id.obc_tax_rate_type or ""
+                )
+                vals[labels[11]] = tax.amount or line.tax_line_id.amount or ""
                 vals[labels[12]] = 0  # No tax calculation
-                vals[labels[13]] = line.partner_id.ref or ""  # debit partner code
+                vals[labels[13]] = line.partner_id.ref or ""
                 vals[labels[14]] = project_account.name or ""
                 first_debit = False
             if line.credit:
-                vals[labels[4]] = account_code or ""
+                vals[labels[4]] = account_code
                 vals[labels[5]] = line.credit
                 vals[labels[16]] = department_account.name or "0000"
                 vals[labels[17]] = subaccount_code or ""
-                vals[labels[18]] = tax.obc_tax_category or ""
-                vals[labels[19]] = tax.obc_tax_rate_type or ""
-                vals[labels[20]] = (
-                    tax and tax.amount or ""
-                )  # credit consumption tax rate
+                vals[labels[18]] = (
+                    tax.obc_tax_category or line.tax_line_id.obc_tax_category or ""
+                )
+                vals[labels[19]] = (
+                    tax.obc_tax_rate_type or line.tax_line_id.obc_tax_rate_type or ""
+                )
+                vals[labels[20]] = tax.amount or line.tax_line_id.amount or ""
                 vals[labels[21]] = 0  # No tax calculation
-                vals[labels[22]] = line.partner_id.ref or ""  # credit partner code
+                vals[labels[22]] = line.partner_id.ref or ""
                 vals[labels[23]] = project_account.name or ""
                 first_credit = False
             vals_dict[line_num] = vals
