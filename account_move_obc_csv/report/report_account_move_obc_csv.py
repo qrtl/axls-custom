@@ -79,7 +79,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         """Regard the first department identified as the department of the journal
         entry.
         """
-        department = self.env["account.analytic.plan"].browse()
+        department = self.env["account.analytic.account"].browse()
         for analytic_line in record.line_ids.analytic_line_ids:
             if analytic_line.plan_type == "department":
                 department = analytic_line.account_id
