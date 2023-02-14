@@ -134,6 +134,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         vals_dict = defaultdict(dict)
         first_debit, first_credit = True, True
         line_count = 1
+        purchase_line = record.stock_move_id.purchase_line_id
         for line in move_lines:
             first_line = False
             if (line.debit and first_debit) or (line.credit and first_credit):
@@ -142,7 +143,17 @@ class AccountMoveObcCsv(models.AbstractModel):
             vals = vals_dict[1] if first_line else {}
             vals["GL0010001"] = accounting_date
             vals["GL0010008"] = record.name
-            vals["GL0011001"] = line.name
+            remarks = line.name
+            if purchase_line:
+                # This adjustment is so that the accounting staff can easily find
+                # the related journal items for receipts based on the same string
+                # set on those for vendor bill lines.
+                remarks = "%s: %s, %s" % (
+                    purchase_line.order_id.name,
+                    purchase_line.name,
+                    line.name,
+                )
+            vals["GL0011001"] = remarks
             if line.debit:
                 vals = self._update_vals(vals, line, move_department, "dr")
                 first_debit = False
