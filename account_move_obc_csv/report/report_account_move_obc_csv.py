@@ -112,12 +112,15 @@ class AccountMoveObcCsv(models.AbstractModel):
         vals[fields["department"][drcr]] = department_name
         vals[fields["subaccount"][drcr]] = subaccount_code or ""
         vals[fields["tax_categ"][drcr]] = (
-            tax.obc_tax_category or line.tax_line_id.obc_tax_category or ""
+            # '0' means non-taxable (対象外)
+            tax.obc_tax_category
+            or line.tax_line_id.obc_tax_category
+            or "0"
         )
         vals[fields["tax_rate_type"][drcr]] = (
             tax.obc_tax_rate_type or line.tax_line_id.obc_tax_rate_type or ""
         )
-        vals[fields["tax_rate"][drcr]] = tax.amount or line.tax_line_id.amount or ""
+        vals[fields["tax_rate"][drcr]] = tax.amount or line.tax_line_id.amount or "0"
         vals[fields["tax_auto_calc"][drcr]] = 0  # No tax calculation
         vals[fields["partner"][drcr]] = line.partner_id.ref or ""
         vals[fields["project"][drcr]] = project.code or ""
