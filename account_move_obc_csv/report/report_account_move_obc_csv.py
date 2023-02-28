@@ -75,18 +75,7 @@ class AccountMoveObcCsv(models.AbstractModel):
                 % ("\n".join(exported_records.mapped("name")))
             )
 
-    def _get_move_department(self, record):
-        """Regard the first department identified as the department of the journal
-        entry.
-        """
-        department = self.env["account.analytic.account"].browse()
-        for analytic_line in record.line_ids.analytic_line_ids:
-            if analytic_line.plan_type == "department":
-                department = analytic_line.account_id
-                break
-        return department
-
-    def _update_vals(self, vals, line, move_department, drcr):
+    def _update_vals(self, vals, line, move_analytic_accounts, drcr):
         account_code = line.account_id.code
         subaccount_code = ""
         if "." in account_code:
@@ -98,18 +87,24 @@ class AccountMoveObcCsv(models.AbstractModel):
         project = line.analytic_line_ids.filtered(
             lambda x: x.plan_type == "project"
         ).account_id[:1]
+        department = line.analytic_line_ids.filtered(
+            lambda x: x.plan_type == "department"
+        ).account_id[:1]
         if line.account_id.account_type in ("asset_receivable", "liability_payable"):
-            department_name = move_department.code or ""
-        else:
-            department = line.analytic_line_ids.filtered(
-                lambda x: x.plan_type == "department"
-            ).account_id[:1]
-            department_name = department.code or "0000"
+            # For AP/AR journal items, we let the first identified project/department
+            # analytic accounts represent the entry, and set them in the corresponding
+            # fields.
+            project = move_analytic_accounts.filtered(
+                lambda x: x.plan_id.plan_type == "project"
+            )[:1]
+            department = move_analytic_accounts.filtered(
+                lambda x: x.plan_id.plan_type == "department"
+            )[:1]
         tax = line.tax_ids[:1]
         fields = self._get_field_map()
         vals[fields["account"][drcr]] = account_code
         vals[fields["base_amount"][drcr]] = line.debit if drcr == "dr" else line.credit
-        vals[fields["department"][drcr]] = department_name
+        vals[fields["department"][drcr]] = department.code or "0000"
         vals[fields["subaccount"][drcr]] = subaccount_code or ""
         vals[fields["tax_categ"][drcr]] = (
             # '0' means non-taxable (対象外)
@@ -128,7 +123,7 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def _get_report_vals_dict(self, record):
         accounting_date = record.date.strftime("%Y/%m/%d")
-        move_department = self._get_move_department(record)
+        move_analytic_accounts = record.line_ids.analytic_line_ids.mapped("account_id")
         # Sort lines so that the tax line(s) will come at the end of a journal entry
         move_lines = record.line_ids.filtered(lambda x: not x.tax_line_id).sorted(
             lambda x: abs(x.balance), reverse=True
@@ -158,10 +153,10 @@ class AccountMoveObcCsv(models.AbstractModel):
                 )
             vals["GL0011001"] = remarks
             if line.debit:
-                vals = self._update_vals(vals, line, move_department, "dr")
+                vals = self._update_vals(vals, line, move_analytic_accounts, "dr")
                 first_debit = False
             if line.credit:
-                vals = self._update_vals(vals, line, move_department, "cr")
+                vals = self._update_vals(vals, line, move_analytic_accounts, "cr")
                 first_credit = False
             vals_dict[line_num] = vals
             line_count += 1

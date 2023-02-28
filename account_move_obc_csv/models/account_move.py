@@ -7,4 +7,4 @@ from odoo import fields, models
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    is_exported = fields.Boolean("Exported")
+    is_exported = fields.Boolean("Exported", copy=False)
