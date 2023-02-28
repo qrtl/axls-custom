@@ -1,0 +1,141 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* account_move_obc_csv
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-28 01:06+0000\n"
+"PO-Revision-Date: 2023-02-28 01:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: account_move_obc_csv
+#: model:ir.actions.report,print_report_name:account_move_obc_csv.report_obc_csv
+msgid "'OBC_%s' % (time.strftime('%Y%m%d'))"
+msgstr ""
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields.selection,name:account_move_obc_csv.selection__account_tax__obc_tax_rate_type__0
+msgid "0: Standard"
+msgstr "0: 標準"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields.selection,name:account_move_obc_csv.selection__account_tax__obc_tax_rate_type__1
+msgid "1: Reduced"
+msgstr "1: 軽減"
+
+#. module: account_move_obc_csv
+#: model:ir.model,name:account_move_obc_csv.model_account_analytic_line
+msgid "Analytic Line"
+msgstr "分析行"
+
+#. module: account_move_obc_csv
+#: model:ir.model,name:account_move_obc_csv.model_account_analytic_plan
+msgid "Analytic Plans"
+msgstr "分析プラン"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields.selection,name:account_move_obc_csv.selection__account_analytic_plan__plan_type__department
+msgid "Department"
+msgstr "部門"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields,field_description:account_move_obc_csv.field_account_bank_statement_line__is_exported
+#: model:ir.model.fields,field_description:account_move_obc_csv.field_account_move__is_exported
+#: model:ir.model.fields,field_description:account_move_obc_csv.field_account_payment__is_exported
+#: model_terms:ir.ui.view,arch_db:account_move_obc_csv.view_account_move_filter
+msgid "Exported"
+msgstr "出力済"
+
+#. module: account_move_obc_csv
+#. odoo-python
+#: code:addons/account_move_obc_csv/report/report_account_move_obc_csv.py:0
+#, python-format
+msgid ""
+"Following records are not in a valid state (posted) for export.\n"
+"%s"
+msgstr ""
+"次のレコードは出力処理可能な状態(記帳済)ではありません。\n"
+"%s"
+
+#. module: account_move_obc_csv
+#. odoo-python
+#: code:addons/account_move_obc_csv/report/report_account_move_obc_csv.py:0
+#, python-format
+msgid ""
+"Following records have been exported already. Please unselect 'Exported' as necessary to export them again.\n"
+"%s"
+msgstr ""
+"次のレコードはすでに出力済です。必要に応じて「出力済」の選択を外した上で再出力してください。\n"
+"%s"
+
+#. module: account_move_obc_csv
+#: model:ir.model,name:account_move_obc_csv.model_account_move
+msgid "Journal Entry"
+msgstr "仕訳"
+
+#. module: account_move_obc_csv
+#: model_terms:ir.ui.view,arch_db:account_move_obc_csv.view_account_move_filter
+msgid "Not exported"
+msgstr "未出力"
+
+#. module: account_move_obc_csv
+#: model:ir.actions.report,name:account_move_obc_csv.report_obc_csv
+msgid "OBC CSV"
+msgstr ""
+
+#. module: account_move_obc_csv
+#: model_terms:ir.ui.view,arch_db:account_move_obc_csv.view_tax_form
+msgid "OBC Settings"
+msgstr "OBC設定"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields,field_description:account_move_obc_csv.field_account_tax__obc_tax_category
+msgid "OBC Tax Category"
+msgstr "OBC消費税区分"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields,field_description:account_move_obc_csv.field_account_tax__obc_tax_rate_type
+msgid "OBC Tax Rate Type"
+msgstr "OBC消費税率種別"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields,field_description:account_move_obc_csv.field_account_analytic_line__plan_type
+#: model:ir.model.fields,field_description:account_move_obc_csv.field_account_analytic_plan__plan_type
+msgid "Plan Type"
+msgstr "プランタイプ"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields.selection,name:account_move_obc_csv.selection__account_analytic_plan__plan_type__project
+msgid "Project"
+msgstr "プロジェクト"
+
+#. module: account_move_obc_csv
+#: model:ir.model,name:account_move_obc_csv.model_account_tax
+msgid "Tax"
+msgstr "税"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields,help:account_move_obc_csv.field_account_tax__obc_tax_category
+#: model:ir.model.fields,help:account_move_obc_csv.field_account_tax__obc_tax_rate_type
+msgid "The set value will be used in OBC data export."
+msgstr "設定値はOBCデータ出力で使用されます。"
+
+#. module: account_move_obc_csv
+#: model:ir.model.fields,help:account_move_obc_csv.field_account_analytic_line__plan_type
+#: model:ir.model.fields,help:account_move_obc_csv.field_account_analytic_plan__plan_type
+msgid ""
+"This selection will affect which column the analytic account will be mapped "
+"to in the OBC data export."
+msgstr "この選択はOBCデータ出力で分析勘定をどのカラムに表示するかに影響します。"
+
+#. module: account_move_obc_csv
+#: model:ir.model,name:account_move_obc_csv.model_report_account_move_obc_csv_report_obc_csv
+msgid "report.account_move_obc_csv.report_obc_csv"
+msgstr ""

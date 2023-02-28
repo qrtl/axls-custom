@@ -12,6 +12,6 @@ class AccountAnalylticPlan(models.Model):
             ("project", "Project"),
             ("department", "Department"),
         ],
-        help="This selection will affect which column the analytic account will be"
+        help="This selection will affect which column the analytic account will be "
         "mapped to in the OBC data export.",
     )
