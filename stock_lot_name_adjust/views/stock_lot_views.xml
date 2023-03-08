@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="search_product_lot_filter" model="ir.ui.view">
+        <field name="name">Production Lots Filter</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.search_product_lot_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="filter_domain">[
+                    '|', '|',
+                    ('product_id.default_code', 'ilike', self),
+                    ('name', 'ilike', self),
+                    ('ref', 'ilike', self),
+                ]</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
