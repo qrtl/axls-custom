@@ -109,7 +109,15 @@ class AccountMoveObcCsv(models.AbstractModel):
             department = move_analytic_accounts.filtered(
                 lambda x: x.plan_id.plan_type == "department"
             )[:1]
-        tax = line.tax_ids[:1]
+        # Records of purchase interim account should not be passed to OBC as taxable,
+        # due to conceptual discrepancies between real-time inventory accounting and
+        # 3-part method.
+        tax = self.env["account.tax"]
+        if (
+            line.account_id
+            != line.product_id.categ_id.property_stock_account_input_categ_id
+        ):
+            tax = line.tax_ids[:1]
         fields = self._get_field_map()
         vals[fields["account"][drcr]] = account_code
         vals[fields["base_amount"][drcr]] = line.debit if drcr == "dr" else line.credit
