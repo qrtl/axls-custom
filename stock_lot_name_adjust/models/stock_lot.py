@@ -2,7 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import re
-from odoo import models, api
+
+from odoo import api, models
 
 
 class StockLot(models.Model):
@@ -23,17 +24,35 @@ class StockLot(models.Model):
     def _name_search(
         self, name, args=None, operator="ilike", limit=100, name_get_uid=None
     ):
-        args = []
+        if not args:
+            args = []
         if name:
-            lot_ids = list(self._search(args, limit=limit, access_rights_uid=name_get_uid))
-            args += [
+            new_args = [
                 "|",
                 ("name", operator, name),
                 ("product_id.default_code", operator, name),
             ]
+            lot_ids = list(
+                self._search(
+                    new_args + args, limit=limit, access_rights_uid=name_get_uid
+                )
+            )
             if not lot_ids:
-                ptrn = re.compile('(\[(.*?)\])')
+                ptrn = re.compile(r"(\[(.*?)\])")
                 res = ptrn.search(name)
+                lot_name = name.replace("[" + res.group(2) + "] ", "")
                 if res:
-                    lot_ids = list(self._search([('default_code', '=', res.group(2))] + args, limit=limit, access_rights_uid=name_get_uid))
+                    lot_ids = list(
+                        self._search(
+                            [
+                                ("product_id.default_code", "=", res.group(2)),
+                                ("name", operator, lot_name),
+                            ]
+                            + args,
+                            limit=limit,
+                            access_rights_uid=name_get_uid,
+                        )
+                    )
+        else:
+            lot_ids = self._search(args, limit=limit, access_rights_uid=name_get_uid)
         return lot_ids
