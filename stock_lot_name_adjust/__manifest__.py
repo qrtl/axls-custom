@@ -8,8 +8,6 @@
     "category": "Inventory",
     "license": "AGPL-3",
     "depends": ["stock"],
-    "data": [
-        "views/stock_lot_views.xml",
-    ],
+    "data": [],
     "installable": True,
 }

@@ -38,10 +38,12 @@ class StockLot(models.Model):
                 )
             )
             if not lot_ids:
+                # These logic identify the correct lot_id when imported with the
+                # "[internal ref of product] lot name" (ex.[A0001] test01).
                 ptrn = re.compile(r"(\[(.*?)\])")
                 res = ptrn.search(name)
-                lot_name = name.replace("[" + res.group(2) + "] ", "")
                 if res:
+                    lot_name = name.replace("[" + res.group(2) + "] ", "")
                     lot_ids = list(
                         self._search(
                             [
