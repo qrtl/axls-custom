@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="account_analytic_plan_form_view" model="ir.ui.view">
+        <field name="name">account.analytic.plan.form</field>
+        <field name="model">account.analytic.plan</field>
+        <field name="inherit_id" ref="analytic.account_analytic_plan_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="plan_type" />
+            </xpath>
+        </field>
+    </record>
+    <record id="account_analytic_plan_tree_view" model="ir.ui.view">
+        <field name="name">account.analytic.plan.tree</field>
+        <field name="model">account.analytic.plan</field>
+        <field name="inherit_id" ref="analytic.account_analytic_plan_tree_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='color']" position="after">
+                <field name="plan_type" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

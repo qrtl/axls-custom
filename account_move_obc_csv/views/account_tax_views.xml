@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_tax_tree" model="ir.ui.view">
+        <field name="name">account.tax.tree</field>
+        <field name="model">account.tax</field>
+        <field name="inherit_id" ref="account.view_tax_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type_tax_use']" position="after">
+                <field name="obc_tax_category" optional="show" />
+                <field name="obc_tax_rate_type" optional="show" />
+            </xpath>
+        </field>
+    </record>
+    <record id="view_tax_form" model="ir.ui.view">
+        <field name="name">account.tax.form</field>
+        <field name="model">account.tax</field>
+        <field name="inherit_id" ref="account.view_tax_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='advanced_booleans']" position="after">
+                <group string="OBC Settings">
+                    <field name="obc_tax_category" />
+                    <field name="obc_tax_rate_type" />
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
