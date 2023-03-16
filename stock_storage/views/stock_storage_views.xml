@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_stock_storage_tree" model="ir.ui.view">
+        <field name="name">stock.storage.tree</field>
+        <field name="model">stock.storage</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree create="1" editable="bottom" multi_edit="1">
+                <field name="company_id"  optional="show" />
+                <field name="product_id"  optional="show" />
+                <field name="location_id" optional="show" />
+                <field name="shelf" optional="show" />
+                <field name="bucket" optional="show" />
+                <field name="position" optional="show" />
+                <field name="memo" optional="show" />
+                <field name="ref" optional="show" />
+                <field name="generated_id" optional="show" />                
+            </tree>
+        </field>
+    </record>
+    <record id="action_stock_storage_view" model="ir.actions.act_window">
+        <field name="name">Stock Storage</field>
+        <field name="res_model">stock.storage</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_stock_storage_tree" />
+    </record>
+    <menuitem
+        id="menu_stock_storage"
+        parent="stock.menu_stock_root"
+        action="action_stock_storage_view"
+        sequence="10"
+    />
+</odoo>
