@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="product_shelfinfo_comp_rule" model="ir.rule">
+        <field name="name">Product shelfinfo multi-company</field>
+        <field name="model_id" ref="model_product_shelfinfo" />
+        <field
+            name="domain_force"
+        > ['|', ('company_id', 'in', company_ids), ('company_id', '=', False)]</field>
+    </record>
+</odoo>

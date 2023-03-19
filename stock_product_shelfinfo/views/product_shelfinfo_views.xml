@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_product_shelfinfo_form" model="ir.ui.view">
+        <field name="name">product.shelfinfo.form</field>
+        <field name="model">product.shelfinfo</field>
+        <field name="arch" type="xml">
+            <form string="Product Shelf Information">
+                <sheet name="product_shelfinfo_form">
+                    <group>
+                        <group>
+                            <field name="sequence" />
+                            <field
+                                name="product_id"
+                                readonly="context.get('via_product_form', False)"
+                            />
+                            <field
+                                name="location_id"
+                                readonly="context.get('via_product_form', False)"
+                            />
+                            <field
+                                name="company_id"
+                                readonly="context.get('via_product_form', False)"
+                                groups="base.group_multi_company"
+                            />
+                        </group>
+                        <group>
+                            <field name="shelf" />
+                            <field name="bucket" />
+                            <field name="position" />
+                            <field name="memo" />
+                            <field name="ref" />
+                            <field name="name" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_product_shelfinfo_tree" model="ir.ui.view">
+        <field name="name">product.shelfinfo.tree</field>
+        <field name="model">product.shelfinfo</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree create="1" editable="bottom" multi_edit="1">
+                <field name="sequence" widget="handle" />
+                <field name="product_id" />
+                <field name="product_tmpl_id" optional="hide" />
+                <field name="location_id" />
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="show"
+                />
+                <field name="shelf" />
+                <field name="bucket" optional="show" />
+                <field name="position" optional="show" />
+                <field name="memo" optional="show" />
+                <field name="ref" optional="show" />
+                <field name="name" optional="show" />
+            </tree>
+        </field>
+    </record>
+    <record id="product_shelfinfo_search_view" model="ir.ui.view">
+        <field name="name">product.shelfinfo.search</field>
+        <field name="model">product.shelfinfo</field>
+        <field name="arch" type="xml">
+            <search string="Product Shelfinfo">
+                <field name="product_id" />
+                <field name="location_id" />
+                <separator />
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Product"
+                        name="product_id"
+                        context="{'group_by': 'product_id'}"
+                    />
+                    <filter
+                        string="Location"
+                        name="location_id"
+                        context="{'group_by': 'location_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="action_product_shelfinfo_view" model="ir.actions.act_window">
+        <field name="name">Product Shelf Information</field>
+        <field name="res_model">product.shelfinfo</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_product_shelfinfo_tree" />
+    </record>
+    <menuitem
+        id="menu_product_shelfinfo"
+        parent="stock.menu_stock_inventory_control"
+        action="action_product_shelfinfo_view"
+        sequence="120"
+    />
+</odoo>
