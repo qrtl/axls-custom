@@ -23,8 +23,8 @@
                                 groups="base.group_multi_company"
                                 optional="hide"
                             />
-                            <field name="shelf" />
-                            <field name="bucket" />
+                            <field name="area1" />
+                            <field name="area2" />
                             <field name="position" />
                             <field name="memo" optional="hide" />
                             <field name="ref" optional="hide" />

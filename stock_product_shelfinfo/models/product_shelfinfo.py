@@ -31,8 +31,8 @@ class ProductShelfinfo(models.Model):
         default=lambda self: self.env.company,
         required=True,
     )
-    shelf = fields.Char(required=True)
-    bucket = fields.Char()
+    area1 = fields.Char(required=True)
+    area2 = fields.Char()
     position = fields.Char()
     memo = fields.Char()
     ref = fields.Char("Internal Reference")
@@ -57,11 +57,14 @@ class ProductShelfinfo(models.Model):
                     )
                 )
 
-    @api.depends("shelf", "bucket", "position")
+    @api.depends("area1", "area2", "position")
     def _compute_name(self):
         for record in self:
-            record.name = record.shelf
-            if record.bucket:
-                record.name += "-" + record.bucket
+            record.name = record.area1
+            record.name = ""
+            if record.area1:
+                record.name += record.area1
+            if record.area2:
+                record.name += "-" + record.area2
             if record.position:
                 record.name += "-" + record.position

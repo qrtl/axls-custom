@@ -24,8 +24,8 @@
                             />
                         </group>
                         <group>
-                            <field name="shelf" />
-                            <field name="bucket" />
+                            <field name="area1" />
+                            <field name="area2" />
                             <field name="position" />
                             <field name="memo" />
                             <field name="ref" />
@@ -51,8 +51,8 @@
                     groups="base.group_multi_company"
                     optional="show"
                 />
-                <field name="shelf" />
-                <field name="bucket" optional="show" />
+                <field name="area1" />
+                <field name="area2" optional="show" />
                 <field name="position" optional="show" />
                 <field name="memo" optional="show" />
                 <field name="ref" optional="show" />

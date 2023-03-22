@@ -25,9 +25,14 @@ msgid ""
 msgstr "そのプロダクト、ロケーション、会社の組み合わせに対するレコードは既に存在しています。"
 
 #. module: stock_product_shelfinfo
-#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__bucket
-msgid "Bucket"
-msgstr "引出"
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__area1
+msgid "Area1"
+msgstr "場所1"
+
+#. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__area2
+msgid "Area2"
+msgstr "場所2"
 
 #. module: stock_product_shelfinfo
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__company_id
@@ -134,11 +139,6 @@ msgstr "プロダクトバリアント"
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__sequence
 msgid "Sequence"
 msgstr "シークエンス"
-
-#. module: stock_product_shelfinfo
-#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__shelf
-msgid "Shelf"
-msgstr "棚"
 
 #. module: stock_product_shelfinfo
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_stock_move__shelfinfo_src_id
