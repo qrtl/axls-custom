@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_picking_form" model="ir.ui.view">
+        <field name="name">stock.picking.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="//field[@name='move_ids_without_package']/tree/button[@name='action_assign_serial']"
+                position="after"
+            >
+                <field
+                    name="shelfinfo_src_id"
+                    attrs="{'column_invisible': [('parent.picking_type_code', '=', 'incoming')]}"
+                    optional="show"
+                />
+                <field
+                    name="shelfinfo_dest_id"
+                    attrs="{'column_invisible': [('parent.picking_type_code', '=', 'outgoing')]}"
+                    optional="show"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

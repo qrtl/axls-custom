@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_picking" inherit_id="stock.report_picking">
+        <xpath expr="//span[@t-esc='ml.location_id.display_name']/.." position="inside">
+            <t t-if="ml.move_id.shelfinfo_src_id">
+                <span t-field="ml.move_id.shelfinfo_src_id" />
+            </t>
+        </xpath>
+        <xpath expr="//span[@t-field='ml.location_dest_id']/.." position="inside">
+            <t t-if="ml.move_id.shelfinfo_dest_id">
+                <span t-field="ml.move_id.shelfinfo_dest_id" />
+            </t>
+        </xpath>
+    </template>
+</odoo>
