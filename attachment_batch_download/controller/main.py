@@ -17,7 +17,9 @@ class Binary(http.Controller):
     @http.route("/web/binary/download_document", type="http", auth="public")
     def download_document(self, attachment_ids, **kw):
         new_attachments = ast.literal_eval(attachment_ids)
-        attachment_ids = request.env["ir.attachment"].search([("id", "in", new_attachments)])
+        attachment_ids = request.env["ir.attachment"].search(
+            [("id", "in", new_attachments)]
+        )
         file_dict = {}
         for attachment_id in attachment_ids:
             file_store = attachment_id.store_fname
