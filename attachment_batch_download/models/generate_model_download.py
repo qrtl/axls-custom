@@ -10,10 +10,10 @@ class GenerateModelDownload(models.Model):
     model_id = fields.Many2one(
         "ir.model",
         "Model",
+        required=True,
         help="Select model for which you want to generate server action.",
         states={"generated": [("readonly", True)]},
-        ondelete="set null",
-        index=True,
+        ondelete="cascade",
     )
     state = fields.Selection(
         [("draft", "Draft"), ("generated", "Generated")],
@@ -31,7 +31,7 @@ class GenerateModelDownload(models.Model):
         server_model = self.env["ir.actions.server"]
         for record in self:
             vals = {
-                "name": _("Download"),
+                "name": _("Attachemnts Download"),
                 "model_id": record.model_id.id,
                 "state": "code",
                 "code": """if records:
@@ -50,3 +50,8 @@ class GenerateModelDownload(models.Model):
                 server_action.unlink()
         self.write({"state": "draft"})
         return True
+
+    def unlink(self):
+        if self.action_id:
+            self.action_id.unlink()
+        return super().unlink()

@@ -15,9 +15,9 @@ from odoo.http import content_disposition, request
 
 class Binary(http.Controller):
     @http.route("/web/binary/download_document", type="http", auth="public")
-    def download_document(self, tab_id, **kw):
-        new_tab = ast.literal_eval(tab_id)
-        attachment_ids = request.env["ir.attachment"].search([("id", "in", new_tab)])
+    def download_document(self, attachment_ids, **kw):
+        new_attachments = ast.literal_eval(attachment_ids)
+        attachment_ids = request.env["ir.attachment"].search([("id", "in", new_attachments)])
         file_dict = {}
         for attachment_id in attachment_ids:
             file_store = attachment_id.store_fname
@@ -27,10 +27,9 @@ class Binary(http.Controller):
             if file_store:
                 document_name = "[" + document.name.replace("/", "_") + "]"
                 date = "[" + datetime.today().strftime("%Y-%m-%d") + "]"
-                partner_name = document.partner_id.name
-                name_lst = [partner_name, attachment_id.name]
-                if not partner_name:
-                    name_lst = [attachment_id.name]
+                name_lst = [attachment_id.name]
+                if document.partner_id:
+                    name_lst = [document.partner_id.name, attachment_id.name]
                 file_name = document_name + date + "-".join(name_lst)
                 file_path = attachment_id._full_path(file_store)
                 file_dict["%s:%s" % (file_store, file_name)] = dict(

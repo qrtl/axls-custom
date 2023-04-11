@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <menuitem
-        id="menu_generate_model_download"
-        name="Generate Model Download"
+        id="menu_attachment_batch_download"
+        name="Attachment Batch Download"
         parent="base.menu_custom"
         sequence="50"
     />
@@ -94,8 +94,8 @@
         <field name="search_view_id" ref="view_generate_model_download_search" />
     </record>
     <menuitem
-        id="menu_generate_model_download_list"
-        parent="menu_generate_model_download"
+        id="menu_generate_model_download"
+        parent="menu_attachment_batch_download"
         action="action_generate_model_download"
     />
 </odoo>
