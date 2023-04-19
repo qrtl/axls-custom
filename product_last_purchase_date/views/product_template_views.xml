@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="product_template_tree_view" model="ir.ui.view">
+        <field name="name">product.template.product.tree</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='default_code']" position="after">
+                <field name="last_purchase_date" optional="hide" />
+                <field name="man_last_purchase_date" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+    <record id="product_template_only_form_view" model="ir.ui.view">
+        <field name="name">product.template.product.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='purchase_method']" position="after">
+                <field name="allow_manual_purchase_date" />
+                <field
+                    name="man_last_purchase_date"
+                    attrs="{'invisible':[('allow_manual_purchase_date','==',False)]}"
+                />
+                <field name="last_purchase_date" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
