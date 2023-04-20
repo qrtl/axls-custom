@@ -5,9 +5,8 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_product_tree_view" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='default_code']" position="after">
+            <xpath expr="//field[@name='uom_id']" position="after">
                 <field name="last_purchase_date" optional="hide" />
-                <field name="man_last_purchase_date" optional="hide" />
             </xpath>
         </field>
     </record>
@@ -16,13 +15,11 @@
         <field name="model">product.product</field>
         <field name="inherit_id" ref="product.product_normal_form_view" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='purchase_method']" position="after">
-                <field name="allow_manual_purchase_date" />
-                <field
-                    name="man_last_purchase_date"
-                    attrs="{'invisible':[('allow_manual_purchase_date','==',False)]}"
-                />
-                <field name="last_purchase_date" />
+            <xpath expr="//group[@name='inventory']" position="inside">
+                <group string="Aging Control" colspan="1">
+                    <field name="man_last_purchase_date" groups="base.group_system" />
+                    <field name="last_purchase_date" />
+                </group>
             </xpath>
         </field>
     </record>

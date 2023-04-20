@@ -1,5 +1,5 @@
-This module does the following:
+This module adds the *Last Purchase Date* field to the product, for the purpose of rough
+aging monitoring of products.
 
-* Adds the last_purchase_date and allow_manual_purchase_date.
-* Auto update last_purchase_date when make purchase receipt.
-* If choose allow_manual_purchase_date, auto update will be ignored.
+For products with no past receipt history, the option of updating the date with *Last
+Purchase Date (Man.)* is available.
