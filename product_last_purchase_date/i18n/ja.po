@@ -1,0 +1,61 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_last_purchase_date
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-04-20 07:18+0000\n"
+"PO-Revision-Date: 2023-04-20 07:18+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: product_last_purchase_date
+#: model_terms:ir.ui.view,arch_db:product_last_purchase_date.product_normal_form_view
+#: model_terms:ir.ui.view,arch_db:product_last_purchase_date.product_template_only_form_view
+msgid "Aging Control"
+msgstr "年齢管理"
+
+#. module: product_last_purchase_date
+#: model:ir.model.fields,help:product_last_purchase_date.field_product_product__last_purchase_date
+#: model:ir.model.fields,help:product_last_purchase_date.field_product_template__last_purchase_date
+msgid "Date of the last receipt from the supplier."
+msgstr "仕入先から最後に納入された日"
+
+#. module: product_last_purchase_date
+#: model:ir.model.fields,field_description:product_last_purchase_date.field_product_product__last_purchase_date
+#: model:ir.model.fields,field_description:product_last_purchase_date.field_product_template__last_purchase_date
+msgid "Last Purchase Date"
+msgstr "最終購入日"
+
+#. module: product_last_purchase_date
+#: model:ir.model.fields,field_description:product_last_purchase_date.field_product_product__man_last_purchase_date
+#: model:ir.model.fields,field_description:product_last_purchase_date.field_product_template__man_last_purchase_date
+msgid "Last Purchase Date (Man.)"
+msgstr "最終購入日(手)"
+
+#. module: product_last_purchase_date
+#: model:ir.model,name:product_last_purchase_date.model_product_template
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: product_last_purchase_date
+#: model:ir.model,name:product_last_purchase_date.model_product_product
+msgid "Product Variant"
+msgstr "プロダクトバリアント"
+
+#. module: product_last_purchase_date
+#: model:ir.model.fields,help:product_last_purchase_date.field_product_product__man_last_purchase_date
+#: model:ir.model.fields,help:product_last_purchase_date.field_product_template__man_last_purchase_date
+msgid ""
+"Update this field to force set Last Purchase Date in absence of past receipt"
+" records. If there is a receipt record dated after this date, the date of the "
+"receipt prevails."
+msgstr ""
+"過去の納入履歴がないプロダクトにつき、この項目を更新すると最終購入日が設定値で更新されます。"
+"設定値より後の日付の納入履歴がある場合は、納入履歴の日付が優先されます。"

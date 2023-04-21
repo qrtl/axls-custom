@@ -6,11 +6,11 @@
         <field name="inherit_id" ref="product.product_template_form_view" />
         <field name="arch" type="xml">
             <xpath expr="//group[@name='inventory']" position="inside">
-                <group string="Shelf Information" name="product_shelfinfo">
+                <group string="Shelf Information" name="product_shelfinfo" colspan="4">
                     <field
                         name="shelfinfo_ids"
                         nolabel="1"
-                        colspan="4"
+                        colspan="2"
                         context="{
                             'via_product_form': True,
                             'form_view_ref': 'stock_product_shelfinfo.view_product_shelfinfo_form',
