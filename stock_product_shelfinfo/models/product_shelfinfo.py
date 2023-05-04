@@ -31,8 +31,8 @@ class ProductShelfinfo(models.Model):
         default=lambda self: self.env.company,
         required=True,
     )
-    area1 = fields.Char(required=True)
-    area2 = fields.Char()
+    area1 = fields.Many2one("product.shelfinfo_area1", required=True)
+    area2 = fields.Many2one("product.shelfinfo_area2")
     position = fields.Char()
     memo = fields.Char()
     ref = fields.Char("Internal Reference")
@@ -68,3 +68,29 @@ class ProductShelfinfo(models.Model):
                 record.name += "-" + record.area2
             if record.position:
                 record.name += "-" + record.position
+
+
+class Area1(models.Model):
+    _name = "product.shelfinfo_area1"
+    _description = "Product Shelfinfo Area 1"
+
+    area1 = fields.Char("Area 1")
+
+    def name_get(self):
+        result = []
+        for rec in self:
+            result.append((rec.id, rec.area1))
+        return result
+
+
+class Area2(models.Model):
+    _name = "product.shelfinfo_area2"
+    _description = "Product Shelfinfo Area 2"
+
+    area2 = fields.Char("Area 2")
+
+    def name_get(self):
+        result = []
+        for rec in self:
+            result.append((rec.id, rec.area1))
+        return result
