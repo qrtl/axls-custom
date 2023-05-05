@@ -4,13 +4,9 @@
         <field name="name">purchase.order.form</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form" />
-        <field name="priority">100</field>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='date_order']" position="after">
-                <field
-                    name="restrict_purchase_order"
-                    groups="purchase.group_purchase_manager"
-                />
+            <xpath expr="//field[@name='date_order']" position="before">
+                <field name="is_restricted" />
             </xpath>
         </field>
     </record>
@@ -21,8 +17,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='user_id']" position="after">
                 <field
-                    name="restrict_purchase_order"
-                    optional="show"
+                    name="is_restricted"
+                    optional="hide"
                     groups="purchase.group_purchase_manager"
                 />
             </xpath>
@@ -35,8 +31,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='user_id']" position="after">
                 <field
-                    name="restrict_purchase_order"
-                    optional="show"
+                    name="is_restricted"
+                    optional="hide"
                     groups="purchase.group_purchase_manager"
                 />
             </xpath>
