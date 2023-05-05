@@ -83,23 +83,14 @@
             </search>
         </field>
     </record>
-    <record id="view_product_shelfinfo_area1_tree" model="ir.ui.view">
-        <field name="name">product.shelfinfo.area1.tree</field>
-        <field name="model">product.shelfinfo_area1</field>
+    <record id="view_product_shelfinfo_area_tree" model="ir.ui.view">
+        <field name="name">product.shelfinfo.area.tree</field>
+        <field name="model">product.shelfinfo_area</field>
         <field name="type">tree</field>
         <field name="arch" type="xml">
             <tree create="1" editable="bottom" multi_edit="1">
-                <field name="area1" />
-            </tree>
-        </field>
-    </record>
-    <record id="view_product_shelfinfo_area2_tree" model="ir.ui.view">
-        <field name="name">product.shelfinfo.area2.tree</field>
-        <field name="model">product.shelfinfo_area2</field>
-        <field name="type">tree</field>
-        <field name="arch" type="xml">
-            <tree create="1" editable="bottom" multi_edit="1">
-                <field name="area2" />
+                <field name="name" />
+                <field name="type" />
             </tree>
         </field>
     </record>
@@ -109,17 +100,11 @@
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_product_shelfinfo_tree" />
     </record>
-    <record id="action_product_shelfinfo_area1_view" model="ir.actions.act_window">
-        <field name="name">Area1</field>
-        <field name="res_model">product.shelfinfo_area1</field>
+    <record id="action_product_shelfinfo_area_view" model="ir.actions.act_window">
+        <field name="name">Area</field>
+        <field name="res_model">product.shelfinfo_area</field>
         <field name="view_mode">tree</field>
-        <field name="view_id" ref="view_product_shelfinfo_area1_tree" />
-    </record>
-        <record id="action_product_shelfinfo_area2_view" model="ir.actions.act_window">
-        <field name="name">Area2</field>
-        <field name="res_model">product.shelfinfo_area2</field>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="view_product_shelfinfo_area2_tree" />
+        <field name="view_id" ref="view_product_shelfinfo_area_tree" />
     </record>
     <menuitem
         id="menu_product_shelfinfo"
@@ -133,17 +118,10 @@
         name="Product Shelf Info"
     />
     <menuitem
-        id="menu_area1_config"
+        id="menu_product_shelfinfo_area_config"
         parent="menu_stock_product_shelfinfo"
-        action="action_product_shelfinfo_area1_view"
-        name="Area1"
+        action="action_product_shelfinfo_area_view"
+        name="Area"
         sequence="50"
-    />
-    <menuitem
-        id="menu_area2_config"
-        parent="menu_stock_product_shelfinfo"
-        action="action_product_shelfinfo_area2_view"
-        name="Area2"
-        sequence="70"
     />
 </odoo>
