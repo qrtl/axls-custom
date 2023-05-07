@@ -24,9 +24,10 @@
                             />
                         </group>
                         <group>
-                            <field name="area1" />
-                            <field name="area2" />
-                            <field name="position" />
+                            <field name="active" />
+                            <field name="area1_id" />
+                            <field name="area2_id" />
+                            <field name="position_id" />
                             <field name="memo" />
                             <field name="ref" />
                             <field name="name" />
@@ -51,9 +52,9 @@
                     groups="base.group_multi_company"
                     optional="show"
                 />
-                <field name="area1" />
-                <field name="area2" optional="show" />
-                <field name="position" optional="show" />
+                <field name="area1_id" />
+                <field name="area2_id" optional="show" />
+                <field name="position_id" optional="show" />
                 <field name="memo" optional="show" />
                 <field name="ref" optional="show" />
                 <field name="name" optional="show" />
@@ -67,7 +68,15 @@
             <search string="Product Shelfinfo">
                 <field name="product_id" />
                 <field name="location_id" />
+                <field name="area1_id" />
+                <field name="area2_id" />
+                <field name="position_id" />
                 <separator />
+                <filter
+                    string="Archived"
+                    name="inactive"
+                    domain="[('active','=',False)]"
+                />
                 <group expand="1" string="Group By">
                     <filter
                         string="Product"
@@ -79,19 +88,23 @@
                         name="location_id"
                         context="{'group_by': 'location_id'}"
                     />
+                    <filter
+                        string="Area1"
+                        name="area1_id"
+                        context="{'group_by': 'area1_id'}"
+                    />
+                    <filter
+                        string="Area2"
+                        name="area2_id"
+                        context="{'group_by': 'area2_id'}"
+                    />
+                    <filter
+                        string="Position"
+                        name="position_id"
+                        context="{'group_by': 'position_id'}"
+                    />
                 </group>
             </search>
-        </field>
-    </record>
-    <record id="view_product_shelfinfo_area_tree" model="ir.ui.view">
-        <field name="name">product.shelfinfo.area.tree</field>
-        <field name="model">product.shelfinfo_area</field>
-        <field name="type">tree</field>
-        <field name="arch" type="xml">
-            <tree create="1" editable="bottom" multi_edit="1">
-                <field name="name" />
-                <field name="type" />
-            </tree>
         </field>
     </record>
     <record id="action_product_shelfinfo_view" model="ir.actions.act_window">
@@ -100,28 +113,10 @@
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="view_product_shelfinfo_tree" />
     </record>
-    <record id="action_product_shelfinfo_area_view" model="ir.actions.act_window">
-        <field name="name">Area</field>
-        <field name="res_model">product.shelfinfo_area</field>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="view_product_shelfinfo_area_tree" />
-    </record>
     <menuitem
         id="menu_product_shelfinfo"
         parent="stock.menu_stock_inventory_control"
         action="action_product_shelfinfo_view"
         sequence="120"
-    />
-    <menuitem
-        id="menu_stock_product_shelfinfo"
-        parent="stock.menu_stock_config_settings"
-        name="Product Shelf Info"
-    />
-    <menuitem
-        id="menu_product_shelfinfo_area_config"
-        parent="menu_stock_product_shelfinfo"
-        action="action_product_shelfinfo_area_view"
-        name="Area"
-        sequence="50"
     />
 </odoo>

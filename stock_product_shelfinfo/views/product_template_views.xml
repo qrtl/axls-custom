@@ -23,9 +23,9 @@
                                 groups="base.group_multi_company"
                                 optional="hide"
                             />
-                            <field name="area1" />
-                            <field name="area2" />
-                            <field name="position" />
+                            <field name="area1_id" />
+                            <field name="area2_id" />
+                            <field name="position_id" />
                             <field name="memo" optional="hide" />
                             <field name="ref" optional="hide" />
                             <field name="name" optional="hide" />

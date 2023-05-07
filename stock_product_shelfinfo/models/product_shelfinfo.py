@@ -31,16 +31,13 @@ class ProductShelfinfo(models.Model):
         default=lambda self: self.env.company,
         required=True,
     )
-    area1 = fields.Many2one(
-        "product.shelfinfo_area", required=True, domain="[('type', '=', 'area1')]"
-    )
-    area2 = fields.Many2one("product.shelfinfo_area", domain="[('type', '=', 'area2')]")
-    position = fields.Many2one(
-        "product.shelfinfo_area", domain="[('type', '=', 'position')]"
-    )
+    area1_id = fields.Many2one("product.shelf.area1", required=True)
+    area2_id = fields.Many2one("product.shelf.area2")
+    position_id = fields.Many2one("product.shelf.position")
     memo = fields.Char()
     ref = fields.Char("Internal Reference")
     sequence = fields.Integer(default=1)
+    active = fields.Boolean(default=True)
 
     @api.constrains("product_id", "location_id", "company_id")
     def _check_product_location_unique(self):
@@ -61,14 +58,13 @@ class ProductShelfinfo(models.Model):
                     )
                 )
 
-    @api.depends("area1", "area2", "position")
+    @api.depends("area1_id", "area2_id", "position_id")
     def _compute_name(self):
         for record in self:
-            record.name = record.area1.name
             record.name = ""
-            if record.area1:
-                record.name += record.area1.name
-            if record.area2:
-                record.name += "-" + record.area2.name
-            if record.position:
-                record.name += "-" + record.position.name
+            if record.area1_id:
+                record.name += record.area1_id.name
+            if record.area2_id:
+                record.name += "-" + record.area2_id.name
+            if record.position_id:
+                record.name += "-" + record.position_id.name

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-20 05:24+0000\n"
-"PO-Revision-Date: 2023-03-20 05:24+0000\n"
+"POT-Creation-Date: 2023-05-07 02:02+0000\n"
+"PO-Revision-Date: 2023-05-07 02:02+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,21 +16,39 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1__active
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2__active
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position__active
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__active
+msgid "Active"
+msgstr "有効"
+
+#. module: stock_product_shelfinfo
 #. odoo-python
 #: code:addons/stock_product_shelfinfo/models/product_shelfinfo.py:0
 #, python-format
 msgid ""
 "Another record already exists for the given combination of product, location"
 " and company."
-msgstr "そのプロダクト、ロケーション、会社の組み合わせに対するレコードは既に存在しています。"
+msgstr "指定のプロダクト・ロケーション・会社の組み合わせで既にレコードが存在しています。"
 
 #. module: stock_product_shelfinfo
-#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__area1
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelf_area1_search_view
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelf_area2_search_view
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelf_position_search_view
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelfinfo_search_view
+msgid "Archived"
+msgstr "アーカイブ済"
+
+#. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__area1_id
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelfinfo_search_view
 msgid "Area1"
 msgstr "場所1"
 
 #. module: stock_product_shelfinfo
-#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__area2
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__area2_id
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelfinfo_search_view
 msgid "Area2"
 msgstr "場所2"
 
@@ -40,16 +58,25 @@ msgid "Company"
 msgstr "会社"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1__create_uid
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2__create_uid
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position__create_uid
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__create_uid
 msgid "Created by"
 msgstr "作成者"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1__create_date
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2__create_date
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position__create_date
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__create_date
 msgid "Created on"
 msgstr "作成日"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1__display_name
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2__display_name
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position__display_name
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__display_name
 msgid "Display Name"
 msgstr "表示名"
@@ -65,9 +92,12 @@ msgid "Group By"
 msgstr "グループ化"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1__id
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2__id
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position__id
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: stock_product_shelfinfo
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__ref
@@ -75,16 +105,25 @@ msgid "Internal Reference"
 msgstr "内部参照"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1____last_update
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2____last_update
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position____last_update
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo____last_update
 msgid "Last Modified on"
 msgstr "最終更新日"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1__write_uid
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2__write_uid
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position__write_uid
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__write_uid
 msgid "Last Updated by"
 msgstr "最終更新者"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1__write_date
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2__write_date
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position__write_date
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__write_date
 msgid "Last Updated on"
 msgstr "最終更新日"
@@ -101,7 +140,15 @@ msgid "Memo"
 msgstr "メモ"
 
 #. module: stock_product_shelfinfo
-#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__position
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area1__name
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_area2__name
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelf_position__name
+msgid "Name"
+msgstr "名称"
+
+#. module: stock_product_shelfinfo
+#: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__position_id
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelfinfo_search_view
 msgid "Position"
 msgstr "位置"
 
@@ -113,11 +160,31 @@ msgid "Product"
 msgstr "プロダクト"
 
 #. module: stock_product_shelfinfo
+#: model:ir.model,name:stock_product_shelfinfo.model_product_shelf_area1
+msgid "Product Shelf Area 1"
+msgstr "プロダクト棚場所1"
+
+#. module: stock_product_shelfinfo
+#: model:ir.model,name:stock_product_shelfinfo.model_product_shelf_area2
+msgid "Product Shelf Area 2"
+msgstr "プロダクト棚場所2"
+
+#. module: stock_product_shelfinfo
+#: model:ir.ui.menu,name:stock_product_shelfinfo.menu_stock_product_shelfinfo
+msgid "Product Shelf Info"
+msgstr "プロダクト棚情報"
+
+#. module: stock_product_shelfinfo
 #: model:ir.actions.act_window,name:stock_product_shelfinfo.action_product_shelfinfo_view
 #: model:ir.ui.menu,name:stock_product_shelfinfo.menu_product_shelfinfo
 #: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.view_product_shelfinfo_form
 msgid "Product Shelf Information"
 msgstr "棚情報"
+
+#. module: stock_product_shelfinfo
+#: model:ir.model,name:stock_product_shelfinfo.model_product_shelf_position
+msgid "Product Shelf Position"
+msgstr "プロダクト棚位置"
 
 #. module: stock_product_shelfinfo
 #: model:ir.model,name:stock_product_shelfinfo.model_product_shelfinfo
@@ -138,7 +205,21 @@ msgstr "プロダクトバリアント"
 #. module: stock_product_shelfinfo
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_product_shelfinfo__sequence
 msgid "Sequence"
-msgstr "シークエンス"
+msgstr "順序"
+
+#. module: stock_product_shelfinfo
+#: model:ir.actions.act_window,name:stock_product_shelfinfo.action_product_shelf_area1_view
+#: model:ir.ui.menu,name:stock_product_shelfinfo.menu_product_shelf_area1_config
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelf_area1_search_view
+msgid "Shelf Area 1"
+msgstr "棚場所2"
+
+#. module: stock_product_shelfinfo
+#: model:ir.actions.act_window,name:stock_product_shelfinfo.action_product_shelf_area2_view
+#: model:ir.ui.menu,name:stock_product_shelfinfo.menu_product_shelf_area2_config
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelf_area2_search_view
+msgid "Shelf Area 2"
+msgstr "棚場所2"
 
 #. module: stock_product_shelfinfo
 #: model:ir.model.fields,field_description:stock_product_shelfinfo.field_stock_move__shelfinfo_src_id
@@ -156,6 +237,13 @@ msgstr "棚情報(移動先)"
 #: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_template_form_view
 msgid "Shelf Information"
 msgstr "棚情報"
+
+#. module: stock_product_shelfinfo
+#: model:ir.actions.act_window,name:stock_product_shelfinfo.action_product_shelf_position_view
+#: model:ir.ui.menu,name:stock_product_shelfinfo.menu_product_shelf_position_config
+#: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelf_position_search_view
+msgid "Shelf Position"
+msgstr "棚位置"
 
 #. module: stock_product_shelfinfo
 #: model:ir.model,name:stock_product_shelfinfo.model_stock_move
