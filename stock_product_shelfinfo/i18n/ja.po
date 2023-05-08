@@ -212,7 +212,7 @@ msgstr "順序"
 #: model:ir.ui.menu,name:stock_product_shelfinfo.menu_product_shelf_area1_config
 #: model_terms:ir.ui.view,arch_db:stock_product_shelfinfo.product_shelf_area1_search_view
 msgid "Shelf Area 1"
-msgstr "棚場所2"
+msgstr "棚場所1"
 
 #. module: stock_product_shelfinfo
 #: model:ir.actions.act_window,name:stock_product_shelfinfo.action_product_shelf_area2_view
