@@ -19,11 +19,11 @@ Purchase Order Restriction
 
 |badge1| |badge2| |badge3| 
 
-This module does the following:
+This module adds Restrict Access boolean field in the purchase order model, to limit the
+access to the purchase order to 1) the buyer and 2) purchase managers.
 
-* Adds Restrict Access boolean field in purchase order form for Purchase Manager and Purchase Order Owner to mark that the record is restricted
-* Adds new record rule for Purchase Users to have access only into their own record that have Restrict Access value is True  
-* Adds Restrict Access to RFQ and Purchase Orders Tree view for Purchase Manager to monitor which records is currently restricted on the list
+The module can be useful if there are orders whose conditions should not be visible to
+wide range of buyers (e.g. contract rates of the temp staff).
 
 **Table of contents**
 

@@ -368,12 +368,10 @@ ul.auto-toc {
 !! changes will be overwritten.                   !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external" href="https://github.com/qrtl/axls-custom/tree/16.0/purchase_order_restriction"><img alt="qrtl/axls-custom" src="https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github" /></a></p>
-<p>This module does the following:</p>
-<ul class="simple">
-<li>Adds Restrict Access boolean field in purchase order form for Purchase Manager and Purchase Order Owner to mark that the record is restricted</li>
-<li>Adds new record rule for Purchase Users to have access only into their own record that have Restrict Access value is True</li>
-<li>Adds Restrict Access to RFQ and Purchase Orders Tree view for Purchase Manager to monitor which records is currently restricted on the list</li>
-</ul>
+<p>This module adds Restrict Access boolean field in the purchase order model, to limit the
+access to the purchase order to 1) the buyer and 2) purchase managers.</p>
+<p>The module can be useful if there are orders whose conditions should not be visible to
+wide range of buyers (e.g. contract rates of the temp staff).</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">

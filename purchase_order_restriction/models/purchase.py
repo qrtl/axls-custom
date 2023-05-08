@@ -11,8 +11,8 @@ class PurchaseOrder(models.Model):
     is_restricted = fields.Boolean(
         "Restrict Access",
         tracking=True,
-        help="If selected, this purchase order can only be accessed\
-              by the assigned buyer or purchase managers.",
+        help="If selected, this purchase order can only be accessed by the assigned "
+        "buyer or purchase managers.",
     )
 
     @api.constrains("is_restricted")
