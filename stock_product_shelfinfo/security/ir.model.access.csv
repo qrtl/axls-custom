@@ -1,3 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_product_shelfinfo_user,access.product.shelfinfo.user,model_product_shelfinfo,stock.group_stock_user,1,0,0,0
 access_product_shelfinfo_manager,access.product.shelfinfo.manager,model_product_shelfinfo,stock.group_stock_manager,1,1,1,1
+access_product_shelf_area1_user,access.product.shelf.area1.user,model_product_shelf_area1,stock.group_stock_user,1,0,0,0
+access_product_shelf_area1_manager,access.product.shelf.area1.manager,model_product_shelf_area1,stock.group_stock_manager,1,1,1,1
+access_product_shelf_area2_user,access.product.shelf.area2.user,model_product_shelf_area2,stock.group_stock_user,1,0,0,0
+access_product_shelf_area2_manager,access.product.shelf.area2.manager,model_product_shelf_area2,stock.group_stock_manager,1,1,1,1
+access_product_shelf_position_user,access.product.shelf.position.user,model_product_shelf_position,stock.group_stock_user,1,0,0,0
+access_product_shelf_position_manager,access.product.shelf.position.manager,model_product_shelf_position,stock.group_stock_manager,1,1,1,1

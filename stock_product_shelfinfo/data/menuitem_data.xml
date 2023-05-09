@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_stock_product_shelfinfo"
+        parent="stock.menu_stock_config_settings"
+        name="Product Shelf Info"
+        sequence="20"
+    />
+</odoo>
