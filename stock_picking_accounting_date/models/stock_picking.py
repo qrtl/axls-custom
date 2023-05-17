@@ -1,7 +1,13 @@
+# Copyright 2023 Quartile Limited
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 from odoo import fields, models
 
 
-class Picking(models.Model):
+class StockPicking(models.Model):
     _inherit = "stock.picking"
 
-    stock_picking_accounting_date = fields.Date("Accounting Date", store=True)
+    accounting_date = fields.Date(
+        states={"done": [("readonly", True)], "cancel": [("readonly", True)]},
+        help="Accounting date for journal entry of SVL.",
+    )
