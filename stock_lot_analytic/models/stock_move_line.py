@@ -8,11 +8,8 @@ class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
     def _get_value_production_lot(self):
-        self.ensure_one()
         res = super()._get_value_production_lot()
-        res.update(
-            {
-                "analytic_distribution": self.move_id.analytic_distribution,
-            }
-        )
+        res[
+            "analytic_distribution"
+        ] = self.move_id.purchase_line_id.analytic_distribution
         return res

@@ -13,20 +13,33 @@ Stock Lot Analytic
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Faccount--analytic-lightgray.png?logo=github
-    :target: https://github.com/OCA/account-analytic/tree/16.0/stock_lot_analytic
-    :alt: OCA/account-analytic
-.. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/account-analytic-16-0/account-analytic-16-0-stock_lot_analytic
-    :alt: Translate me on Weblate
-.. |badge5| image:: https://img.shields.io/badge/runbot-Try%20me-875A7B.png
-    :target: https://runbot.odoo-community.org/runbot/87/16.0
-    :alt: Try me on Runbot
+.. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github
+    :target: https://github.com/qrtl/axls-custom/tree/16.0/stock_lot_analytic
+    :alt: qrtl/axls-custom
 
-|badge1| |badge2| |badge3| |badge4| |badge5| 
+|badge1| |badge2| |badge3| 
 
-Adds Analytic Distribution field in stock lot to be able to get
-analytic information when lots/serials is created in purchase receipts.
+This module does the following:
+
+- Adds analytic distribution field to stock.lot and stock.quant models (by inheriting
+  analytic.mixin).
+- Assigns analytic distribution to created lots/serials (and quants) upon purchase
+  receipt (analytic distribution is taken from the purchase order line).
+
+Note that analytic distribution should be maintained in stock.lot, although you could
+directly update it in stock.quant (and have it reflected in stock.lot via the relation).
+When stock.quant record does not have a lot/serial assigned to it, assigning analytic
+distribution to this record will not persist when the quant is transfered to another
+location.
+
+Background:
+~~~~~~~~~~~
+
+The module was created in a bid to facilitate the inventory analysis based on the
+responsible project/department.
+
+Products that are subject to this inventory analysis should be set for lot/serial
+tracking.
 
 **Table of contents**
 
@@ -36,10 +49,10 @@ analytic information when lots/serials is created in purchase receipts.
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/OCA/account-analytic/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/qrtl/axls-custom/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/account-analytic/issues/new?body=module:%20stock_lot_analytic%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/qrtl/axls-custom/issues/new?body=module:%20stock_lot_analytic%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -61,16 +74,6 @@ Contributors
 Maintainers
 ~~~~~~~~~~~
 
-This module is maintained by the OCA.
+This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_lot_analytic>`_ project on GitHub.
 
-.. image:: https://odoo-community.org/logo.png
-   :alt: Odoo Community Association
-   :target: https://odoo-community.org
-
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
-
-This module is part of the `OCA/account-analytic <https://github.com/OCA/account-analytic/tree/16.0/stock_lot_analytic>`_ project on GitHub.
-
-You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
+You are welcome to contribute.
