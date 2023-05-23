@@ -37,7 +37,8 @@ class StockMoveLocationWizard(models.TransientModel):
         if move_line_move_location:
             # if need move only available qty per product on location
             for _product, ml in groupby(
-                move_lines, lambda r: r.product_id and r.lot_id
+                sorted(move_lines, key=lambda r: (r.product_id.id, r.lot_id.id)),
+                lambda r: (r.product_id.id, r.lot_id.id),
             ):
                 quant = self.env["stock.quant"]
                 ml = list(ml)[0]
