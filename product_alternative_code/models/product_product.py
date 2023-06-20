@@ -13,7 +13,7 @@ class ProductProduct(models.Model):
         for rec in res:
             product = self.browse(rec[0])
             alt_code = product.alt_code
-            if not alt_code:
+            if not alt_code or not self._context.get("display_alt_code", True):
                 name_list.append(rec)
                 continue
             name = rec[1]
