@@ -7,7 +7,7 @@ from odoo.addons.stock.tests.common import TestStockCommon
 class TestStockLotPriceUnit(TestStockCommon):
     @classmethod
     def setUpClass(cls):
-        super(TestStockLotPriceUnit, cls).setUpClass()
+        super().setUpClass()
 
         # Product created in TestStockCommon
         cls.productA.tracking = "lot"
@@ -31,14 +31,14 @@ class TestStockLotPriceUnit(TestStockCommon):
         )
         return picking
 
-    def create_stock_move(self, picking, price):
+    def create_stock_move(self, picking, product, price):
         move = self.env["stock.move"].create(
             {
                 "name": "Move product to stock",
-                "product_id": self.productA.id,
+                "product_id": product.id,
                 "location_id": picking.location_id.id,
                 "location_dest_id": picking.location_dest_id.id,
-                "product_uom": self.productA.uom_id.id,
+                "product_uom": product.uom_id.id,
                 "product_uom_qty": 5.0,
                 "picking_id": picking.id,
                 "price_unit": price,
@@ -46,7 +46,7 @@ class TestStockLotPriceUnit(TestStockCommon):
         )
         return move
 
-    def create_stock_move_line(self, move):
+    def create_stock_move_line(self, move, lot):
         self.env["stock.move.line"].create(
             {
                 "move_id": move.id,
@@ -55,14 +55,14 @@ class TestStockLotPriceUnit(TestStockCommon):
                 "location_dest_id": move.location_dest_id.id,
                 "product_uom_id": move.product_uom.id,
                 "qty_done": move.product_uom_qty,
-                "lot_id": self.lot.id,
+                "lot_id": lot.id,
             }
         )
 
     def test_stock_lot_price_unit(self):
         picking = self.create_picking()
-        move = self.create_stock_move(picking, 1000)
-        self.create_stock_move_line(move)
+        move = self.create_stock_move(picking, self.productA, 1000)
+        self.create_stock_move_line(move, self.lot)
 
         picking.action_confirm()
         picking.action_assign()
@@ -80,8 +80,8 @@ class TestStockLotPriceUnit(TestStockCommon):
         self.assertEqual(quant.price_unit, self.lot.price_unit)
 
         picking = self.create_picking()
-        move = self.create_stock_move(picking, 1500)
-        self.create_stock_move_line(move)
+        move = self.create_stock_move(picking, self.productA, 1500)
+        self.create_stock_move_line(move, self.lot)
 
         picking.action_confirm()
         picking.action_assign()

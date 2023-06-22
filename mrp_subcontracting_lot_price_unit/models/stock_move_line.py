@@ -16,6 +16,6 @@ class StockMoveLine(models.Model):
         subcontracting manufacting order.
         """
         res = super()._skip_lot_price_unit_update()
-        if res and self.move_id.is_subcontract:
+        if self.move_id.is_subcontract:
             return True
-        return False
+        return res
