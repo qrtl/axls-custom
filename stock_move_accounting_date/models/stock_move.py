@@ -12,10 +12,9 @@ class StockMove(models.Model):
         store=True,
     )
 
-    @api.depends("accounting_date")
+    @api.depends("date", "accounting_date")
     def _compute_accounting_date(self):
         for line in self:
-            if not line.picking_id.accounting_date:
-                line.accounting_date = line.picking_id.date_done
-            else:
+            line.accounting_date = line.date
+            if line.picking_id.accounting_date:
                 line.accounting_date = line.picking_id.accounting_date
