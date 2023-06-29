@@ -12,6 +12,8 @@ class StockQuant(models.Model):
 
     @api.model
     def _get_inventory_fields_create(self):
+        """Add fields from analytic.mixin, or creation of quants
+        via inventory adjustment screen fails."""
         fields = super()._get_inventory_fields_create()
         fields += ["analytic_distribution", "analytic_precision"]
         return fields
