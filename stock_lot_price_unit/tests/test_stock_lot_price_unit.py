@@ -22,17 +22,16 @@ class TestStockLotPriceUnit(TestStockCommon):
         )
 
     def create_picking(self):
-        picking = self.env["stock.picking"].create(
+        return self.env["stock.picking"].create(
             {
                 "location_id": self.supplier_location,
                 "location_dest_id": self.stock_location,
                 "picking_type_id": self.picking_type_in,
             }
         )
-        return picking
 
     def create_stock_move(self, picking, product, price):
-        move = self.env["stock.move"].create(
+        return self.env["stock.move"].create(
             {
                 "name": "Move product to stock",
                 "product_id": product.id,
@@ -44,7 +43,6 @@ class TestStockLotPriceUnit(TestStockCommon):
                 "price_unit": price,
             }
         )
-        return move
 
     def create_stock_move_line(self, move, lot):
         self.env["stock.move.line"].create(
