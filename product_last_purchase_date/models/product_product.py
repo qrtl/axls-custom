@@ -20,16 +20,21 @@ class Product(models.Model):
         help="Date of the last receipt from the supplier.",
     )
 
+    def _assign_last_purchase_date(self, move):
+        return fields.Date.context_today(self, move.date)
+
     @api.depends("stock_move_ids.state", "man_last_purchase_date")
     def _compute_last_purchase_date(self):
         for product in self:
             last_purchase_date = False
             man_last_purchase_date = product.man_last_purchase_date
             move = product.stock_move_ids.filtered(
-                lambda m: m.state == "done" and m.picking_code == "incoming"
+                lambda m: m.state == "done"
+                and m.picking_code == "incoming"
+                and isinstance(m.id, int)
             ).sorted(key=lambda m: m.id, reverse=True)[:1]
             if move:
-                last_purchase_date = fields.Date.context_today(self, move.date)
+                last_purchase_date = self._assign_last_purchase_date(move)
             if (
                 not last_purchase_date
                 or man_last_purchase_date
