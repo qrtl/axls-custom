@@ -29,9 +29,7 @@ class Product(models.Model):
             last_purchase_date = False
             man_last_purchase_date = product.man_last_purchase_date
             move = product.stock_move_ids.filtered(
-                lambda m: m.state == "done"
-                and m.picking_code == "incoming"
-                and isinstance(m.id, int)
+                lambda m: m.state == "done" and m.picking_code == "incoming"
             ).sorted(key=lambda m: m.id, reverse=True)[:1]
             if move:
                 last_purchase_date = self._assign_last_purchase_date(move)
