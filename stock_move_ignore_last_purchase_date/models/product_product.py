@@ -8,7 +8,6 @@ class ProductProduct(models.Model):
     _inherit = "product.product"
 
     def _assign_last_purchase_date(self, move):
-        last_purchase_date = super()._assign_last_purchase_date(move)
-        if move.ignore_last_purchase_date and self.man_last_purchase_date:
-            last_purchase_date = self.man_last_purchase_date
-        return last_purchase_date
+        if move.ignore_last_purchase_date:
+            return False
+        return super()._assign_last_purchase_date(move)
