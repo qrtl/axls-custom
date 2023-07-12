@@ -22,7 +22,7 @@ class ProductProduct(models.Model):
                     else:
                         return self.man_last_purchase_date
                 else:
-                    return False
+                    return move_date
             else:
                 return False
         return super()._assign_last_purchase_date(move)
