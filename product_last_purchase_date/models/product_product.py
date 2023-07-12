@@ -20,19 +20,16 @@ class Product(models.Model):
         help="Date of the last receipt from the supplier.",
     )
 
-    def _assign_last_purchase_date(self, move):
-        return fields.Date.context_today(self, move.date)
-
     @api.depends("stock_move_ids.state", "man_last_purchase_date")
     def _compute_last_purchase_date(self):
         for product in self:
             last_purchase_date = False
             man_last_purchase_date = product.man_last_purchase_date
-            move = product.stock_move_ids.filtered(
-                lambda m: m.state == "done" and m.picking_code == "incoming"
-            ).sorted(key=lambda m: m.id, reverse=True)[:1]
+            move = self.env["stock.move"].search(
+                self._get_domain(product), order="id desc", limit=1
+            )
             if move:
-                last_purchase_date = self._assign_last_purchase_date(move)
+                last_purchase_date = fields.Date.context_today(self, move.date)
             if (
                 not last_purchase_date
                 or man_last_purchase_date
@@ -41,3 +38,10 @@ class Product(models.Model):
                 last_purchase_date = man_last_purchase_date
             product.last_purchase_date = last_purchase_date
             product.product_tmpl_id._compute_last_purchase_date()
+
+    def _get_domain(self, product):
+        return [
+            ("product_id", "=", product.id),
+            ("state", "=", "done"),
+            ("picking_code", "=", "incoming"),
+        ]
