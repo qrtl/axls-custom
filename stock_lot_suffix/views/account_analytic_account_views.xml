@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="analytic.view_account_analytic_account_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='code']" position="after">
-                <field name="is_suffix" />
+                <field name="analytic_category" />
             </xpath>
         </field>
     </record>

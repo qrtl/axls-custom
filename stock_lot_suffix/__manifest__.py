@@ -7,7 +7,7 @@
     "website": "https://www.quartile.co",
     "category": "",
     "license": "AGPL-3",
-    "depends": ["purchase", "stock", "analytic_mixin_analytic_account"],
+    "depends": ["purchase_stock", "analytic_mixin_analytic_account"],
     "data": [
         "views/account_analytic_account_views.xml",
         "views/stock_lot_views.xml",

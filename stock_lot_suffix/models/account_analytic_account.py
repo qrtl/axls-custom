@@ -7,4 +7,4 @@ from odoo import fields, models
 class AccountAnalyticAccount(models.Model):
     _inherit = "account.analytic.account"
 
-    is_suffix = fields.Boolean("Suffix")
+    analytic_category = fields.Char()

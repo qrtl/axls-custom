@@ -8,21 +8,22 @@ class StockPicking(models.Model):
     _inherit = "stock.picking"
 
     def _set_channel_category(self):
-        move_lines = self.env["stock.move.line"].search([("picking_id", "=", self.id)])
-        lot_ids = move_lines.mapped("lot_id").ids
-        if lot_ids:
-            lots = self.env["stock.lot"].browse(lot_ids)
-            update_values = {}
-            if self.purchase_id.channel_category:
-                update_values["channel_category"] = self.purchase_id.channel_category
-            if self.purchase_id.analytic_account_ids:
-                names = []
-                for ad in self.purchase_id.analytic_account_ids:
-                    if ad.is_suffix:
-                        names.append(ad.name)
-                if names:
-                    update_values["analytic_category"] = "-" + "-".join(names)
-            lots.write(update_values)
+        for picking in self:
+            lots = self.move_line_ids.lot_id
+            if lots:
+                update_values = {}
+                if picking.purchase_id.channel_category:
+                    update_values[
+                        "channel_category"
+                    ] = picking.purchase_id.channel_category
+                if picking.purchase_id.analytic_account_ids:
+                    names = []
+                    for ad in picking.purchase_id.analytic_account_ids:
+                        if ad.analytic_category:
+                            names.append(ad.analytic_category)
+                    if names:
+                        update_values["analytic_category"] = "-".join(names)
+                lots.write(update_values)
 
     def _action_done(self):
         self._set_channel_category()

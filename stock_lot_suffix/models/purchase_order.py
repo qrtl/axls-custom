@@ -5,7 +5,8 @@ from odoo import api, fields, models
 
 
 class PurchaseOrder(models.Model):
-    _inherit = "purchase.order"
+    _name = "purchase.order"
+    _inherit = ["purchase.order", "analytic.mixin"]
 
     channel_category = fields.Char()
 
