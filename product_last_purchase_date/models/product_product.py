@@ -26,7 +26,7 @@ class Product(models.Model):
             last_purchase_date = False
             man_last_purchase_date = product.man_last_purchase_date
             move = self.env["stock.move"].search(
-                self._get_domain(product), order="id desc", limit=1
+                self._get_move_domain(product), order="id desc", limit=1
             )
             if move:
                 last_purchase_date = fields.Date.context_today(self, move.date)
@@ -39,7 +39,7 @@ class Product(models.Model):
             product.last_purchase_date = last_purchase_date
             product.product_tmpl_id._compute_last_purchase_date()
 
-    def _get_domain(self, product):
+    def _get_move_domain(self, product):
         return [
             ("product_id", "=", product.id),
             ("state", "=", "done"),

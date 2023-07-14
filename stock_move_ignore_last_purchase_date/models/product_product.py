@@ -8,7 +8,7 @@ from odoo.osv import expression
 class ProductProduct(models.Model):
     _inherit = "product.product"
 
-    def _get_domain(self, product):
-        domain = super()._get_domain(product)
+    def _get_move_domain(self, product):
+        domain = super()._get_move_domain(product)
         domain = expression.AND([domain, [("ignore_last_purchase_date", "=", False)]])
         return domain
