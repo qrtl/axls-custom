@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_purchaseorder_document_adj"
+        inherit_id="purchase.report_purchaseorder_document"
+        priority="100"
+    >
+        <xpath expr="//div[@t-if='o.partner_ref']" position="attributes">
+            <attribute name="t-att-style">'display: none!important'</attribute>
+        </xpath>
+        <xpath expr="//div[@t-if='o.partner_ref']" position="after">
+            <div t-if="o.partner_ref" class="col-3 bm-2">
+                <strong>Your Order Reference:</strong>
+                <p t-field="o.partner_ref" class="m-0" />
+            </div>
+            <div t-if="o.payment_term_id" class="col-3 bm-2">
+                <strong>Payment Term:</strong>
+                <p t-field="o.payment_term_id" class="m-0" />
+            </div>
+        </xpath>
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th name="th_line_no" class="text-center">
+                <span><strong>No.</strong></span>
+            </th>
+        </xpath>
+        <xpath expr="//td[@id='product']" position="before">
+            <td style="text-align: center !important">
+                <span t-esc="line_index + 1" />
+            </td>
+        </xpath>
+        <xpath expr="//th[@name='th_taxes']" position="replace">
+        </xpath>
+        <xpath expr="//td[@name='td_taxes']" position="replace">
+        </xpath>
+    </template>
+</odoo>
