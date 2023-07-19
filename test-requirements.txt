@@ -1,4 +1,3 @@
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/currency_rate_update
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/report_csv
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_reception_status
-git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/analytic_mixin_analytic_account
