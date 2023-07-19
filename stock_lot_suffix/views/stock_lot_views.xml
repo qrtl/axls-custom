@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='product_id']" position="after">
                 <field name="channel_category" />
-                <field name="analytic_category" />
+                <field name="lot_suffix" />
             </xpath>
         </field>
     </record>
@@ -18,7 +18,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='last_delivery_partner_id']" position="after">
                 <field name="channel_category" optional="hide" />
-                <field name="analytic_category" optional="hide" />
+                <field name="lot_suffix" optional="hide" />
             </xpath>
         </field>
     </record>

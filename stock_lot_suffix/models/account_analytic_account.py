@@ -7,4 +7,4 @@ from odoo import fields, models
 class AccountAnalyticAccount(models.Model):
     _inherit = "account.analytic.account"
 
-    analytic_category = fields.Char()
+    lot_suffix = fields.Char()
