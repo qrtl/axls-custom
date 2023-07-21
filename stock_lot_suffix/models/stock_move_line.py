@@ -16,11 +16,16 @@ class StockMoveLine(models.Model):
             purchase_line = ml.move_id.purchase_line_id
             vals["channel_category"] = purchase_line.order_id.channel_category
             # We assume that there is only one analytic account with lot_suffix if any.
-            lot_suffixes = [
-                suffix
-                for suffix in purchase_line.analytic_account_ids.mapped("lot_suffix")
-                if suffix
-            ]
-            vals["lot_suffix"] = lot_suffixes[0] if lot_suffixes else None
+            analytic_account = purchase_line.analytic_account_ids.filtered(
+                lambda x: x.lot_suffix
+            )
+            if analytic_account:
+                vals["lot_suffix"] = analytic_account[0].lot_suffix
+            # lot_suffixes = [
+            #     suffix
+            #     for suffix in purchase_line.analytic_account_ids.mapped("lot_suffix")
+            #     if suffix
+            # ]
+            # vals["lot_suffix"] = lot_suffixes[0] if lot_suffixes else None
             ml.lot_id.write(vals)
         return res

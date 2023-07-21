@@ -11,7 +11,6 @@ class PurchaseOrder(models.Model):
     channel_category = fields.Char()
 
     @api.onchange("partner_id")
-    def _onchange_channel_category(self):
-        channel = self.partner_id.channel_category
-        if channel:
-            self.channel_category = channel
+    def _onchange_partner_id(self):
+        if self.partner_id:
+            self.channel_category = self.partner_id.channel_category
