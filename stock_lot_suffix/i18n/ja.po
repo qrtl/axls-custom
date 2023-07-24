@@ -1,0 +1,92 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_lot_suffix
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-07-14 09:37+0000\n"
+"PO-Revision-Date: 2023-07-14 09:37+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_purchase_order__analytic_distribution
+msgid "Analytic"
+msgstr "分析"
+
+#. module: stock_lot_suffix
+#: model:ir.model,name:stock_lot_suffix.model_account_analytic_account
+msgid "Analytic Account"
+msgstr "分析勘定"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_purchase_order__analytic_account_names
+msgid "Analytic Account Names"
+msgstr "分析勘定名"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_purchase_order__analytic_account_ids
+msgid "Analytic Accounts"
+msgstr "分析勘定"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_account_analytic_account__lot_suffix
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_stock_lot__lot_suffix
+msgid "Lot Suffix"
+msgstr "ロットサフィックス"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_purchase_order__analytic_distribution_search
+msgid "Analytic Distribution Search"
+msgstr "分析分配検索"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_purchase_order__analytic_precision
+msgid "Analytic Precision"
+msgstr "分析精度"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,help:stock_lot_suffix.field_purchase_order__analytic_account_ids
+msgid "Analytic accounts computed from analytic distribution."
+msgstr "分析分配に指定した分析勘定"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_purchase_order__channel_category
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_res_partner__channel_category
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_res_users__channel_category
+#: model:ir.model.fields,field_description:stock_lot_suffix.field_stock_lot__channel_category
+msgid "Channel Category"
+msgstr "チャネルカテゴリ"
+
+#. module: stock_lot_suffix
+#: model:ir.model.fields,help:stock_lot_suffix.field_purchase_order__analytic_account_names
+msgid ""
+"Comma-separated analytic account names, in case it is useful to be included "
+"in the exported data."
+msgstr ""
+
+#. module: stock_lot_suffix
+#: model:ir.model,name:stock_lot_suffix.model_res_partner
+msgid "Contact"
+msgstr "連絡先"
+
+#. module: stock_lot_suffix
+#: model:ir.model,name:stock_lot_suffix.model_stock_lot
+msgid "Lot/Serial"
+msgstr "ロット/シリアル"
+
+#. module: stock_lot_suffix
+#: model:ir.model,name:stock_lot_suffix.model_purchase_order
+msgid "Purchase Order"
+msgstr "購買オーダ"
+
+#. module: stock_lot_suffix
+#: model:ir.model,name:stock_lot_suffix.model_stock_picking
+msgid "Transfer"
+msgstr "運送"
