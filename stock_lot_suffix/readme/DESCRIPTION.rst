@@ -1,6 +1,6 @@
-This module provides the functionality to manage lot references by adding suffixes.
+This module provides the functionality to add suffixes to the display name of lots/serials.
 
-Suffixes are added in the following scenarios:
+Suffixes are added to lots/serials created from purchase receipts with following conditions:
 
-- When a purchase order is created with a supplier that the channel_category is set.
-- When a purchase order is created using an analytic plan that the lot suffix is set.
+- Purchase order has the channel_category set.
+- Purchase order line has an analytic account with lot suffix.

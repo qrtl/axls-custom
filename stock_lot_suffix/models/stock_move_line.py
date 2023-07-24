@@ -21,11 +21,5 @@ class StockMoveLine(models.Model):
             )
             if analytic_account:
                 vals["lot_suffix"] = analytic_account[0].lot_suffix
-            # lot_suffixes = [
-            #     suffix
-            #     for suffix in purchase_line.analytic_account_ids.mapped("lot_suffix")
-            #     if suffix
-            # ]
-            # vals["lot_suffix"] = lot_suffixes[0] if lot_suffixes else None
             ml.lot_id.write(vals)
         return res
