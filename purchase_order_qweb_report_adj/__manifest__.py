@@ -3,7 +3,7 @@
 {
     "name": "Purchase Order Qweb Report Adj",
     "version": "16.0.1.0.0",
-    "category": "",
+    "category": "Purchase",
     "author": "Quartile Limited",
     "website": "https://www.quartile.co",
     "license": "AGPL-3",

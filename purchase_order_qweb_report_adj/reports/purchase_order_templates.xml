@@ -6,7 +6,7 @@
         priority="100"
     >
         <xpath expr="//div[@t-if='o.partner_ref']" position="attributes">
-            <attribute name="t-att-style">'display: none!important'</attribute>
+            <attribute name="t-att-style">'display: none'</attribute>
         </xpath>
         <xpath expr="//div[@t-if='o.partner_ref']" position="after">
             <div t-if="o.partner_ref" class="col-3 bm-2">
@@ -28,9 +28,11 @@
                 <span t-esc="line_index + 1" />
             </td>
         </xpath>
-        <xpath expr="//th[@name='th_taxes']" position="replace">
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+          <attribute name="t-att-style">'display: none'</attribute>
         </xpath>
-        <xpath expr="//td[@name='td_taxes']" position="replace">
+        <xpath expr="//td[@name='td_taxes']" position="attributes">
+          <attribute name="t-att-style">'display: none'</attribute>
         </xpath>
     </template>
 </odoo>
