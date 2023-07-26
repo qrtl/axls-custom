@@ -9,6 +9,11 @@ class StockMoveLine(models.Model):
 
     def _action_done(self):
         res = super()._action_done()
+        # Use exists() to ensure that we only work with records
+        # that are currently present in the database.
+        # This is because the super call "_action_done()" may delete some of the records.
+        # This avoids errors that would occur if we try to operate on deleted records.
+        self = self.exists()
         for ml in self:
             if not ml.lot_id:
                 continue
