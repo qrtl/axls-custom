@@ -1,7 +1,7 @@
 # Copyright 2023 Quartile Limited
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
-    "name": "Purchase Order Qweb Report Adj",
+    "name": "Purchase Order Report Adj",
     "version": "16.0.1.0.0",
     "category": "Purchase",
     "author": "Quartile Limited",
