@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="inventory_valuation_report_xlsx" model="ir.actions.report">
+        <field name="name">Inventory Valuation Report</field>
+        <field name="model">inventory.valuation.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field
+            name="report_name"
+        >inventory_reporting.inventory_valutaion_report_xlsx</field>
+        <field
+            name="report_file"
+        >inventory_reporting.inventory_valutaion_report_xlsx</field>
+        <field name="binding_model_id" ref="model_inventory_valuation_report_wizard" />
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
