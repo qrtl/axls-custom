@@ -21,12 +21,12 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Write the header
             headers = [
-                "Product Name (プロダクト名)",
-                "Quantity (個数)",
-                "Unit of Measurement (単位)",
-                "Unit Price (単価)",
-                "Total Value (合計価値)",
-                "Last Purchase Date (最終購入日)",
+                "Product Name",
+                "Quantity",
+                "Unit of Measurement",
+                "Unit Price",
+                "Total Value",
+                "Last Purchase Date",
             ]
             for col, header in enumerate(headers):
                 ws.write(0, col, header)

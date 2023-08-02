@@ -9,14 +9,19 @@
     "license": "AGPL-3",
     "depends": [
         "stock",
+        "analytic_mixin_analytic_account",
         "product_last_purchase_date",
         "report_xlsx",
+        "stock_analytic",
         "stock_valuation_layer_accounting_date",
+        "stock_move_accounting_date",
     ],
     "data": [
         "security/ir.model.access.csv",
         "wizards/inventory_valution_report_wizard_views.xml",
+        "wizards/inventory_transfer_report_wizard_views.xml",
         "reports/inventory_valuation_report.xml",
+        "reports/inventory_transfer_report.xml",
     ],
     "installable": True,
 }
