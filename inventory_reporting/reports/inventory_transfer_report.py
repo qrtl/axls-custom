@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup
+
 from odoo import fields, models
 
 
@@ -13,6 +15,12 @@ class InventoryTransferReportXlsx(models.AbstractModel):
         elif report_type == "consumable":
             self.generate_consumable_report(workbook, wizard)
 
+    def parse_html(self, html_content):
+        if html_content:
+            soup = BeautifulSoup(html_content, "html.parser")
+            return soup.get_text()
+        return False
+
     def generate_storable_report(self, workbook, wizard):
         categories = [
             {
@@ -20,8 +28,8 @@ class InventoryTransferReportXlsx(models.AbstractModel):
                 "filter": [
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
-                    ["product_id.active", "=", True],
-                    ["reference", "ilike", "/IN/"],
+                    ["picking_type_id.code", "=", "incoming"],
+                    ["origin_returned_move_id", "=", False],
                     ["product_id.detailed_type", "=", "product"],
                 ],
             },
@@ -30,8 +38,45 @@ class InventoryTransferReportXlsx(models.AbstractModel):
                 "filter": [
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
-                    ["product_id.active", "=", True],
-                    ["reference", "ilike", "/OUT/"],
+                    ["origin_returned_move_id", "!=", False],
+                    ["product_id.detailed_type", "=", "product"],
+                ],
+            },
+            {
+                "name": "Delivery",
+                "filter": [
+                    ["accounting_date", ">=", wizard.date_start],
+                    ["accounting_date", "<=", wizard.date_end],
+                    ["picking_type_id.code", "=", "outgoing"],
+                    ["origin_returned_move_id", "=", False],
+                    ["product_id.detailed_type", "=", "product"],
+                ],
+            },
+            {
+                "name": "Internal Transfer",
+                "filter": [
+                    ["accounting_date", ">=", wizard.date_start],
+                    ["accounting_date", "<=", wizard.date_end],
+                    ["picking_type_id.code", "=", "internal"],
+                    ["origin_returned_move_id", "=", False],
+                    ["product_id.detailed_type", "=", "product"],
+                ],
+            },
+            {
+                "name": "Inventory Adjustment",
+                "filter": [
+                    ["accounting_date", ">=", wizard.date_start],
+                    ["accounting_date", "<=", wizard.date_end],
+                    ["reference", "=", "Product Quantity Updated"],
+                    ["product_id.detailed_type", "=", "product"],
+                ],
+            },
+            {
+                "name": "Subcontracting",
+                "filter": [
+                    ["accounting_date", ">=", wizard.date_start],
+                    ["accounting_date", "<=", wizard.date_end],
+                    ["is_subcontract", "=", True],
                     ["product_id.detailed_type", "=", "product"],
                 ],
             },
@@ -72,11 +117,17 @@ class InventoryTransferReportXlsx(models.AbstractModel):
                 accounting_date = fields.Date.from_string(move.accounting_date)
                 ws.write(row, 0, move.reference)
                 ws.write(row, 1, move.origin)
-                ws.write(row, 2, accounting_date)
-                ws.write(row, 3, "")
+                ws.write(row, 2, accounting_date.strftime("%Y-%m-%d"))
+                ws.write(
+                    row,
+                    3,
+                    self.parse_html(move.picking_id.note)
+                    if move.picking_id.note
+                    else "",
+                )
                 ws.write(row, 4, move.create_uid.name)
                 ws.write(row, 5, move.partner_id.name)
-                ws.write(row, 6, "")
+                ws.write(row, 6, move.purchase_line_id.price_subtotal)
                 ws.write(row, 7, move.product_id.name)
                 ws.write(row, 8, move.product_id.type)
                 ws.write(row, 9, move.product_id.categ_id.name)
@@ -85,7 +136,11 @@ class InventoryTransferReportXlsx(models.AbstractModel):
                 ws.write(row, 12, move.quantity_done)
                 ws.write(row, 13, move.product_uom.name)
                 ws.write(row, 14, move.product_id.categ_id.property_cost_method)
-                ws.write(row, 15, "")
+                ws.write(
+                    row,
+                    15,
+                    sum(layer.value for layer in move.stock_valuation_layer_ids),
+                )
                 ws.write(
                     row,
                     16,
@@ -100,7 +155,8 @@ class InventoryTransferReportXlsx(models.AbstractModel):
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
                     ["product_id.active", "=", True],
-                    ["name", "ilike", "/IN/"],
+                    ["picking_type_id.code", "=", "incoming"],
+                    ["origin_returned_move_id", "=", False],
                     ["product_id.detailed_type", "!=", "product"],
                 ],
             },
@@ -110,7 +166,8 @@ class InventoryTransferReportXlsx(models.AbstractModel):
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
                     ["product_id.active", "=", True],
-                    ["name", "ilike", "/OUT/"],
+                    ["picking_type_id.code", "=", "outgoing"],
+                    ["origin_returned_move_id", "!=", False],
                     ["product_id.detailed_type", "!=", "product"],
                 ],
             },
@@ -151,11 +208,17 @@ class InventoryTransferReportXlsx(models.AbstractModel):
                 accounting_date = fields.Date.from_string(move.accounting_date)
                 ws.write(row, 0, move.reference)
                 ws.write(row, 1, move.origin)
-                ws.write(row, 2, accounting_date)
-                ws.write(row, 3, "")
+                ws.write(row, 2, accounting_date.strftime("%Y-%m-%d"))
+                ws.write(
+                    row,
+                    3,
+                    self.parse_html(move.picking_id.note)
+                    if move.picking_id.note
+                    else "",
+                )
                 ws.write(row, 4, move.create_uid.name)
                 ws.write(row, 5, move.partner_id.name)
-                ws.write(row, 6, "")
+                ws.write(row, 6, move.purchase_line_id.price_subtotal)
                 ws.write(row, 7, move.product_id.name)
                 ws.write(row, 8, move.product_id.type)
                 ws.write(row, 9, move.product_id.categ_id.name)
@@ -164,7 +227,11 @@ class InventoryTransferReportXlsx(models.AbstractModel):
                 ws.write(row, 12, move.quantity_done)
                 ws.write(row, 13, move.product_uom.name)
                 ws.write(row, 14, move.product_id.categ_id.property_cost_method)
-                ws.write(row, 15, "")
+                ws.write(
+                    row,
+                    15,
+                    sum(layer.value for layer in move.stock_valuation_layer_ids),
+                )
                 ws.write(
                     row,
                     16,

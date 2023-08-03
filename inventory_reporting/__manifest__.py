@@ -8,7 +8,7 @@
     "category": "Reporting",
     "license": "AGPL-3",
     "depends": [
-        "stock",
+        "mrp_subcontracting",
         "analytic_mixin_analytic_account",
         "product_last_purchase_date",
         "report_xlsx",
