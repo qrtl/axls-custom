@@ -9,7 +9,11 @@ class InventoryReportWizard(models.TransientModel):
     _description = "Inventory Report Wizard"
 
     report_type = fields.Selection(
-        [("valuation", "Inventory valuation"), ("storable", "Incoming-Outgoing transfers (For storable products)"), ("consumable", "Incoming-Outgoing transfers (For consumable products)")],
+        [
+            ("valuation", "Inventory valuation"),
+            ("storable", "Incoming-Outgoing transfers (For storable products)"),
+            ("consumable", "Incoming-Outgoing transfers (For consumable products)"),
+        ],
         required=True,
         default="valuation",
     )
@@ -22,6 +26,6 @@ class InventoryReportWizard(models.TransientModel):
             "date_start": self.date_start,
             "date_end": self.date_end,
         }
-        return self.env.ref(
-            "inventory_reporting.inventory_report_xlsx"
-        ).report_action(self, data=data)
+        return self.env.ref("inventory_reporting.inventory_report_xlsx").report_action(
+            self, data=data
+        )

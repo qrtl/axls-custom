@@ -23,7 +23,6 @@ class InventoryReportXlsx(models.AbstractModel):
             return soup.get_text()
         return False
 
-    
     def generate_valuation_report(self, workbook, wizard):
         categories = [
             "Harness",
@@ -73,7 +72,6 @@ class InventoryReportXlsx(models.AbstractModel):
                     valuation.product_id.last_purchase_date
                 )
                 ws.write(row, 5, last_purchase_date.strftime("%Y-%m-%d"))
-
 
     def generate_storable_report(self, workbook, wizard):
         categories = [
@@ -190,7 +188,9 @@ class InventoryReportXlsx(models.AbstractModel):
                 )
                 ws.write(row, 4, valuation.create_uid.name)
                 ws.write(row, 5, valuation.stock_move_id.partner_id.name)
-                ws.write(row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal)
+                ws.write(
+                    row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal
+                )
                 ws.write(row, 7, valuation.product_id.name)
                 ws.write(row, 8, valuation.product_id.type)
                 ws.write(row, 9, valuation.product_id.categ_id.name)
@@ -207,7 +207,9 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(
                     row,
                     16,
-                    valuation.stock_move_id.analytic_account_names if valuation.stock_move_id.analytic_account_names else "",
+                    valuation.stock_move_id.analytic_account_names
+                    if valuation.stock_move_id.analytic_account_names
+                    else "",
                 )
 
     def generate_consumable_report(self, workbook, wizard):
@@ -279,7 +281,9 @@ class InventoryReportXlsx(models.AbstractModel):
                 )
                 ws.write(row, 4, valuation.create_uid.name)
                 ws.write(row, 5, valuation.partner_id.name)
-                ws.write(row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal)
+                ws.write(
+                    row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal
+                )
                 ws.write(row, 7, valuation.product_id.name)
                 ws.write(row, 8, valuation.product_id.type)
                 ws.write(row, 9, valuation.product_id.categ_id.name)
@@ -296,5 +300,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(
                     row,
                     16,
-                    valuation.stock_move_id.analytic_account_names if valuation.stock_move_id.analytic_account_names else "",
+                    valuation.stock_move_id.analytic_account_names
+                    if valuation.stock_move_id.analytic_account_names
+                    else "",
                 )
