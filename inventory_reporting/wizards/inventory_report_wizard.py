@@ -4,14 +4,14 @@
 from odoo import fields, models
 
 
-class InventoryTransferReportWizard(models.TransientModel):
-    _name = "inventory.transfer.report.wizard"
-    _description = "Inventory Transfer Report Wizard"
+class InventoryReportWizard(models.TransientModel):
+    _name = "inventory.report.wizard"
+    _description = "Inventory Report Wizard"
 
     report_type = fields.Selection(
-        [("storable", "Storable Products"), ("consumable", "Consumable Products")],
+        [("valuation", "Inventory valuation"), ("storable", "Incoming-Outgoing transfers (For storable products)"), ("consumable", "Incoming-Outgoing transfers (For consumable products)")],
         required=True,
-        default="storable",
+        default="valuation",
     )
     date_start = fields.Date("Start Date", required=True)
     date_end = fields.Date("End Date", required=True)
@@ -23,5 +23,5 @@ class InventoryTransferReportWizard(models.TransientModel):
             "date_end": self.date_end,
         }
         return self.env.ref(
-            "inventory_reporting.inventory_transfer_report_xlsx"
+            "inventory_reporting.inventory_report_xlsx"
         ).report_action(self, data=data)

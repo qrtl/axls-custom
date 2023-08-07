@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="view_inventory_valuation_report_wizard" model="ir.ui.view">
-        <field name="name">inventory.valuation.report.wizard.form</field>
-        <field name="model">inventory.valuation.report.wizard</field>
+    <record id="view_inventory_report_wizard" model="ir.ui.view">
+        <field name="name">inventory.report.wizard.form</field>
+        <field name="model">inventory.report.wizard</field>
         <field name="arch" type="xml">
-            <form string="Inventory Valuation Report">
+            <form string="Inventory Report">
                 <group>
                     <group>
+                        <field name="report_type" />
                         <label for="date_start" string="Accounting Date Period" />
                         <div name="dates" class="o_row">
                             <field
@@ -39,19 +40,19 @@
             </form>
         </field>
     </record>
-    <record id="inventory_valuation_report_wizard_action" model="ir.actions.act_window">
-        <field name="name">Inventory Valuation Report Wizard</field>
-        <field name="res_model">inventory.valuation.report.wizard</field>
+    <record id="inventory_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">Inventory Report Wizard</field>
+        <field name="res_model">inventory.report.wizard</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="view_inventory_valuation_report_wizard" />
+        <field name="view_id" ref="view_inventory_report_wizard" />
         <field name="target">new</field>
     </record>
     <menuitem
-        id="inventory_valuation_report_menu"
-        name="Inventory Valuation Report"
+        id="inventory_report_menu"
+        name="Inventory Report"
         parent="stock.menu_warehouse_report"
-        action="inventory_valuation_report_wizard_action"
-        sequence="20"
+        action="inventory_report_wizard_action"
+        sequence="30"
         groups="stock.group_stock_manager"
     />
 </odoo>

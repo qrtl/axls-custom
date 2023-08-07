@@ -18,10 +18,8 @@
     ],
     "data": [
         "security/ir.model.access.csv",
-        "wizards/inventory_valution_report_wizard_views.xml",
-        "wizards/inventory_transfer_report_wizard_views.xml",
-        "reports/inventory_valuation_report.xml",
-        "reports/inventory_transfer_report.xml",
+        "wizards/inventory_report_wizard_views.xml",
+        "reports/inventory_report.xml",
     ],
     "installable": True,
 }
