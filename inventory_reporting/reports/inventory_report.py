@@ -91,6 +91,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
                     ["stock_move_id.origin_returned_move_id", "!=", False],
+                    ["reference", "ilike", "/OUT/"],
                     ["product_id.detailed_type", "=", "product"],
                 ],
             },
@@ -105,7 +106,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": "Internal Transfer",
+                "name": "Immediate Transfer",
                 "filter": [
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
@@ -117,19 +118,41 @@ class InventoryReportXlsx(models.AbstractModel):
             {
                 "name": "Inventory Adjustment",
                 "filter": [
+                    "&",
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
-                    ["reference", "=", "Product Quantity Updated"],
                     ["product_id.detailed_type", "=", "product"],
+                    "|",
+                    [
+                        "stock_move_id.location_id",
+                        "ilike",
+                        "Virtual Locations/Inventory adjustment",
+                    ],
+                    [
+                        "stock_move_id.location_dest_id",
+                        "ilike",
+                        "Virtual Locations/Inventory adjustment",
+                    ],
                 ],
             },
             {
                 "name": "Subcontracting",
                 "filter": [
+                    "&",
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
-                    ["stock_move_id.is_subcontract", "=", True],
                     ["product_id.detailed_type", "=", "product"],
+                    "|",
+                    [
+                        "stock_move_id.location_id",
+                        "ilike",
+                        "Physical Locations/Subcontracting Location",
+                    ],
+                    [
+                        "stock_move_id.location_dest_id",
+                        "ilike",
+                        "Physical Locations/Subcontracting Location",
+                    ],
                 ],
             },
             {
