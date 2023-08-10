@@ -240,8 +240,8 @@ class InventoryReportXlsx(models.AbstractModel):
             {
                 "name": "Receipt",
                 "filter": [
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
+                    ["stock_move_id.date", ">=", wizard.date_start],
+                    ["stock_move_id.date", "<=", wizard.date_end],
                     ["stock_move_id.picking_type_id.code", "=", "incoming"],
                     ["stock_move_id.origin_returned_move_id", "=", False],
                     ["product_id.detailed_type", "!=", "product"],
@@ -250,8 +250,8 @@ class InventoryReportXlsx(models.AbstractModel):
             {
                 "name": "Return",
                 "filter": [
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
+                    ["stock_move_id.date", ">=", wizard.date_start],
+                    ["stock_move_id.date", "<=", wizard.date_end],
                     ["stock_move_id.picking_type_id.code", "=", "outgoing"],
                     ["stock_move_id.origin_returned_move_id", "!=", False],
                     ["product_id.detailed_type", "!=", "product"],
@@ -291,19 +291,19 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Write the data to the worksheet
             for row, valuation in enumerate(valuations, start=1):
-                accounting_date = fields.Date.from_string(valuation.accounting_date)
+                date = fields.Date.from_string(valuation.stock_move_id.date)
                 ws.write(row, 0, valuation.reference)
                 ws.write(row, 1, valuation.stock_move_id.origin)
-                ws.write(row, 2, accounting_date.strftime("%Y-%m-%d"))
+                ws.write(row, 2, date.strftime("%Y-%m-%d"))
                 ws.write(
                     row,
                     3,
-                    self.parse_html(valuation.picking_id.note)
-                    if valuation.picking_id.note
+                    self.parse_html(valuation.stock_move_id.picking_id.note)
+                    if valuation.stock_move_id.picking_id.note
                     else "",
                 )
                 ws.write(row, 4, valuation.create_uid.name)
-                ws.write(row, 5, valuation.partner_id.name)
+                ws.write(row, 5, valuation.stock_move_id.partner_id.name)
                 ws.write(
                     row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal
                 )
