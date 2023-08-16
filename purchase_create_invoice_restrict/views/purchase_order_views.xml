@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="purchase_order_form" model="ir.ui.view">
+        <field name="name">purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath
+                expr="(//button[@name='action_create_invoice'])[1]"
+                position="attributes"
+            >
+                <attribute
+                    name="groups"
+                >purchase_create_invoice_restrict.group_create_invoice_allowed,account.group_account_invoice</attribute>
+            </xpath>
+            <xpath
+                expr="(//button[@name='action_create_invoice'])[2]"
+                position="attributes"
+            >
+                <attribute
+                    name="groups"
+                >purchase_create_invoice_restrict.group_create_invoice_allowed,account.group_account_invoice</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="purchase_order_kpis_tree" model="ir.ui.view">
+        <field name="name">purchase.order.inherit.purchase.order.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_create_invoice']" position="attributes">
+                <attribute
+                    name="groups"
+                >purchase_create_invoice_restrict.group_create_invoice_allowed,account.group_account_invoice</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="purchase_order_view_tree" model="ir.ui.view">
+        <field name="name">purchase.order.view.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_create_invoice']" position="attributes">
+                <attribute
+                    name="groups"
+                >purchase_create_invoice_restrict.group_create_invoice_allowed,account.group_account_invoice</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

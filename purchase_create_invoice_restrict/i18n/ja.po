@@ -1,0 +1,21 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_create_invoice_restrict
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-16 08:45+0000\n"
+"PO-Revision-Date: 2023-08-16 08:45+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_create_invoice_restrict
+#: model:res.groups,name:purchase_create_invoice_restrict.group_create_invoice_allowed
+msgid "Invoice Createion Allowed"
+msgstr "請求書作成可能"

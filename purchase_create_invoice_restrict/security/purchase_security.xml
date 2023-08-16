@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="group_create_invoice_allowed" model="res.groups">
+        <field name="name">Invoice Createion Allowed</field>
+        <field name="category_id" ref="base.module_category_hidden" />
+    </record>
+</odoo>
