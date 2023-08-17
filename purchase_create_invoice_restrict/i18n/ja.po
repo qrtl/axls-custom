@@ -17,5 +17,5 @@ msgstr ""
 
 #. module: purchase_create_invoice_restrict
 #: model:res.groups,name:purchase_create_invoice_restrict.group_create_invoice_allowed
-msgid "Invoice Createion Allowed"
+msgid "Invoice Creation Allowed"
 msgstr "請求書作成可能"
