@@ -1,1 +1,1 @@
-Users with the group_account_invoice or group_create_invoice_allowed can press the "CREATE BILL" button.
+Users with the group_account_invoice or group_create_bill_allowed can press the "CREATE BILL" button.

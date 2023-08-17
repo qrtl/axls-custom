@@ -11,7 +11,7 @@
             >
                 <attribute
                     name="groups"
-                >purchase_create_invoice_restrict.group_create_invoice_allowed,account.group_account_invoice</attribute>
+                >purchase_create_invoice_restrict.group_create_bill_allowed,account.group_account_invoice</attribute>
             </xpath>
             <xpath
                 expr="(//button[@name='action_create_invoice'])[2]"
@@ -19,7 +19,7 @@
             >
                 <attribute
                     name="groups"
-                >purchase_create_invoice_restrict.group_create_invoice_allowed,account.group_account_invoice</attribute>
+                >purchase_create_invoice_restrict.group_create_bill_allowed,account.group_account_invoice</attribute>
             </xpath>
         </field>
     </record>
@@ -31,7 +31,7 @@
             <xpath expr="//button[@name='action_create_invoice']" position="attributes">
                 <attribute
                     name="groups"
-                >purchase_create_invoice_restrict.group_create_invoice_allowed,account.group_account_invoice</attribute>
+                >purchase_create_invoice_restrict.group_create_bill_allowed,account.group_account_invoice</attribute>
             </xpath>
         </field>
     </record>
@@ -43,7 +43,7 @@
             <xpath expr="//button[@name='action_create_invoice']" position="attributes">
                 <attribute
                     name="groups"
-                >purchase_create_invoice_restrict.group_create_invoice_allowed,account.group_account_invoice</attribute>
+                >purchase_create_invoice_restrict.group_create_bill_allowed,account.group_account_invoice</attribute>
             </xpath>
         </field>
     </record>

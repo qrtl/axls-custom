@@ -19,7 +19,7 @@ Purchase Create Invoice Restrict
 
 |badge1| |badge2| |badge3| 
 
-Users with the group_account_invoice or group_create_invoice_allowed can press the "CREATE BILL" button.
+Users with the group_account_invoice or group_create_bill_allowed can press the "CREATE BILL" button.
 
 **Table of contents**
 
