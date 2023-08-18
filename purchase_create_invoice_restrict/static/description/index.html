@@ -368,7 +368,8 @@ ul.auto-toc {
 !! changes will be overwritten.                   !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external" href="https://github.com/qrtl/axls-custom/tree/16.0/purchase_create_invoice_restrict"><img alt="qrtl/axls-custom" src="https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github" /></a></p>
-<p>Users with the group_account_invoice or group_create_bill_allowed can press the “CREATE BILL” button.</p>
+<p>This module adds a new group group_create_bill_allowed, and hids “Create Bill” button of the purchase order form for users without group_account_invoice or group_create_bill_allowed.</p>
+<p>This functionality intends to prevent the situation where purchase users accidentally create vendor bills from purchase orders, when bills are supposed to be created by authorized users.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
