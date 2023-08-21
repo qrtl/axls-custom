@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 
-from odoo import fields, models
+from odoo import _, fields, models
 
 
 class InventoryReportXlsx(models.AbstractModel):
@@ -39,12 +39,12 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Write the header
             headers = [
-                "Product Name",
-                "Quantity",
-                "Unit of Measurement",
-                "Unit Price",
-                "Total Value",
-                "Last Purchase Date",
+                _("Product Name"),
+                _("Quantity"),
+                _("Unit of Measurement"),
+                _("Unit Price"),
+                _("Total Value"),
+                _("Last Purchase Date"),
             ]
             for col, header in enumerate(headers):
                 ws.write(0, col, header)
@@ -77,7 +77,7 @@ class InventoryReportXlsx(models.AbstractModel):
     def generate_storable_report(self, workbook, wizard):
         categories = [
             {
-                "name": "Receipt",
+                "name": _("Receipt"),
                 "filter": [
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
@@ -87,7 +87,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": "Return",
+                "name": _("Return"),
                 "filter": [
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
@@ -97,7 +97,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": "Delivery",
+                "name": _("Delivery"),
                 "filter": [
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
@@ -107,7 +107,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": "Inventory Adjustment",
+                "name": _("Inventory Adjustment"),
                 "filter": [
                     "&",
                     ["accounting_date", ">=", wizard.date_start],
@@ -127,7 +127,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": "Subcontracting",
+                "name": _("Subcontracting"),
                 "filter": [
                     "&",
                     ["accounting_date", ">=", wizard.date_start],
@@ -147,7 +147,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": "Price Update",
+                "name": _("Price Update"),
                 "filter": [
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
@@ -162,23 +162,23 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Write the header
             headers = [
-                "Reference",
-                "Origin",
-                "Accounting Date",
-                "Note",
-                "User",
-                "Partner",
-                "Total Amount of Purchase Order",
-                "Product",
-                "Product Type",
-                "Product Category",
-                "Source Location",
-                "Destination Location",
-                "Quantity",
-                "Unit of Measurement",
-                "Product Cost Method",
-                "SVL's Total Inventory Value",
-                "Analytic Distribution",
+                _("Reference"),
+                _("Origin"),
+                _("Accounting Date"),
+                _("Note"),
+                _("User"),
+                _("Partner"),
+                _("Total Amount of Purchase Order"),
+                _("Product"),
+                _("Product Type"),
+                _("Product Category"),
+                _("Source Location"),
+                _("Destination Location"),
+                _("Quantity"),
+                _("Unit of Measurement"),
+                _("Product Cost Method"),
+                _("SVL's Total Inventory Value"),
+                _("Analytic Distribution"),
             ]
             for col, header in enumerate(headers):
                 ws.write(0, col, header)
@@ -225,7 +225,7 @@ class InventoryReportXlsx(models.AbstractModel):
     def generate_consumable_report(self, workbook, wizard):
         categories = [
             {
-                "name": "Receipt",
+                "name": _("Receipt"),
                 "filter": [
                     ["stock_move_id.date", ">=", wizard.date_start],
                     ["stock_move_id.date", "<=", wizard.date_end],
@@ -235,7 +235,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": "Return",
+                "name": _("Return"),
                 "filter": [
                     ["stock_move_id.date", ">=", wizard.date_start],
                     ["stock_move_id.date", "<=", wizard.date_end],
@@ -251,23 +251,23 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Write the header
             headers = [
-                "Reference",
-                "Origin",
-                "Accounting Date",
-                "Note",
-                "User",
-                "Partner",
-                "Total Amount of Purchase Order",
-                "Product",
-                "Product Type",
-                "Product Category",
-                "Source Location",
-                "Destination Location",
-                "Quantity",
-                "Unit of Measurement",
-                "Product Cost Method",
-                "SVL's Total Inventory Value",
-                "Analytic Distribution",
+                _("Reference"),
+                _("Origin"),
+                _("Accounting Date"),
+                _("Note"),
+                _("User"),
+                _("Partner"),
+                _("Total Amount of Purchase Order"),
+                _("Product"),
+                _("Product Type"),
+                _("Product Category"),
+                _("Source Location"),
+                _("Destination Location"),
+                _("Quantity"),
+                _("Unit of Measurement"),
+                _("Product Cost Method"),
+                _("SVL's Total Inventory Value"),
+                _("Analytic Distribution"),
             ]
             for col, header in enumerate(headers):
                 ws.write(0, col, header)
