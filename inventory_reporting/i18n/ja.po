@@ -101,7 +101,7 @@ msgstr "入出庫表(消耗品)"
 #. module: inventory_reporting
 #: model:ir.model.fields.selection,name:inventory_reporting.selection__inventory_report_wizard__report_type__storable
 msgid "Incoming-Outgoing transfers (For storable products)"
-msgstr "入出庫(在庫可能品)"
+msgstr "入出庫表(在庫可能品)"
 
 #. module: inventory_reporting
 #. odoo-python
