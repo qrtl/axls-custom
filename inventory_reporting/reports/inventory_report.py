@@ -100,16 +100,6 @@ class InventoryReportXlsx(models.AbstractModel):
                 "filter": [
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
-                    ["stock_move_id.picking_type_id.code", "=", "outgoing"],
-                    ["stock_move_id.origin_returned_move_id", "=", False],
-                    ["product_id.detailed_type", "=", "product"],
-                ],
-            },
-            {
-                "name": "Immediate Transfer",
-                "filter": [
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
                     ["stock_move_id.picking_type_id.code", "=", "internal"],
                     ["stock_move_id.origin_returned_move_id", "=", False],
                     ["product_id.detailed_type", "=", "product"],
@@ -222,11 +212,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(row, 12, valuation.quantity)
                 ws.write(row, 13, valuation.uom_id.name)
                 ws.write(row, 14, valuation.product_id.categ_id.property_cost_method)
-                ws.write(
-                    row,
-                    15,
-                    sum(layer.value for layer in valuation.stock_valuation_layer_ids),
-                )
+                ws.write(row, 15, valuation.value),
                 ws.write(
                     row,
                     16,
@@ -315,11 +301,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(row, 12, valuation.quantity)
                 ws.write(row, 13, valuation.uom_id.name)
                 ws.write(row, 14, valuation.product_id.categ_id.property_cost_method)
-                ws.write(
-                    row,
-                    15,
-                    sum(layer.value for layer in valuation.stock_valuation_layer_ids),
-                )
+                ws.write(row, 15, valuation.value),
                 ws.write(
                     row,
                     16,
