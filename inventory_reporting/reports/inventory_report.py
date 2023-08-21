@@ -201,7 +201,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     else "",
                 )
                 ws.write(row, 4, valuation.create_uid.name)
-                ws.write(row, 5, valuation.stock_move_id.partner_id.name)
+                ws.write(row, 5, valuation.stock_move_id.picking_id.partner_id.name)
                 ws.write(
                     row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal
                 )
@@ -290,7 +290,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     else "",
                 )
                 ws.write(row, 4, valuation.create_uid.name)
-                ws.write(row, 5, valuation.stock_move_id.partner_id.name)
+                ws.write(row, 5, valuation.stock_move_id.picking_id.partner_id.name)
                 ws.write(
                     row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal
                 )
