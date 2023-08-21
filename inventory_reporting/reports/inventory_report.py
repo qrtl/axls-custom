@@ -71,7 +71,8 @@ class InventoryReportXlsx(models.AbstractModel):
                 last_purchase_date = fields.Date.from_string(
                     valuation.product_id.last_purchase_date
                 )
-                ws.write(row, 5, last_purchase_date.strftime("%Y-%m-%d"))
+                if last_purchase_date:
+                    ws.write(row, 5, last_purchase_date.strftime("%Y-%m-%d"))
 
     def generate_storable_report(self, workbook, wizard):
         categories = [
