@@ -52,25 +52,40 @@ class InventoryReportXlsx(models.AbstractModel):
             valuations = valuation_obj.search(
                 [
                     ("product_id.categ_id.name", "=", category),
-                    ("accounting_date", ">=", wizard.date_start),
                     ("accounting_date", "<=", wizard.date_end),
                 ]
             )
 
-            # Write the data
-            for row, valuation in enumerate(valuations, start=1):
-                ws.write(row, 0, valuation.product_id.name)
-                ws.write(row, 1, valuation.quantity)
-                ws.write(row, 2, valuation.product_id.uom_id.name)
-                ws.write(row, 3, valuation.unit_cost)
-                ws.write(row, 4, valuation.value)
+            # Group valuations by product and aggregate the quantities and total values
+            grouped_valuations = {}
+            for valuation in valuations:
+                product_id = valuation.product_id.id
+                if product_id not in grouped_valuations:
+                    grouped_valuations[product_id] = {
+                        "product": valuation.product_id,
+                        "quantity": 0,
+                        "unit_cost": 0,
+                        "value": 0,
+                    }
+                grouped_valuations[product_id]["quantity"] += valuation.quantity
+                grouped_valuations[product_id]["unit_cost"] += valuation.unit_cost
+                grouped_valuations[product_id]["value"] += valuation.value
+
+            # Write the aggregated data
+            row = 1
+            for valuation_data in grouped_valuations.values():
+                product = valuation_data["product"]
+                ws.write(row, 0, product.name)
+                ws.write(row, 1, valuation_data["quantity"])
+                ws.write(row, 2, product.uom_id.name)
+                ws.write(row, 3, valuation_data["value"])
+                ws.write(row, 4, valuation_data["value"])
 
                 # Convert the date to the desired format (YYYY-MM-DD)
-                last_purchase_date = fields.Date.from_string(
-                    valuation.product_id.last_purchase_date
-                )
+                last_purchase_date = fields.Date.from_string(product.last_purchase_date)
                 if last_purchase_date:
                     ws.write(row, 5, last_purchase_date.strftime("%Y-%m-%d"))
+                row += 1
 
     def generate_storable_report(self, workbook, wizard):
         categories = [
