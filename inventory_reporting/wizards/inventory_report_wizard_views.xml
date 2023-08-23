@@ -7,7 +7,6 @@
             <form string="Inventory Report">
                 <group>
                     <group>
-                        <field name="report_type" />
                         <label for="date_start" string="Date Period" />
                         <div name="dates" class="o_row">
                             <field

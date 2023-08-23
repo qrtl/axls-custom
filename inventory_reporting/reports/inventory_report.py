@@ -8,13 +8,11 @@ class InventoryReportXlsx(models.AbstractModel):
     _inherit = "report.report_xlsx.abstract"
 
     def generate_xlsx_report(self, workbook, data, wizard):
-        report_type = wizard.report_type
-
-        if report_type == "valuation":
+        if data["report_type"] == "valuation":
             self.generate_valuation_report(workbook, wizard)
-        if report_type == "storable":
+        if data["report_type"] == "storable":
             self.generate_storable_report(workbook, wizard)
-        elif report_type == "consumable":
+        elif data["report_type"] == "consumable":
             self.generate_consumable_report(workbook, wizard)
 
     def parse_html(self, html_content):
