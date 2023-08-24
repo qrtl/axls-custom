@@ -51,6 +51,7 @@ class InventoryReportXlsx(models.AbstractModel):
             valuation_obj = self.env["stock.valuation.layer"]
             valuations = valuation_obj.search(
                 [
+                    ("product_id.active", "=", True),
                     ("product_id.categ_id.name", "=", category),
                     ("accounting_date", "<=", wizard.date_end),
                 ]
@@ -96,6 +97,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     ["accounting_date", "<=", wizard.date_end],
                     ["stock_move_id.picking_type_id.code", "=", "incoming"],
                     ["stock_move_id.origin_returned_move_id", "=", False],
+                    ["product_id.active", "=", True],
                     ["product_id.detailed_type", "=", "product"],
                 ],
             },
@@ -106,6 +108,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     ["accounting_date", "<=", wizard.date_end],
                     ["stock_move_id.origin_returned_move_id", "!=", False],
                     ["reference", "ilike", "/OUT/"],
+                    ["product_id.active", "=", True],
                     ["product_id.detailed_type", "=", "product"],
                 ],
             },
@@ -116,6 +119,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     ["accounting_date", "<=", wizard.date_end],
                     ["stock_move_id.picking_type_id.code", "=", "internal"],
                     ["stock_move_id.origin_returned_move_id", "=", False],
+                    ["product_id.active", "=", True],
                     ["product_id.detailed_type", "=", "product"],
                 ],
             },
@@ -125,6 +129,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     "&",
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
+                    ["product_id.active", "=", True],
                     ["product_id.detailed_type", "=", "product"],
                     "|",
                     [
@@ -145,6 +150,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     "&",
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
+                    ["product_id.active", "=", True],
                     ["product_id.detailed_type", "=", "product"],
                     "|",
                     [
@@ -165,6 +171,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     ["accounting_date", ">=", wizard.date_start],
                     ["accounting_date", "<=", wizard.date_end],
                     ["stock_move_id", "=", False],
+                    ["product_id.active", "=", True],
                     ["product_id.detailed_type", "=", "product"],
                 ],
             },
@@ -244,6 +251,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     ["stock_move_id.date", "<=", wizard.date_end],
                     ["stock_move_id.picking_type_id.code", "=", "incoming"],
                     ["stock_move_id.origin_returned_move_id", "=", False],
+                    ["product_id.active", "=", True],
                     ["product_id.detailed_type", "!=", "product"],
                 ],
             },
@@ -254,6 +262,7 @@ class InventoryReportXlsx(models.AbstractModel):
                     ["stock_move_id.date", "<=", wizard.date_end],
                     ["stock_move_id.picking_type_id.code", "=", "outgoing"],
                     ["stock_move_id.origin_returned_move_id", "!=", False],
+                    ["product_id.active", "=", True],
                     ["product_id.detailed_type", "!=", "product"],
                 ],
             },
