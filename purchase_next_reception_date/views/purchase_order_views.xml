@@ -51,25 +51,25 @@
             </group>
         </field>
     </record>
-    <record id="purchase_order_view_search_inherit" model="ir.ui.view">
-        <field name="name">purchase.order.inherit.purchase.order.search</field>
+    <record id="purchase_order_view_search" model="ir.ui.view">
+        <field name="name">purchase.order.select</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_view_search" />
         <field name="arch" type="xml">
-            <filter name="order_date" position="after">
+            <xpath expr="//filter[@name='order_date']" position="after">
                 <filter
                     name="next_reception_date"
                     string="Next Reception Date"
                     date="next_reception_date"
                 />
-            </filter>
-            <group expand="0" string="Group By">
+            </xpath>
+            <xpath expr="//group" position="inside">
                 <filter
                     string="Next Reception Date"
                     name="next_reception_date"
                     context="{'group_by':'next_reception_date'}"
                 />
-            </group>
+            </xpath>
         </field>
     </record>
 </odoo>

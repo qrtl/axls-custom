@@ -25,10 +25,10 @@ Background
 ~~~~~~~~~~
 
 For purchase orders with multiple order lines, each having different 'date_planned' values,
-expected arrival will not showing the upcoming receipt date after the first reception has been done.
-with this condition purchase users should open each record one by one to see the upcoming receipt of the orders.
+the expected arrival date field will not display the next order line's 'date_planned' after the first reception has been completed.
+Due to this condition, purchase users are required to open each record individually to see the upcoming receipt dates of the other order lines.
 
-This Next Reception Date field is designed to give the information of the order's upcoming reception date at a glance on the purchase order list view.
+The 'Next Reception Date' field is designed to provide information about the upcoming reception date of orders at a glance in the purchase order list view.
 
 **Table of contents**
 

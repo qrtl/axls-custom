@@ -12,24 +12,25 @@ class PurchaseOrder(models.Model):
     )
 
     @api.depends(
-        "order_line.date_planned",
+        "order_line.product_id",
         "order_line.product_qty",
         "order_line.qty_received",
         "order_line.qty_invoiced",
+        "order_line.date_planned",
     )
     def _compute_next_reception_date(self):
         for order in self:
-            dates = order.order_line.filtered(
-                lambda line: (
+            lines = order.order_line.filtered(
+                lambda x: (
                     (
-                        line.product_id.detailed_type != "service"
-                        and line.qty_received < line.product_qty
+                        x.product_id.detailed_type != "service"
+                        and x.qty_received < x.product_qty
                     )
                     or (
-                        line.product_id.detailed_type == "service"
-                        and line.qty_invoiced < line.product_qty
+                        x.product_id.detailed_type == "service"
+                        and x.qty_invoiced < x.product_qty
                     )
                 )
-            ).mapped("date_planned")
-
+            )
+            dates = lines.mapped("date_planned")
             order.next_reception_date = min(dates) if dates else False
