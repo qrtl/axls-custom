@@ -10,6 +10,16 @@
             </xpath>
         </field>
     </record>
+        <record id="purchase_order_kpis_tree" model="ir.ui.view">
+        <field name="name">purchase.order.inherit.purchase.order.kpis.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_kpis_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_order']" position="after">
+               <field name="next_reception_date" optional="hide" />
+            </xpath>
+        </field>
+    </record>
     <record id="purchase_order_view_tree" model="ir.ui.view">
         <field name="name">purchase.order.inherit.purchase.order.tree</field>
         <field name="model">purchase.order</field>
@@ -18,6 +28,48 @@
             <xpath expr="//field[@name='date_planned']" position="after">
                <field name="next_reception_date" />
             </xpath>
+        </field>
+    </record>
+    <record id="view_purchase_order_filter_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.inherit.purchase.order.filter</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter" />
+        <field name="arch" type="xml">
+            <filter name="order_date" position="after">
+                <filter
+                    name="next_reception_date"
+                    string="Next Reception Date"
+                    date="next_reception_date"
+                />
+            </filter>
+            <group expand="0" string="Group By">
+                <filter
+                    string="Next Reception Date"
+                    name="next_reception_date"
+                    context="{'group_by':'next_reception_date'}"
+                />
+            </group>
+        </field>
+    </record>
+    <record id="purchase_order_view_search_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.inherit.purchase.order.search</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_search" />
+        <field name="arch" type="xml">
+            <filter name="order_date" position="after">
+                <filter
+                    name="next_reception_date"
+                    string="Next Reception Date"
+                    date="next_reception_date"
+                />
+            </filter>
+            <group expand="0" string="Group By">
+                <filter
+                    string="Next Reception Date"
+                    name="next_reception_date"
+                    context="{'group_by':'next_reception_date'}"
+                />
+            </group>
         </field>
     </record>
 </odoo>
