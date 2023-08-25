@@ -30,8 +30,8 @@
             </xpath>
         </field>
     </record>
-    <record id="view_purchase_order_filter_inherit" model="ir.ui.view">
-        <field name="name">purchase.order.inherit.purchase.order.filter</field>
+    <record id="view_purchase_order_filter" model="ir.ui.view">
+        <field name="name">request.quotation.select</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.view_purchase_order_filter" />
         <field name="arch" type="xml">
