@@ -33,16 +33,36 @@ class InventoryReportWizard(models.TransientModel):
                 )
 
                 # Add the Excel content to the ZIP file with a unique filename
-                zip_file.writestr(report_type + ".xlsx", excel_content)
+                if report_type == "valuation":
+                    filename = (
+                        report_type + "_" + self.date_end.strftime("%Y%m%d") + ".xlsx"
+                    )
+                else:
+                    filename = (
+                        report_type
+                        + "_"
+                        + self.date_start.strftime("%Y%m%d")
+                        + "-"
+                        + self.date_end.strftime("%Y%m%d")
+                        + ".xlsx"
+                    )
+                zip_file.writestr(filename, excel_content)
 
         # Convert the ZIP data into base64 for downloading.
         zip_buffer.seek(0)
         zip_data = base64.b64encode(zip_buffer.getvalue())
 
         # Create an attachment with the ZIP file
+        attachment_name = (
+            "reports_"
+            + self.date_start.strftime("%Y%m%d")
+            + "-"
+            + self.date_end.strftime("%Y%m%d")
+            + ".zip"
+        )
         attachment = self.env["ir.attachment"].create(
             {
-                "name": "reports.zip",
+                "name": attachment_name,
                 "type": "binary",
                 "datas": zip_data,
                 "res_model": self._name,
