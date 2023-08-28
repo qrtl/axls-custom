@@ -3,3 +3,4 @@ git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/report_csv
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_reception_status
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/analytic_mixin_analytic_account
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/stock_picking_accounting_date
+git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/web_ir_actions_act_multi

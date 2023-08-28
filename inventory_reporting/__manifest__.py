@@ -15,6 +15,7 @@
         "stock_analytic",
         "stock_valuation_layer_accounting_date",
         "stock_move_accounting_date",
+        "web_ir_actions_act_multi",
     ],
     "data": [
         "security/ir.model.access.csv",

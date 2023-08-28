@@ -71,8 +71,15 @@ class InventoryReportWizard(models.TransientModel):
         )
 
         # Return an action to directly download the ZIP.
+
         return {
-            "type": "ir.actions.act_url",
-            "url": "/web/content/%s?download=true" % attachment.id,
-            "target": "self",
+            "type": "ir.actions.act_multi",
+            "actions": [
+                {"type": "ir.actions.act_window_close"},
+                {
+                    "type": "ir.actions.act_url",
+                    "url": "/web/content/%s?download=true" % attachment.id,
+                    "target": "self",
+                },
+            ],
         }
