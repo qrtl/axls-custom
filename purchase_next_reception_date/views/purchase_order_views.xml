@@ -38,7 +38,7 @@
             <xpath expr="//filter[@name='order_date']" position="after">
                 <filter name="next_reception_date" date="next_reception_date" />
             </xpath>
-            <xpath expr="//group" position="inside">
+            <xpath expr="//group/filter[@name='order_date']" position="after">
                 <filter
                     name="next_reception_date"
                     context="{'group_by':'next_reception_date'}"
@@ -54,7 +54,7 @@
             <xpath expr="//filter[@name='order_date']" position="after">
                 <filter name="next_reception_date" date="next_reception_date" />
             </xpath>
-            <xpath expr="//group" position="inside">
+            <xpath expr="//group/filter[@name='order_date']" position="after">
                 <filter
                     name="next_reception_date"
                     context="{'group_by':'next_reception_date'}"
