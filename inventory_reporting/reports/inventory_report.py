@@ -69,7 +69,9 @@ class InventoryReportXlsx(models.AbstractModel):
                 company_currency = self.env.company.currency_id
                 unit_cost = (
                     float_round(
-                        valuation_data["value"] / valuation_data["quantity"],
+                        valuation_data["value"] / valuation_data["quantity"]
+                        if valuation_data["quantity"] > 0
+                        else 0,
                         precision_rounding=company_currency.rounding,
                         rounding_method="UP",
                     )

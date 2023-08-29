@@ -52,6 +52,6 @@
         parent="stock.menu_warehouse_report"
         action="inventory_report_wizard_action"
         sequence="30"
-        groups="stock.group_stock_manager"
+        groups="account.group_account_manager,stock.group_stock_manager"
     />
 </odoo>
