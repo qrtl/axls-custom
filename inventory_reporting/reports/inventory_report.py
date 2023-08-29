@@ -67,15 +67,12 @@ class InventoryReportXlsx(models.AbstractModel):
                     valuation_data["product_id"][0]
                 )
                 company_currency = self.env.company.currency_id
-                unit_cost = (
-                    float_round(
-                        valuation_data["value"] / valuation_data["quantity"]
-                        if valuation_data["quantity"] > 0
-                        else 0,
-                        precision_rounding=company_currency.rounding,
-                        rounding_method="UP",
-                    )
-                    * valuation_data["product_id_count"]
+                unit_cost = float_round(
+                    valuation_data["value"] / valuation_data["quantity"]
+                    if valuation_data["quantity"] > 0
+                    else 0,
+                    precision_rounding=company_currency.rounding,
+                    rounding_method="UP",
                 )
                 ws.write(row, 0, product.name)
                 ws.write(row, 1, valuation_data["quantity"])
