@@ -21,6 +21,7 @@
         "security/ir.model.access.csv",
         "wizards/inventory_report_wizard_views.xml",
         "reports/inventory_report.xml",
+        "views/product_category_views.xml",
     ],
     "installable": True,
 }

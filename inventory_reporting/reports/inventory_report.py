@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 
 from odoo import _, fields, models
+from odoo.tools import float_round
 
 
 class InventoryReportXlsx(models.AbstractModel):
@@ -10,9 +11,9 @@ class InventoryReportXlsx(models.AbstractModel):
     def generate_xlsx_report(self, workbook, data, wizard):
         if data["report_type"] == "valuation":
             self.generate_valuation_report(workbook, wizard)
-        if data["report_type"] == "storable":
+        elif data["report_type"] == "storable":
             self.generate_storable_report(workbook, wizard)
-        elif data["report_type"] == "consumable":
+        else:
             self.generate_consumable_report(workbook, wizard)
 
     def parse_html(self, html_content):
@@ -22,15 +23,10 @@ class InventoryReportXlsx(models.AbstractModel):
         return False
 
     def generate_valuation_report(self, workbook, wizard):
-        categories = [
-            "Harness",
-            "PCBA",
-            "PCB",
-            "Electrical",
-            "Component",
-            "Mechanical",
-            "Consumable",
-        ]
+        category_objs = self.env["product.category"].search(
+            [("is_report_category", "=", True)]
+        )
+        categories = category_objs.mapped("name")
 
         for _i, category in enumerate(categories):
             ws = workbook.add_worksheet(category)
@@ -49,37 +45,40 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Fetch the valuation layers for the product category and date range
             valuation_obj = self.env["stock.valuation.layer"]
-            valuations = valuation_obj.search(
-                [
-                    ("product_id.active", "=", True),
-                    ("product_id.categ_id.name", "=", category),
-                    ("accounting_date", "<=", wizard.date_end),
-                ]
-            )
 
-            # Group valuations by product and aggregate the quantities and total values
-            grouped_valuations = {}
-            for valuation in valuations:
-                product_id = valuation.product_id.id
-                if product_id not in grouped_valuations:
-                    grouped_valuations[product_id] = {
-                        "product": valuation.product_id,
-                        "quantity": 0,
-                        "unit_cost": 0,
-                        "value": 0,
-                    }
-                grouped_valuations[product_id]["quantity"] += valuation.quantity
-                grouped_valuations[product_id]["unit_cost"] += valuation.unit_cost
-                grouped_valuations[product_id]["value"] += valuation.value
+            # Define search domain
+            domain = [
+                ("product_id.active", "=", True),
+                ("product_id.categ_id.name", "=", category),
+                ("accounting_date", "<=", wizard.date_end),
+            ]
+
+            # Fields to aggregate
+            fields_to_aggregate = ["quantity", "value"]
+
+            valuation_grouped_data = valuation_obj.read_group(
+                domain, fields_to_aggregate, ["product_id"]
+            )
 
             # Write the aggregated data
             row = 1
-            for valuation_data in grouped_valuations.values():
-                product = valuation_data["product"]
+            for valuation_data in valuation_grouped_data:
+                product = self.env["product.product"].browse(
+                    valuation_data["product_id"][0]
+                )
+                company_currency = self.env.company.currency_id
+                unit_cost = (
+                    float_round(
+                        valuation_data["value"] / valuation_data["quantity"],
+                        precision_rounding=company_currency.rounding,
+                        rounding_method="UP",
+                    )
+                    * valuation_data["product_id_count"]
+                )
                 ws.write(row, 0, product.name)
                 ws.write(row, 1, valuation_data["quantity"])
                 ws.write(row, 2, product.uom_id.name)
-                ws.write(row, 3, valuation_data["value"])
+                ws.write(row, 3, unit_cost)
                 ws.write(row, 4, valuation_data["value"])
 
                 # Convert the date to the desired format (YYYY-MM-DD)
@@ -216,9 +215,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(
                     row,
                     3,
-                    self.parse_html(valuation.stock_move_id.picking_id.note)
-                    if valuation.stock_move_id.picking_id.note
-                    else "",
+                    self.parse_html(valuation.stock_move_id.picking_id.note) or "",
                 )
                 ws.write(row, 4, valuation.create_uid.name)
                 ws.write(row, 5, valuation.stock_move_id.picking_id.partner_id.name)
@@ -237,9 +234,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(
                     row,
                     16,
-                    valuation.stock_move_id.analytic_account_names
-                    if valuation.stock_move_id.analytic_account_names
-                    else "",
+                    valuation.stock_move_id.analytic_account_names or "",
                 )
 
     def generate_consumable_report(self, workbook, wizard):
@@ -307,9 +302,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(
                     row,
                     3,
-                    self.parse_html(valuation.stock_move_id.picking_id.note)
-                    if valuation.stock_move_id.picking_id.note
-                    else "",
+                    self.parse_html(valuation.stock_move_id.picking_id.note) or "",
                 )
                 ws.write(row, 4, valuation.create_uid.name)
                 ws.write(row, 5, valuation.stock_move_id.picking_id.partner_id.name)
@@ -328,7 +321,5 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(
                     row,
                     16,
-                    valuation.stock_move_id.analytic_account_names
-                    if valuation.stock_move_id.analytic_account_names
-                    else "",
+                    valuation.stock_move_id.analytic_account_names or "",
                 )
