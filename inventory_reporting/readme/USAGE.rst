@@ -1,9 +1,5 @@
-To generate Valuation Report
-1. Go to the `Inventory > Reporting > Inventory Valuation Report`.
+To generate Inventory Report
+1. Enable `is_report_category` in product category.
+1. Go to the `Inventory > Reporting > Inventory Report`.
 2. Fill the date period.
-3. Click `Generate` button.
-
-To generate Valuation Report
-1. Go to the `Inventory > Reporting > Inventory Transfer Report`.
-2. Choose the report type and fill the date period.
 3. Click `Generate` button.
