@@ -1,0 +1,317 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* inventory_reporting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-29 09:08+0000\n"
+"PO-Revision-Date: 2023-08-29 09:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: inventory_reporting
+#: model_terms:ir.ui.view,arch_db:inventory_reporting.view_inventory_report_wizard
+msgid ""
+"<i class=\"fa fa-long-arrow-right mx-2 oe_edit_only\" aria-label=\"Arrow "
+"icon\" title=\"Arrow\"/>"
+msgstr ""
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Accounting Date"
+msgstr "会計日"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Analytic Distribution"
+msgstr "分析"
+
+#. module: inventory_reporting
+#: model_terms:ir.ui.view,arch_db:inventory_reporting.view_inventory_report_wizard
+msgid "Cancel"
+msgstr "取消"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard__create_uid
+msgid "Created by"
+msgstr "作成者"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard__create_date
+msgid "Created on"
+msgstr "作成日"
+
+#. module: inventory_reporting
+#: model_terms:ir.ui.view,arch_db:inventory_reporting.view_inventory_report_wizard
+msgid "Date Period"
+msgstr "期間"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Delivery"
+msgstr "出庫"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Destination Location"
+msgstr "移動先ロケーション"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard__date_end
+msgid "End Date"
+msgstr "終了期間"
+
+#. module: inventory_reporting
+#: model_terms:ir.ui.view,arch_db:inventory_reporting.view_inventory_report_wizard
+msgid "Generate"
+msgstr "出力"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_product_category__is_report_category
+msgid "Include in Inventory Report"
+msgstr "在庫評価出力対象"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Inventory Adjustment"
+msgstr "在庫調整"
+
+#. module: inventory_reporting
+#: model:ir.actions.report,name:inventory_reporting.inventory_report_xlsx
+#: model:ir.ui.menu,name:inventory_reporting.inventory_report_menu
+#: model_terms:ir.ui.view,arch_db:inventory_reporting.view_inventory_report_wizard
+msgid "Inventory Report"
+msgstr "在庫レポート"
+
+#. module: inventory_reporting
+#: model:ir.actions.act_window,name:inventory_reporting.inventory_report_wizard_action
+#: model:ir.model,name:inventory_reporting.model_inventory_report_wizard
+msgid "Inventory Report Wizard"
+msgstr "在庫レポートウィザード"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard____last_update
+msgid "Last Modified on"
+msgstr "最終更新日"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Last Purchase Date"
+msgstr "最終購入日"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Note"
+msgstr "ノート"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Origin"
+msgstr "参照元"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Partner"
+msgstr "連絡先"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Price Update"
+msgstr "価格調整"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: model:ir.model,name:inventory_reporting.model_product_category
+#, python-format
+msgid "Product Category"
+msgstr "プロダクトカテゴリ"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Product Cost Method"
+msgstr "原価計算法"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Product Name"
+msgstr "プロダクト"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Product Type"
+msgstr "プロダクトタイプ"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Quantity"
+msgstr "数量"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Receipt"
+msgstr "入庫"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Reference"
+msgstr "参照"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Return"
+msgstr "戻り"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "SVL's Total Inventory Value"
+msgstr "在庫評価/合計価値"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Source Location"
+msgstr "移動元ロケーション"
+
+#. module: inventory_reporting
+#: model:ir.model.fields,field_description:inventory_reporting.field_inventory_report_wizard__date_start
+msgid "Start Date"
+msgstr "開始日"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Subcontracting"
+msgstr "外注加工"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Total Amount of Purchase Order"
+msgstr "購買オーダ明細/合計"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Total Value"
+msgstr "在庫評価/合計価値"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Unit Price"
+msgstr "単価"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Unit of Measurement"
+msgstr "単位"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "User"
+msgstr "運送/担当者"
+
+#. module: inventory_reporting
+#: model:ir.model,name:inventory_reporting.model_report_inventory_reporting_inventory_report_xlsx
+msgid "report.inventory_reporting.inventory_report_xlsx"
+msgstr ""
