@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_plm_product_mapping_tree" model="ir.ui.view">
+        <field name="name">view.plm.product.mapping.tree</field>
+        <field name="model">plm.product.mapping</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="item_type_id" />
+                <field name="category_ids" widget="many2many_tags" />
+                <field name="procure_flag_ids" widget="many2many_tags" />
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="hide"
+                />
+                <field name="product_type" />
+                <field name="product_categ_id" />
+                <field name="route_ids" widget="many2many_tags" />
+                <field
+                    name="tracking"
+                    attrs="{'readonly':[('product_type','!=','product')]}"
+                />
+                <field
+                    name="auto_create_lot"
+                    attrs="{'readonly':[('tracking','=','none')]}"
+                />
+                <field
+                    name="lot_sequence_padding"
+                    attrs="{'readonly':[('auto_create_lot','=',False)]}"
+                />
+                <field
+                    name="lot_sequence_prefix"
+                    attrs="{'readonly':[('auto_create_lot','=',False)]}"
+                />
+                <field name="default_active" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_plm_product_mapping_form" model="ir.ui.view">
+        <field name="name">view.plm.product.mapping.form</field>
+        <field name="model">plm.product.mapping</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="item_type_id" />
+                            <field name="category_ids" widget="many2many_tags" />
+                            <field name="procure_flag_ids" widget="many2many_tags" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
+                        </group>
+                        <group>
+                            <field name="product_type" />
+                            <field name="product_categ_id" />
+                            <field name="route_ids" widget="many2many_tags" />
+                            <field
+                                name="tracking"
+                                attrs="{'invisible':[('product_type','!=','product')]}"
+                            />
+                            <field
+                                name="auto_create_lot"
+                                attrs="{'invisible':[('tracking','=','none')]}"
+                            />
+                            <field
+                                name="lot_sequence_padding"
+                                attrs="{'invisible':[('auto_create_lot','=',False)]}"
+                            />
+                            <field
+                                name="lot_sequence_prefix"
+                                attrs="{'invisible':[('auto_create_lot','=',False)]}"
+                            />
+                            <field name="default_active" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_plm_product_mapping" model="ir.actions.act_window">
+        <field name="name">PLM-Product Mapping</field>
+        <field name="res_model">plm.product.mapping</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem
+        id="menu_plm_product_mapping"
+        name="PLM-Product Mapping"
+        parent="menu_product_plm_import_setting"
+        action="action_plm_product_mapping"
+        sequence="10"
+    />
+</odoo>

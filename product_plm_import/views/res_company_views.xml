@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_company_form" model="ir.ui.view">
+        <field name="name">res.company.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="PLM I/F">
+                    <group>
+                        <field name="plm_path" />
+                        <field name="plm_last_import_date" />
+                        <field name="plm_notif_body" />
+                        <field name="plm_notif_group_ids" widget="many2many_tags" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_product_plm_tree" model="ir.ui.view">
+        <field name="name">view.product.plm.tree</field>
+        <field name="model">product.plm</field>
+        <field name="arch" type="xml">
+            <tree
+                create="false"
+                edit="false"
+                decoration-success="state=='done'"
+                decoration-warning="state=='failed' and solved==False"
+                decoration-muted="solved==True"
+            >
+                <field name="create_date" />
+                <field name="log_id" />
+                <field name="row_no" />
+                <field name="part_number" />
+                <field name="name" />
+                <field name="esc_code" optional="show" />
+                <field name="procure_flag" optional="show" />
+                <field name="item_type" optional="show" />
+                <field name="category" optional="show" />
+                <field name="uom" optional="show" />
+                <field name="description" optional="show" />
+                <field name="spec" optional="show" />
+                <field name="drawing" optional="show" />
+                <field name="generic_name" optional="show" />
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="hide"
+                />
+                <field
+                    name="state"
+                    widget="badge"
+                    decoration-success="state=='done'"
+                    decoration-warning="state=='failed'"
+                />
+                <field name="product_id" />
+                <field name="error_message" />
+                <field name="solved" widget="boolean_toggle" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_product_plm_form" model="ir.ui.view">
+        <field name="name">view.product.plm.form</field>
+        <field name="model">product.plm</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="create_date" />
+                            <field name="part_number" />
+                            <field name="name" />
+                            <field name="esc_code" />
+                            <field name="procure_flag" />
+                            <field name="item_type" />
+                            <field name="category" />
+                            <field name="uom" />
+                            <field name="description" />
+                        </group>
+                        <group>
+                            <field name="spec" />
+                            <field name="drawing" />
+                            <field name="generic_name" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
+                            <field name="log_id" />
+                            <field
+                                name="state"
+                                widget="badge"
+                                decoration-success="state=='done'"
+                                decoration-warning="state=='failed'"
+                            />
+                            <field name="product_id" />
+                            <field name="error_message" />
+                            <field name="solved" widget="boolean_toggle" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_product_plm" model="ir.actions.act_window">
+        <field name="name">PLM Products</field>
+        <field name="res_model">product.plm</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_product_plm_tree" />
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem
+        id="menu_product_followup"
+        name="PLM Products"
+        parent="base_data_import.data_import_main_menu"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_product_plm"
+        name="PLM Products"
+        parent="product_plm_import.menu_product_followup"
+        action="product_plm_import.action_product_plm"
+        sequence="30"
+    />
+</odoo>

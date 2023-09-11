@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_plm_import_log_user,access.plm.import.log.user,model_plm_import_log,base.group_user,1,1,1,0
+access_product_plm_import_user,access_product_plm_import_user,model_product_plm_import,base.group_user,1,1,1,0
+access_product_plm_user,access_product_plm_user,model_product_plm,base.group_user,1,0,0,0
+access_product_plm_purchase_manager,access_product_plm_purchase_manager,model_product_plm,purchase.group_purchase_manager,1,1,1,1
+access_plm_item_type_user,access_plm_item_type_user,model_plm_item_type,base.group_user,1,0,0,0
+access_plm_item_type_manager,access_plm_item_type_manager,model_plm_item_type,base.group_system,1,1,1,1
+access_plm_category_user,access_plm_category_user,model_plm_category,base.group_user,1,0,0,0
+access_plm_category_manager,access_plm_category_manager,model_plm_category,base.group_system,1,1,1,1
+access_plm_procure_flag_user,access_plm_procure_flag_user,model_plm_procure_flag,base.group_user,1,0,0,0
+access_plm_procure_flag_manager,access_plm_procure_flag_manager,model_plm_procure_flag,base.group_system,1,1,1,1
+access_plm_product_mapping_user,access_plm_product_mapping_user,model_plm_product_mapping,base.group_user,1,0,0,0
+access_plm_product_mapping_manager,access_plm_product_mapping_manager,model_plm_product_mapping,base.group_system,1,1,1,1

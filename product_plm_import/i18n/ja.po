@@ -1,0 +1,681 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_plm_import
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-08-28 14:12+0000\n"
+"PO-Revision-Date: 2023-08-28 14:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/models/plm_import_log.py:0
+#, python-format
+msgid " [Odoo] Product IF Notification: %s"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_category__name
+msgid ""
+"Accepts wildcard matching. E.g. `*` matches any string, `?` matches any "
+"single character."
+msgstr ""
+"ワイルドカードマッチングに対応。`*`: 文字列にマッチ、`?`: 特定の1文字にマッチ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_needaction
+msgid "Action Needed"
+msgstr "要アクション"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__active
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__active
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__active
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__active
+msgid "Active"
+msgstr "有効"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_ids
+msgid "Activities"
+msgstr "アクティビティ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_attachment_count
+msgid "Attachment Count"
+msgstr "添付数"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__auto_create_lot
+msgid "Auto Create Lot"
+msgstr "ロット自動作成"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__category_ids
+msgid "Categories"
+msgstr "カテゴリ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__category
+msgid "Category"
+msgstr "カテゴリ"
+
+#. module: product_plm_import
+#: model:ir.model,name:product_plm_import.model_res_company
+msgid "Companies"
+msgstr "会社"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__company_id
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__company_id
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__company_id
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__company_id
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__company_id
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__company_id
+msgid "Company"
+msgstr "会社"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__create_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__create_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__create_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__create_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__create_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__create_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__create_uid
+msgid "Created by"
+msgstr "作成者"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__create_date
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__create_date
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__create_date
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__create_date
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__create_date
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__create_date
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__create_date
+msgid "Created on"
+msgstr "作成日"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__default_active
+msgid "Default Active"
+msgstr "有効/無効初期値"
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_product_mapping__default_active
+msgid "Default value for active field of the created product."
+msgstr "作成されるプロダクトの有効/無効初期値"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__description
+msgid "Description"
+msgstr "内部説明"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__display_name
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__display_name
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__display_name
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__display_name
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__display_name
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__display_name
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__display_name
+msgid "Display Name"
+msgstr "表示名"
+
+#. module: product_plm_import
+#: model:ir.model.fields.selection,name:product_plm_import.selection__plm_import_log__plm_product_state__done
+#: model:ir.model.fields.selection,name:product_plm_import.selection__product_plm__state__done
+msgid "Done"
+msgstr "完了"
+
+#. module: product_plm_import
+#: model:ir.model.fields.selection,name:product_plm_import.selection__plm_import_log__plm_product_state__draft
+#: model:ir.model.fields.selection,name:product_plm_import.selection__product_plm__state__draft
+msgid "Draft"
+msgstr "ドラフト"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__drawing
+msgid "Drawing No."
+msgstr "図面番号"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__esc_code
+msgid "ESC ID"
+msgstr "ESC番号"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__error_message
+msgid "Error Message"
+msgstr "エラーメッセージ"
+
+#. module: product_plm_import
+#: model:ir.model.fields.selection,name:product_plm_import.selection__plm_import_log__plm_product_state__failed
+#: model:ir.model.fields.selection,name:product_plm_import.selection__product_plm__state__failed
+msgid "Failed"
+msgstr "失敗"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__input_file
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__import_file
+msgid "File"
+msgstr "ファイル"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__file_name
+msgid "File Name"
+msgstr "ファイル名"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__generic_name
+msgid "Generic Name"
+msgstr "汎用名称"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__id
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__id
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__id
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__id
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__id
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__id
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__id
+msgid "ID"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: product_plm_import
+#: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import
+msgid "Import Data"
+msgstr "インポート日"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__import_log_id
+msgid "Import Log"
+msgstr "インポートログ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__import_user_id
+msgid "Imported By"
+msgstr "インポート担当者"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__file_path
+msgid "Imported File"
+msgstr "インポートファイル"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__import_date
+msgid "Imported On"
+msgstr "インポート日"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__plm_product_ids
+#: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import_log_form
+msgid "Imported PLM Products"
+msgstr "インポート済PLMプロダクト"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_is_follower
+msgid "Is Follower"
+msgstr "フォロワーである"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_product__is_via_plm
+#: model:ir.model.fields,field_description:product_plm_import.field_product_template__is_via_plm
+msgid "Is Via Plm"
+msgstr "PLM経由"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__item_type_id
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__item_type
+msgid "Item Type"
+msgstr "アイテムタイプ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category____last_update
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log____last_update
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type____last_update
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag____last_update
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping____last_update
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm____last_update
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import____last_update
+msgid "Last Modified on"
+msgstr "最終変更日"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__write_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__write_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__write_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__write_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__write_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__write_uid
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__write_date
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__write_date
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__write_date
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__write_date
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__write_date
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__write_date
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__log_id
+msgid "Log"
+msgstr "ログ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__error_ids
+msgid "Log Lines"
+msgstr "ログ明細行"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__lot_sequence_padding
+msgid "Lot Sequence Padding"
+msgstr "ロット付番パディング"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__lot_sequence_prefix
+msgid "Lot Sequence Prefix"
+msgstr "ロット付番プレフィクス"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_ids
+msgid "Messages"
+msgstr "メッセージ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__model_id
+msgid "Model"
+msgstr "モデル"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__model_name
+msgid "Model Name"
+msgstr "モデル名"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields.selection,name:product_plm_import.selection__plm_import_log__plm_product_state__na
+msgid "N/A"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_category__name
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__file_name
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_item_type__name
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_procure_flag__name
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__name
+msgid "Name"
+msgstr "名称"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/wizards/product_plm_import.py:0
+#, python-format
+msgid "No PLM-product mapping record found."
+msgstr "PLM-プロダクトマッピングレコードが見つかりません。"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.actions.act_window,name:product_plm_import.action_plm_category
+#: model:ir.ui.menu,name:product_plm_import.menu_plm_category
+msgid "PLM Categories"
+msgstr "PLMカテゴリ"
+
+#. module: product_plm_import
+#: model:ir.model,name:product_plm_import.model_plm_category
+msgid "PLM Category"
+msgstr "PLMカテゴリ"
+
+#. module: product_plm_import
+#: model:ir.model,name:product_plm_import.model_plm_import_log
+msgid "PLM Data Import Log"
+msgstr "PLMデータインポートログ"
+
+#. module: product_plm_import
+#: model_terms:ir.ui.view,arch_db:product_plm_import.product_template_form_view
+#: model_terms:ir.ui.view,arch_db:product_plm_import.view_company_form
+msgid "PLM I/F"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model,name:product_plm_import.model_plm_item_type
+msgid "PLM Item Type"
+msgstr "PLMアイテムタイプ"
+
+#. module: product_plm_import
+#: model:ir.actions.act_window,name:product_plm_import.action_plm_item_type
+#: model:ir.ui.menu,name:product_plm_import.menu_plm_item_type
+msgid "PLM Item Types"
+msgstr "PLMアイテムタイプ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_res_company__plm_notif_body
+msgid "PLM Notification Body"
+msgstr "PLM通知本文"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_res_company__plm_notif_group_ids
+msgid "PLM Notified Groups"
+msgstr "PLM通知グループ"
+
+#. module: product_plm_import
+#: model:ir.model,name:product_plm_import.model_plm_procure_flag
+msgid "PLM Procure Flag"
+msgstr "PLM調達フラグ"
+
+#. module: product_plm_import
+#: model:ir.actions.act_window,name:product_plm_import.action_plm_procure_flag
+#: model:ir.ui.menu,name:product_plm_import.menu_plm_procure_flag
+msgid "PLM Procure Flags"
+msgstr "PLM調達フラグ"
+
+#. module: product_plm_import
+#: model:ir.actions.act_window,name:product_plm_import.action_product_plm
+#: model:ir.ui.menu,name:product_plm_import.menu_product_followup
+#: model:ir.ui.menu,name:product_plm_import.menu_product_plm
+msgid "PLM Products"
+msgstr "PLMプロダクト"
+
+#. module: product_plm_import
+#: model:ir.ui.menu,name:product_plm_import.menu_product_plm_import_setting
+msgid "PLM Settings"
+msgstr "PLM設定"
+
+#. module: product_plm_import
+#: model:ir.actions.act_window,name:product_plm_import.action_plm_product_mapping
+#: model:ir.model,name:product_plm_import.model_plm_product_mapping
+#: model:ir.ui.menu,name:product_plm_import.menu_plm_product_mapping
+msgid "PLM-Product Mapping"
+msgstr "PLM-プロダクトマッピング"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__part_number
+msgid "Part Number"
+msgstr "部品番号"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_res_company__plm_file_path
+msgid "Plm File Path"
+msgstr "PLMファイルパス"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__plm_product_state
+msgid "Plm Product State"
+msgstr "PLMプロダクトステータス"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__procure_flag_ids
+msgid "Procure Flags"
+msgstr "調達フラグ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__procure_flag
+msgid "Procure flag"
+msgstr "調達フラグ"
+
+#. module: product_plm_import
+#: model:ir.model,name:product_plm_import.model_product_template
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__product_id
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__product_categ_id
+msgid "Product Category"
+msgstr "プロダクトカテゴリ"
+
+#. module: product_plm_import
+#: model:ir.model,name:product_plm_import.model_product_plm
+msgid "Product PLM"
+msgstr "プロダクトPLM"
+
+#. module: product_plm_import
+#: model:ir.actions.act_window,name:product_plm_import.action_product_plm_import_wizard
+msgid "Product PLM CSV Import"
+msgstr "プロダクトPLM CSVインポート"
+
+#. module: product_plm_import
+#: model:ir.model,name:product_plm_import.model_product_plm_import
+#: model:ir.ui.menu,name:product_plm_import.menu_product_plm_import
+#: model:ir.ui.menu,name:product_plm_import.product_plm_import_wizard_menu
+msgid "Product PLM Import"
+msgstr "プロダクトPLMインポート"
+
+#. module: product_plm_import
+#: model:ir.actions.act_window,name:product_plm_import.action_product_plm_import_log
+#: model:ir.ui.menu,name:product_plm_import.menu_product_plm_import_log
+msgid "Product PLM Import Log"
+msgstr "プロダクトPLMインポートログ"
+
+#. module: product_plm_import
+#: model:mail.template,name:product_plm_import.template_product_plm_import_log
+msgid "Product PLM Import Notification"
+msgstr "プロダクトPLMインポート通知"
+
+#. module: product_plm_import
+#: model:ir.actions.act_window,name:product_plm_import.action_product_followup
+msgid "Product Templates (WIP)"
+msgstr "プロダクトテンプレート(仕掛中)"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__product_type
+msgid "Product Type"
+msgstr "プロダクトタイプ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_user_id
+msgid "Responsible User"
+msgstr "担当者"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__route_ids
+msgid "Routes"
+msgstr "ルート"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__row_no
+msgid "Row No."
+msgstr "行番号"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__solved
+msgid "Solved"
+msgstr "解決済"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__spec
+msgid "Spec"
+msgstr "規格"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__state
+#: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import_log_tree
+msgid "State"
+msgstr "ステータス"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__state
+#: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import_log_select
+msgid "Status"
+msgstr "ステータス"
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/wizards/product_plm_import.py:0
+#, python-format
+msgid "There is already a product for %s."
+msgstr "%s に対応するプロダクトが既に存在します。"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__tracking
+msgid "Tracking"
+msgstr "追跡"
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__uom
+msgid "Unit of Material"
+msgstr "単位"
+
+#. module: product_plm_import
+#: model_terms:ir.ui.view,arch_db:product_plm_import.product_template_search_view
+msgid "Via PLM"
+msgstr "PLM経由"
+
+#. module: product_plm_import
+#: model:ir.ui.menu,name:product_plm_import.menu_product_wip
+msgid "WIP Products"
+msgstr "仕掛中プロダクト"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/models/product_plm.py:0
+#, python-format
+msgid "You cannot set a record as solved and done at the same time."
+msgstr "レコードを解決済かつ完了とすることはできません。"
