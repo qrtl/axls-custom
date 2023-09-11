@@ -173,6 +173,16 @@ class InventoryReportXlsx(models.AbstractModel):
                     ["product_id.detailed_type", "=", "product"],
                 ],
             },
+            {
+                "name": _("Unbuild"),
+                "filter": [
+                    ["accounting_date", ">=", wizard.date_start],
+                    ["accounting_date", "<=", wizard.date_end],
+                    ["product_id.active", "=", True],
+                    ["product_id.detailed_type", "=", "product"],
+                    ["stock_move_id.unbuild_id", "!=", False],
+                ],
+            },
         ]
 
         for category in categories:
