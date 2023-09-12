@@ -10,19 +10,17 @@ Product PLM Import
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/github-qrtl%2Faxls--private-lightgray.png?logo=github
-    :target: https://github.com/qrtl/axls-private/tree/16.0/product_plm_import
-    :alt: qrtl/axls-private
+.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
+    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
+    :alt: License: AGPL-3
+.. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Fqrtl--custom-lightgray.png?logo=github
+    :target: https://github.com/qrtl/qrtl-custom/tree/16.0/product_plm_import
+    :alt: qrtl/qrtl-custom
 
-|badge1| |badge2| 
+|badge1| |badge2| |badge3| 
 
-This module does the following:
-
-- Adds a CSV import function to create new products based on the data received from the
-  PLM system.
-
-The status of an import log record becomes 'Done' when a product is successfully created
-or marked as 'Solved' for all the imported records.
+This module adds a CSV import function to create new products based on the data received
+from the PLM system.
 
 This module depends on base_data_import module.
 
@@ -31,13 +29,42 @@ This module depends on base_data_import module.
 .. contents::
    :local:
 
+Configuration
+=============
+
+Update fields in the company (in the 'PLM I/F' tab):
+
+- PLM Path: the absolute path to the PLM directory to fetch the files from.
+- PLM Notification Body: the text will be included in the notification email body.
+- PLM Notified Groups: assign groups to notify when a new file is fetched from the PLM.
+
+Usage
+=====
+
+There are three ir.cron records added by this module:
+
+#. PLM: Import PLM Products
+   The main cron job that imports PLM product records into Odoo in a periodical manner.
+#. PLM: Create products based on imported PLM records
+   A job that creates products in Odoo based on the imported PLM records. Triggerd by
+   the main job.
+#. PLM: Send email notification on PLM data import
+   A job that sends email notifications to the relevant users. Triggerd by the main job.
+   Notification email is designed to be sent only once per the log record.
+
+Alternatively, users can import PLM product records manually via 'Product PLM Import'
+wizard, which also triggers the last two jobs.
+
+The status of an import log record becomes 'Done' when a product is successfully created
+or marked as 'Solved' for all the imported records.
+
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/qrtl/axls-private/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/qrtl/qrtl-custom/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed
-`feedback <https://github.com/qrtl/axls-private/issues/new?body=module:%20product_plm_import%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/qrtl/qrtl-custom/issues/new?body=module:%20product_plm_import%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -52,6 +79,6 @@ Authors
 Maintainers
 ~~~~~~~~~~~
 
-This module is part of the `qrtl/axls-private <https://github.com/qrtl/axls-private/tree/16.0/product_plm_import>`_ project on GitHub.
+This module is part of the `qrtl/qrtl-custom <https://github.com/qrtl/qrtl-custom/tree/16.0/product_plm_import>`_ project on GitHub.
 
 You are welcome to contribute.

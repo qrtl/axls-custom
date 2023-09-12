@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-28 14:12+0000\n"
-"PO-Revision-Date: 2023-08-28 14:12+0000\n"
+"POT-Creation-Date: 2023-09-12 03:36+0000\n"
+"PO-Revision-Date: 2023-09-12 03:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -27,8 +27,7 @@ msgstr ""
 msgid ""
 "Accepts wildcard matching. E.g. `*` matches any string, `?` matches any "
 "single character."
-msgstr ""
-"ワイルドカードマッチングに対応。`*`: 文字列にマッチ、`?`: 特定の1文字にマッチ"
+msgstr "ワイルドカードマッチングに対応。`*`: 文字列にマッチ、`?`: 特定の1文字にマッチ"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_needaction
@@ -180,6 +179,13 @@ msgid "Failed"
 msgstr "失敗"
 
 #. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/models/product_plm.py:0
+#, python-format
+msgid "Failed to create product."
+msgstr "プロダクト作成に失敗しました。"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__input_file
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__import_file
 msgid "File"
@@ -249,7 +255,7 @@ msgstr ""
 #. module: product_plm_import
 #: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import
 msgid "Import Data"
-msgstr "インポート日"
+msgstr "インポート"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm_import__import_log_id
@@ -353,6 +359,11 @@ msgid "Main Attachment"
 msgstr ""
 
 #. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__mapping_id
+msgid "Mapping"
+msgstr "マッピング"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_has_error
 msgid "Message Delivery error"
 msgstr ""
@@ -419,6 +430,11 @@ msgid "No PLM-product mapping record found."
 msgstr "PLM-プロダクトマッピングレコードが見つかりません。"
 
 #. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__notification_sent
+msgid "Notification Sent"
+msgstr ""
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
@@ -458,7 +474,7 @@ msgstr "PLMデータインポートログ"
 #: model_terms:ir.ui.view,arch_db:product_plm_import.product_template_form_view
 #: model_terms:ir.ui.view,arch_db:product_plm_import.view_company_form
 msgid "PLM I/F"
-msgstr ""
+msgstr "PLM連携"
 
 #. module: product_plm_import
 #: model:ir.model,name:product_plm_import.model_plm_item_type
@@ -472,6 +488,11 @@ msgid "PLM Item Types"
 msgstr "PLMアイテムタイプ"
 
 #. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_res_company__plm_last_import_date
+msgid "PLM Last Import Date"
+msgstr "PLM最終インポート日"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_res_company__plm_notif_body
 msgid "PLM Notification Body"
 msgstr "PLM通知本文"
@@ -480,6 +501,11 @@ msgstr "PLM通知本文"
 #: model:ir.model.fields,field_description:product_plm_import.field_res_company__plm_notif_group_ids
 msgid "PLM Notified Groups"
 msgstr "PLM通知グループ"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_res_company__plm_path
+msgid "PLM Path"
+msgstr "PLMパス"
 
 #. module: product_plm_import
 #: model:ir.model,name:product_plm_import.model_plm_procure_flag
@@ -512,14 +538,36 @@ msgid "PLM-Product Mapping"
 msgstr "PLM-プロダクトマッピング"
 
 #. module: product_plm_import
+#: model:ir.actions.server,name:product_plm_import.create_products_for_plm_import_ir_actions_server
+#: model:ir.actions.server,name:product_plm_import.ir_cron_create_products_for_plm_import_ir_actions_server
+#: model:ir.cron,cron_name:product_plm_import.ir_cron_create_products_for_plm_import
+msgid "PLM: Create products based on imported PLM records"
+msgstr "PLM: インポートされたPLMレコードにつきプロダクトを作成"
+
+#. module: product_plm_import
+#: model:ir.actions.server,name:product_plm_import.ir_cron_import_product_plm_ir_actions_server
+#: model:ir.cron,cron_name:product_plm_import.ir_cron_import_product_plm
+msgid "PLM: Import PLM Products"
+msgstr "PLM: PLMプロダクトインポート"
+
+#. module: product_plm_import
+#: model:ir.actions.server,name:product_plm_import.ir_cron_send_plm_import_notification_ir_actions_server
+#: model:ir.cron,cron_name:product_plm_import.ir_cron_send_plm_import_notification
+msgid "PLM: Send email notification on PLM data import"
+msgstr "PLM: PLMインポートの通知メール送信"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm__part_number
 msgid "Part Number"
 msgstr "部品番号"
 
 #. module: product_plm_import
-#: model:ir.model.fields,field_description:product_plm_import.field_res_company__plm_file_path
-msgid "Plm File Path"
-msgstr "PLMファイルパス"
+#: model:ir.model.fields,help:product_plm_import.field_res_company__plm_path
+msgid ""
+"Path to PLM CSV files. It can end with a slash (/) or without - both are "
+"acceptable."
+msgstr ""
+"PLMのCSVファイルディレクトリのパス。末尾はスラッシュ(/)があってもなくてもよいです。"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__plm_product_state
@@ -571,11 +619,6 @@ msgid "Product PLM Import Log"
 msgstr "プロダクトPLMインポートログ"
 
 #. module: product_plm_import
-#: model:mail.template,name:product_plm_import.template_product_plm_import_log
-msgid "Product PLM Import Notification"
-msgstr "プロダクトPLMインポート通知"
-
-#. module: product_plm_import
 #: model:ir.actions.act_window,name:product_plm_import.action_product_followup
 msgid "Product Templates (WIP)"
 msgstr "プロダクトテンプレート(仕掛中)"
@@ -611,14 +654,10 @@ msgid "Spec"
 msgstr "規格"
 
 #. module: product_plm_import
-#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__state
-#: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import_log_tree
-msgid "State"
-msgstr "ステータス"
-
-#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__state
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__state
 #: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import_log_select
+#: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import_log_tree
 msgid "Status"
 msgstr "ステータス"
 
@@ -637,6 +676,14 @@ msgstr ""
 #, python-format
 msgid "There is already a product for %s."
 msgstr "%s に対応するプロダクトが既に存在します。"
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_res_company__plm_last_import_date
+msgid ""
+"This date is updated every time PLM files for import are searched in PLM "
+"Path, and is used as a threshold for the next search."
+msgstr ""
+"この日付はPLMパスにてインポート対象ファイルが検索される度に更新され、次回の検索の基準日として使われます。"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__tracking

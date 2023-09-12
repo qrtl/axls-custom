@@ -1,9 +1,10 @@
 # Copyright 2023 Quartile Limited
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-import os
-from datetime import datetime
-from base64 import b64encode
 import logging
+import os
+from base64 import b64encode
+from datetime import datetime, timedelta
 
 from odoo import _, api, fields, models
 
@@ -27,9 +28,7 @@ FIELD_VALS = [
     ["generic_name", "Generic Name", "char", False],
 ]
 
-FIELD_TO_UNESCAPE = ["category", "spec", "drawing", "generic_name"]
-
-FILE_PATH = "/home/ytashiro/ws/axls/test.csv"
+FIELD_TO_UNESCAPE = ["category", "description", "spec", "drawing", "generic_name"]
 
 
 class ProductPlmImport(models.TransientModel):
@@ -56,7 +55,6 @@ class ProductPlmImport(models.TransientModel):
         ]
 
     @api.model
-    # def _update_vals_list(self, row_dict, error_list, vals_list, import_log):
     def _update_vals_list(self, row_dict, error_list, vals_list):
         company = self.env.company
         part_number = row_dict.get("part_number")
@@ -67,7 +65,6 @@ class ProductPlmImport(models.TransientModel):
         # We update vals_list regardless of whether there is an error or not
         row_dict["company_id"] = company.id
         row_dict["log_id"] = self.import_log_id.id
-        # row_dict["log_id"] = self.import_log_id.id
         row_dict = self._unescape_field_vals(row_dict, FIELD_TO_UNESCAPE)
         vals_list.append(row_dict)
 
@@ -76,6 +73,8 @@ class ProductPlmImport(models.TransientModel):
         if not self:
             self = self.create({})
         self.ensure_one()
+        # To send notification emails in English
+        self = self.with_context(lang="en_US")
         self.import_log_id = self._create_import_log("product.plm", "plm.import.log")
         if not self.import_log_id.input_file and attachment:
             self.import_log_id.input_file = attachment
@@ -95,7 +94,6 @@ class ProductPlmImport(models.TransientModel):
             row_dict["row_no"] = row_no
             # Here is the module specific logic
             if row_dict:
-                # self._update_vals_list(row_dict, error_list, vals_list, import_log)
                 self._update_vals_list(row_dict, error_list, vals_list)
             if error_list:
                 # We are not using date.import.error in this module.
@@ -103,24 +101,22 @@ class ProductPlmImport(models.TransientModel):
                 row_dict["state"] = "failed"
         plm_recs = self.env["product.plm"].create(vals_list)
         for plm_rec in plm_recs:
-            mapping = plm_rec._get_plm_product_mapping()
-            if not mapping:
+            plm_rec.mapping_id = plm_rec._get_plm_product_mapping()
+            if not plm_rec.mapping_id:
                 plm_rec.write(
                     {
                         "error_message": _("No PLM-product mapping record found."),
                         "state": "failed",
                     }
                 )
-            elif plm_rec.state == "draft" and not plm_rec.solved:
-                product = plm_rec._create_product(mapping)
-                if mapping.lot_sequence_padding:
-                    product.lot_sequence_id.padding = mapping.lot_sequence_padding
-                if mapping.lot_sequence_prefix:
-                    product.lot_sequence_id.prefix = mapping.lot_sequence_prefix
-                product.product_tmpl_id.active = mapping.default_active
-                plm_rec.write({"state": "done", "product_id": product.id})
-        self.import_log_id.sudo().write({"state": "imported"})
-        self.import_log_id._notify_purchase_managers()
+        self.env.ref(
+            "product_plm_import.ir_cron_create_products_for_plm_import"
+        )._trigger()
+        self.env.ref(
+            "product_plm_import.ir_cron_send_plm_import_notification"
+        )._trigger(fields.Datetime.now() + timedelta(minutes=1))
+        if attachment:
+            return True
         view_id = self.env.ref("product_plm_import.view_product_plm_import_log_form").id
         return self._action_open_import_log(
             self.import_log_id, view_id, "plm.import.log"
@@ -133,34 +129,46 @@ class ProductPlmImport(models.TransientModel):
         all_files = os.listdir(plm_path)
         # Filter the CSV files that are newer than the threshold date
         return [
-            file for file in all_files 
-            if file.endswith('.csv') and 
-            datetime.fromtimestamp(os.path.getmtime(os.path.join(plm_path, file))) > threshold_date
+            file
+            for file in all_files
+            if file.endswith(".csv")
+            and datetime.fromtimestamp(os.path.getmtime(os.path.join(plm_path, file)))
+            > threshold_date
         ]
 
     def _create_plm_attachments(self, new_files, plm_path):
-        attachments = self.env['ir.attachment']
+        attachments = self.env["ir.attachment"]
         for file_name in new_files:
             plm_file_path = os.path.join(plm_path, file_name)
             try:
-                with open(plm_file_path, 'rb') as file:
+                with open(plm_file_path, "rb") as file:
                     file_content = file.read()
                     encoded_content = b64encode(file_content)
-                    attachment = self.env['ir.attachment'].create({
-                        'name': file_name,
-                        'type': 'binary',
-                        'datas': encoded_content,
-                        'mimetype': 'text/csv',
-                    })
+                    attachment = self.env["ir.attachment"].create(
+                        {
+                            "name": file_name,
+                            "type": "binary",
+                            "datas": encoded_content,
+                            "mimetype": "text/csv",
+                        }
+                    )
                     attachments += attachment
             except Exception as e:
-                _logger.error("ProductPlmImport._create_attachment - failed to read and encode the file: %s", str(e))
+                _logger.error(
+                    "ProductPlmImport._create_attachment - failed to read and encode "
+                    "the file: %s",
+                    str(e),
+                )
         return attachments
 
     @api.model
     def import_product_from_plm_path(self):
         plm_path = self.env.company.plm_path
         new_files = self._get_new_plm_files(plm_path)
-        attachments = self._create_plm_attachments(new_files, plm_path)
+        # Avoid importing files that are already imported (identify those by name)
+        attachments = self.env["ir.attachment"].search([("name", "in", new_files)])
         for attachment in attachments:
-            self.import_product_plm(attachment)
+            new_files.remove(attachment.name)
+        new_attachments = self._create_plm_attachments(new_files, plm_path)
+        for new_attachment in new_attachments:
+            self.import_product_plm(new_attachment)

@@ -1,7 +1,12 @@
 # Copyright 2023 Quartile Limited
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+import logging
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class ProductPlm(models.Model):
@@ -25,11 +30,13 @@ class ProductPlm(models.Model):
     state = fields.Selection(
         selection=[("draft", "Draft"), ("done", "Done"), ("failed", "Failed")],
         default="draft",
+        string="Status",
     )
     product_id = fields.Many2one("product.product", "Product")
     solved = fields.Boolean()
     log_id = fields.Many2one("plm.import.log", string="Log", copy=False)
     row_no = fields.Integer("Row No.", copy=False)
+    mapping_id = fields.Many2one("plm.product.mapping", string="Mapping")
 
     @api.constrains("solved", "state")
     def _check_solved(self):
@@ -69,10 +76,12 @@ class ProductPlm(models.Model):
             uom = self.env.ref("uom.product_uom_unit")
         return uom
 
-    def _create_product(self, mapping):
+    def _create_product(self):
         self.ensure_one()
+        product = self.env["product.product"]
         description_purchase = self._get_description_purchase()
         uom = self._get_uom()
+        mapping = self.mapping_id
         vals = {
             "default_code": self.part_number,
             "name": self.name,
@@ -88,4 +97,45 @@ class ProductPlm(models.Model):
             "auto_create_lot": mapping.auto_create_lot,
             "is_via_plm": True,
         }
-        return self.env["product.product"].create(vals)
+        try:
+            product = self.env["product.product"].create(vals)
+        except Exception as e:
+            _logger.error(
+                "ProductPlm._create_product - failed to create product: %s", str(e)
+            )
+        return product
+
+    @api.model
+    def _get_create_products_domain(self):
+        return [("state", "=", "draft"), ("solved", "=", False)]
+
+    @api.model
+    def create_products(self, batch_size=30):
+        domain = self._get_create_products_domain()
+        plm_recs = self.search(domain, limit=batch_size)
+        for plm_rec in plm_recs:
+            if plm_rec.state != "draft" or plm_rec.error_message or plm_rec.solved:
+                continue
+            product = plm_rec._create_product()
+            if not product:
+                plm_rec.write(
+                    {
+                        "error_message": _("Failed to create product."),
+                        "state": "failed",
+                    }
+                )
+                continue
+            mapping = plm_rec.mapping_id
+            if mapping.lot_sequence_padding:
+                product.lot_sequence_id.padding = mapping.lot_sequence_padding
+            if mapping.lot_sequence_prefix:
+                product.lot_sequence_id.prefix = mapping.lot_sequence_prefix
+            product.product_tmpl_id.active = mapping.default_active
+            plm_rec.write({"state": "done", "product_id": product.id})
+        # This step fails with CasheMiss error in case product creation in
+        # _create_product() fails with an exception.
+        plm_recs_remain = self.search(domain)
+        if plm_recs_remain:
+            self.env.ref(
+                "product_plm_import.ir_cron_create_products_for_plm_import"
+            )._trigger()

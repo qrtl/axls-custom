@@ -1,4 +1,5 @@
 # Copyright 2023 Quartile Limited
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import fnmatch
 
@@ -30,6 +31,7 @@ class PlmProductMapping(models.Model):
         selection=lambda self: self.env["product.template"]
         ._fields["tracking"]
         .selection,
+        default="none",
         required=True,
     )
     auto_create_lot = fields.Boolean()
@@ -40,6 +42,14 @@ class PlmProductMapping(models.Model):
     )
     company_id = fields.Many2one("res.company")
     active = fields.Boolean(default=True)
+
+    @api.onchange("product_type")
+    def onchange_product_type(self):
+        if self.product_type != "product":
+            self.tracking = "none"
+            self.auto_create_lot = False
+            self.lot_sequence_padding = False
+            self.lot_sequence_prefix = False
 
     @api.onchange("tracking")
     def onchange_tracking(self):

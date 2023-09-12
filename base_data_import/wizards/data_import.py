@@ -45,7 +45,9 @@ class DataImport(models.TransientModel):
         res_model = self.env["ir.model"].search([("model", "=", res_model_name)])
         attachment = self.env["ir.attachment"]
         if self.import_file:
-            attachment = self.env["ir.attachment"].create({"name": self.file_name, "datas": self.import_file})
+            attachment = self.env["ir.attachment"].create(
+                {"name": self.file_name, "datas": self.import_file}
+            )
         import_log = self.env[log_model_name].create(
             {
                 "input_file": attachment.id,

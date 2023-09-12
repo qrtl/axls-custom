@@ -19,18 +19,22 @@
                 <field
                     name="tracking"
                     attrs="{'readonly':[('product_type','!=','product')]}"
+                    force_save="1"
                 />
                 <field
                     name="auto_create_lot"
                     attrs="{'readonly':[('tracking','=','none')]}"
+                    force_save="1"
                 />
                 <field
                     name="lot_sequence_padding"
                     attrs="{'readonly':[('auto_create_lot','=',False)]}"
+                    force_save="1"
                 />
                 <field
                     name="lot_sequence_prefix"
                     attrs="{'readonly':[('auto_create_lot','=',False)]}"
+                    force_save="1"
                 />
                 <field name="default_active" />
             </tree>

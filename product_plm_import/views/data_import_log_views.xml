@@ -34,9 +34,9 @@
                             <field name="part_number" />
                             <field name="name" />
                             <field name="esc_code" optional="show" />
-                            <field name="procure_flag" optional="show" />
                             <field name="item_type" optional="show" />
                             <field name="category" optional="show" />
+                            <field name="procure_flag" optional="show" />
                             <field name="uom" optional="show" />
                             <field name="description" optional="show" />
                             <field name="spec" optional="show" />
@@ -83,7 +83,7 @@
             <xpath expr="//field[@name='state']" position="after">
                 <field
                     name="plm_product_state"
-                    string="State"
+                    string="Status"
                     widget="badge"
                     decoration-warning="plm_product_state=='draft'"
                     decoration-success="plm_product_state=='done'"

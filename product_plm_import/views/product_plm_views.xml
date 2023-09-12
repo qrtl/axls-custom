@@ -17,9 +17,9 @@
                 <field name="part_number" />
                 <field name="name" />
                 <field name="esc_code" optional="show" />
-                <field name="procure_flag" optional="show" />
                 <field name="item_type" optional="show" />
                 <field name="category" optional="show" />
+                <field name="procure_flag" optional="show" />
                 <field name="uom" optional="show" />
                 <field name="description" optional="show" />
                 <field name="spec" optional="show" />
