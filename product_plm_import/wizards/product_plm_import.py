@@ -155,8 +155,8 @@ class ProductPlmImport(models.TransientModel):
                     attachments += attachment
             except Exception as e:
                 _logger.error(
-                    "ProductPlmImport._create_attachment - failed to read and encode "
-                    "the file: %s",
+                    "ProductPlmImport._create_plm_attachments - failed to read and "
+                    "encode the file: %s",
                     str(e),
                 )
         return attachments

@@ -9,7 +9,7 @@ from collections import OrderedDict
 from datetime import datetime
 from html import escape, unescape
 
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -30,14 +30,6 @@ class DataImport(models.TransientModel):
     #     default="stop",
     # )
     import_log_id = fields.Many2one("data.import.log", string="Import Log")
-
-    # def _create_attachment(self, file_name, file_data):
-    #     return self.env["ir.attachment"].create(
-    #         {
-    #             "name": file_name,
-    #             "datas": file_data,
-    #         }
-    #     )
 
     def _create_import_log(self, res_model_name, log_model_name=None):
         if not log_model_name:
@@ -69,22 +61,11 @@ class DataImport(models.TransientModel):
             field_defs.append(field_def)
         return field_defs
 
-    @api.model
-    def _csv_file_read(self):
-        # This method is expected to be extended in the inherited class.
-        return b""
-
     def _load_import_file(self, field_defs, encodings=None):
         """We assume that there is a header line in the imported CSV."""
         if encodings is None:
             encodings = ["utf-8"]
         csv_data = b64decode(self.import_log_id.input_file.datas)
-        # csv_data = b64decode(self.import_file)
-        # if self.import_file:
-        #     csv_data = b64decode(self.import_file)
-        # else:
-        #     csv_data = self._csv_file_read()
-        #     # csv_data = self._get_csv_data()
         sheet_fields = []
         for encoding in encodings:
             try:
@@ -141,11 +122,11 @@ class DataImport(models.TransientModel):
             label = field_def["label"]
             field_type = field_def["field_type"]
             required = field_def["required"]
+            # Unescape the value in inheriting modules as necessary.
             value = escape(row[sheet_fields.index(label)])
             if required and not value:
                 error_list.append(_("%(label)s is missing.", label=label))
             else:
-                # row_dict[field] = value
                 errored_type = self._check_value_type(field_type, value, date_formats)
                 if errored_type:
                     message = _(
