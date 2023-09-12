@@ -124,7 +124,9 @@ class ProductPlmImport(models.TransientModel):
 
     def _get_new_plm_files(self, plm_path):
         company = self.env.company
-        threshold_date = company.plm_last_import_date
+        threshold_date = company.plm_last_import_date or (
+            fields.Datetime.now() - timedelta(days=1)
+        )
         company.plm_last_import_date = fields.Datetime.now()
         all_files = os.listdir(plm_path)
         # Filter the CSV files that are newer than the threshold date
