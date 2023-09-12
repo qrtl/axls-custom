@@ -28,7 +28,14 @@ FIELD_VALS = [
     ["generic_name", "Generic Name", "char", False],
 ]
 
-FIELD_TO_UNESCAPE = ["category", "description", "spec", "drawing", "generic_name"]
+FIELD_TO_UNESCAPE = [
+    "name",
+    "category",
+    "description",
+    "spec",
+    "drawing",
+    "generic_name",
+]
 
 
 class ProductPlmImport(models.TransientModel):
@@ -65,6 +72,7 @@ class ProductPlmImport(models.TransientModel):
         # We update vals_list regardless of whether there is an error or not
         row_dict["company_id"] = company.id
         row_dict["log_id"] = self.import_log_id.id
+        # TODO: Find a better way to handle unescaping.
         row_dict = self._unescape_field_vals(row_dict, FIELD_TO_UNESCAPE)
         vals_list.append(row_dict)
 
