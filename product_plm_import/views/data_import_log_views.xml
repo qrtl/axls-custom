@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_product_plm_import_log_form" model="ir.ui.view">
+        <field name="name">plm.import.log.form</field>
+        <field name="model">plm.import.log</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="base_data_import.data_import_log_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <field
+                    name="plm_product_state"
+                    widget="statusbar"
+                    statusbar_visible="draft,failed,done"
+                />
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page
+                    string="Imported PLM Products"
+                    attrs="{'invisible':[('plm_product_ids','=',[])]}"
+                >
+                    <field name="plm_product_ids">
+                        <tree
+                            create="false"
+                            edit="false"
+                            decoration-success="state=='done'"
+                            decoration-warning="state=='failed' and solved==False"
+                            decoration-muted="solved==True"
+                            default_order="id asc"
+                        >
+                            <field name="row_no" />
+                            <field name="part_number" />
+                            <field name="name" />
+                            <field name="esc_code" optional="show" />
+                            <field name="item_type" optional="show" />
+                            <field name="category" optional="show" />
+                            <field name="procure_flag" optional="show" />
+                            <field name="uom" optional="show" />
+                            <field name="description" optional="show" />
+                            <field name="spec" optional="show" />
+                            <field name="drawing" optional="show" />
+                            <field name="generic_name" optional="show" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                                optional="hide"
+                            />
+                            <field
+                                name="state"
+                                widget="badge"
+                                decoration-warning="state=='draft'"
+                                decoration-success="state=='done'"
+                                decoration-danger="state=='failed'"
+                            />
+                            <field name="product_id" />
+                            <field name="error_message" />
+                            <field name="solved" widget="boolean_toggle" />
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_product_plm_import_log_tree" model="ir.ui.view">
+        <field name="name">plm.import.log.tree</field>
+        <field name="model">plm.import.log</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="base_data_import.data_import_log_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute
+                    name="decoration-danger"
+                >plm_product_state=='failed'</attribute>
+                <attribute
+                    name="decoration-success"
+                >plm_product_state=='done'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <field
+                    name="plm_product_state"
+                    string="Status"
+                    widget="badge"
+                    decoration-warning="plm_product_state=='draft'"
+                    decoration-success="plm_product_state=='done'"
+                    decoration-danger="plm_product_state=='failed'"
+                />
+            </xpath>
+        </field>
+    </record>
+    <record id="view_product_plm_import_log_select" model="ir.ui.view">
+        <field name="name">plm.import.log.select</field>
+        <field name="model">plm.import.log</field>
+        <field name="mode">primary</field>
+        <field name="inherit_id" ref="base_data_import.import_log_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="plm_product_state" string="Status" />
+            </xpath>
+            <xpath expr="//filter[@name='state']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//filter[@name='state']" position="after">
+                <filter
+                    name="plm_product_state"
+                    string="Status"
+                    context="{'group_by':'plm_product_state'}"
+                />
+            </xpath>
+        </field>
+    </record>
+    <record id="action_product_plm_import_log" model="ir.actions.act_window">
+        <field name="name">Product PLM Import Log</field>
+        <field name="res_model">plm.import.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_product_plm_import_log_select" />
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_product_plm_import_log_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_product_plm_import_log_form')})]"
+        />
+    </record>
+    <menuitem
+        id="menu_product_plm_import_log"
+        name="Product PLM Import Log"
+        parent="product_plm_import.menu_product_plm_import"
+        action="product_plm_import.action_product_plm_import_log"
+        sequence="10"
+    />
+</odoo>

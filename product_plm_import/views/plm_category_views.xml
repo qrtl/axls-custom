@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_plm_category_tree" model="ir.ui.view">
+        <field name="name">view.plm.category.tree</field>
+        <field name="model">plm.category</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name" />
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="hide"
+                />
+            </tree>
+        </field>
+    </record>
+    <record id="action_plm_category" model="ir.actions.act_window">
+        <field name="name">PLM Categories</field>
+        <field name="res_model">plm.category</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem
+        id="menu_plm_category"
+        name="PLM Categories"
+        parent="menu_product_plm_import_setting"
+        action="action_plm_category"
+        sequence="30"
+    />
+</odoo>

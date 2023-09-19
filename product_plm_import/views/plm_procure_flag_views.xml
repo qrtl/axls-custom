@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_plm_procure_flag_tree" model="ir.ui.view">
+        <field name="name">view.plm.procure.flag.tree</field>
+        <field name="model">plm.procure.flag</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name" />
+                <field
+                    name="company_id"
+                    groups="base.group_multi_company"
+                    optional="hide"
+                />
+            </tree>
+        </field>
+    </record>
+    <record id="action_plm_procure_flag" model="ir.actions.act_window">
+        <field name="name">PLM Procure Flags</field>
+        <field name="res_model">plm.procure.flag</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem
+        id="menu_plm_procure_flag"
+        name="PLM Procure Flags"
+        parent="menu_product_plm_import_setting"
+        action="action_plm_procure_flag"
+        sequence="40"
+    />
+</odoo>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Base views that should be extended as necessary. There is no action defined in
+    this module. -->
+    <record model="ir.ui.view" id="data_import_log_form">
+        <field name="name">data.import.log.form</field>
+        <field name="model">data.import.log</field>
+        <field name="arch" type="xml">
+            <form string="Import Log" create="false" edit="false">
+                <header>
+                    <field name="state" widget="statusbar" />
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="import_date" />
+                            <field name="file_path" filename="file_name" />
+                            <field name="file_name" invisible="1" />
+                        </group>
+                        <group>
+                            <field name="import_user_id" />
+                            <field name="model_id" />
+                            <field name="model_name" invisible="1" />
+                            <field
+                                name="company_id"
+                                groups="base.group_multi_company"
+                            />
+                        </group>
+                    </group>
+                    <notebook string="Logs">
+                        <page
+                            string="Error Lines"
+                            attrs="{'invisible':[('error_ids','=',[])]}"
+                        >
+                            <field name="error_ids">
+                                <tree>
+                                    <field name="row_no" />
+                                    <field name="reference" />
+                                    <field name="error_message" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="data_import_log_tree">
+        <field name="name">data.import.log.tree</field>
+        <field name="model">data.import.log</field>
+        <field name="arch" type="xml">
+            <tree
+                create="false"
+                edit="false"
+                decoration-danger="state=='failed'"
+                decoration-success="state=='done'"
+            >
+                <field name="import_date" />
+                <field name="import_user_id" />
+                <field name="file_name" />
+                <field name="model_id" />
+                <field name="company_id" groups="base.group_multi_company" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+    <record id="import_log_filter" model="ir.ui.view">
+        <field name="name">data.import.log.select</field>
+        <field name="model">data.import.log</field>
+        <field name="arch" type="xml">
+            <search string="Search Logs">
+                <group>
+                    <field name="state" />
+                    <field name="import_user_id" />
+                    <field name="import_date" />
+                    <field name="model_id" />
+                </group>
+                <group expand="0" string="Group By...">
+                    <filter
+                        string="Status"
+                        name="state"
+                        context="{'group_by':'state'}"
+                    />
+                    <filter
+                        string="Imported By"
+                        name="import_user_id"
+                        context="{'group_by':'import_user_id'}"
+                    />
+                    <filter
+                        string="Import Date"
+                        name="import_date"
+                        context="{'group_by':'import_date'}"
+                    />
+                    <filter
+                        string="Model"
+                        name="model_id"
+                        context="{'group_by':'model_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <!-- This menu is to have a place to aggregate all the import history.
+    Let users have access to the menu by assigning the 'Data Import Log' group
+    to them as necessary. -->
+    <menuitem
+        id="data_import_main_menu"
+        name="Data Import"
+        groups="base_data_import.group_data_import_log"
+    />
+    <menuitem
+        id="menu_data_import_log"
+        name="Data Import"
+        parent="data_import_main_menu"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_data_import_setting"
+        name="Data Import Settings"
+        parent="data_import_main_menu"
+        sequence="30"
+    />
+</odoo>

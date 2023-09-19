@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_product_plm_import"
+        name="Product PLM Import"
+        parent="base_data_import.menu_data_import_log"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_product_plm_import_setting"
+        name="PLM Settings"
+        parent="base_data_import.menu_data_import_setting"
+        sequence="10"
+    />
+</odoo>

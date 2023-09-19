@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="product_template_form_view" model="ir.ui.view">
+        <field name="name">product.template.common.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page
+                    string="PLM I/F"
+                    attrs="{'invisible': [('is_via_plm', '=', False)]}"
+                >
+                    <group>
+                        <field name="is_via_plm" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="product_template_search_view" model="ir.ui.view">
+        <field name="name">product.template.search</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='filter_to_sell']" position="before">
+                <filter
+                    string="Via PLM"
+                    name="is_via_plm"
+                    domain="[('is_via_plm','=',True)]"
+                />
+                <separator />
+            </xpath>
+        </field>
+    </record>
+    <record id="action_product_followup" model="ir.actions.act_window">
+        <field name="name">Product Templates (WIP)</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">
+            {"search_default_is_via_plm": 1, "search_default_inactive": 1}
+        </field>
+    </record>
+    <menuitem
+        id="menu_product_wip"
+        name="WIP Products"
+        parent="product_plm_import.menu_product_followup"
+        action="product_plm_import.action_product_followup"
+        sequence="20"
+    />
+</odoo>

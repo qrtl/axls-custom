@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="group_data_import_log" model="res.groups">
+        <field name="name">Data Import Log</field>
+        <field name="category_id" ref="base.module_category_hidden" />
+    </record>
+    <record id="data_import_log_comp_rule" model="ir.rule">
+        <field name="name">Data Import Log multi-company</field>
+        <field name="model_id" ref="model_data_import_log" />
+        <field
+            name="domain_force"
+        >['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>
