@@ -124,5 +124,6 @@
         name="Data Import Settings"
         parent="data_import_main_menu"
         sequence="30"
+        groups="base.group_system"
     />
 </odoo>
