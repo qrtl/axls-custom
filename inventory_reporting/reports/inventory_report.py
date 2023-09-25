@@ -161,6 +161,7 @@ class InventoryReportXlsx(models.AbstractModel):
                         "ilike",
                         "Physical Locations/Subcontracting Location",
                     ],
+                    ["stock_move_id.unbuild_id", "=", False],
                 ],
             },
             {
