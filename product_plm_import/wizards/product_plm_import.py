@@ -132,21 +132,20 @@ class ProductPlmImport(models.TransientModel):
 
     @api.model
     def _send_path_access_error_notification(self, plm_path, error_message):
+        # To send notification emails in English
+        self = self.with_context(lang="en_US")
         # Define the email recipients
         company = self.env.user.company_id
         notified_groups = company.plm_notif_group_ids
         notified_partners = notified_groups.mapped("users.partner_id")
-
         if not notified_partners:
             return
-
         # Email subject and body
         subject = _("PLM Path Access Error")
         body = _(
             f"<p>Error accessing the path: <strong>{plm_path}</strong></p>"
             f"<p>Error Message: {error_message}</p>"
         )
-
         # Prepare email values
         email_values = {
             "subject": subject,
@@ -154,19 +153,13 @@ class ProductPlmImport(models.TransientModel):
             "email_to": ",".join(notified_partners.mapped("email")),
             "state": "outgoing",  # Mark the email as 'to be sent'
         }
-
-        # Create the email
+        # Create the email and send
         self.env["mail.mail"].create(email_values).send()
 
     def _get_new_plm_files(self, plm_path):
         if not plm_path:
             _logger.error("PLM path is not set in the company.")
             return []
-        company = self.env.company
-        threshold_date = company.plm_last_import_date or (
-            fields.Datetime.now() - timedelta(days=1)
-        )
-        company.plm_last_import_date = fields.Datetime.now()
         try:
             all_files = os.listdir(plm_path)
         except Exception as e:
@@ -174,6 +167,11 @@ class ProductPlmImport(models.TransientModel):
             _logger.error(f"Unable to access the PLM path {plm_path}. Error: {str(e)}")
             self._send_path_access_error_notification(plm_path, str(e))
             return []
+        company = self.env.company
+        threshold_date = company.plm_last_import_date or (
+            fields.Datetime.now() - timedelta(days=1)
+        )
+        company.plm_last_import_date = fields.Datetime.now()
         # Filter the CSV files that are newer than the threshold date
         return [
             file
