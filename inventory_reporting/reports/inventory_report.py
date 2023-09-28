@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 
 from odoo import _, fields, models
+from odoo.osv import expression
 from odoo.tools import float_round
 
 
@@ -87,90 +88,78 @@ class InventoryReportXlsx(models.AbstractModel):
                 row += 1
 
     def generate_storable_report(self, workbook, wizard):
+        base_storable_domain = [
+            ("accounting_date", ">=", wizard.date_start),
+            ("accounting_date", "<=", wizard.date_end),
+            ("product_id.active", "=", True),
+            ("product_id.detailed_type", "=", "product"),
+        ]
+
         categories = [
             {
                 "name": _("Receipt"),
                 "filter": [
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
-                    ["stock_move_id.picking_type_id.code", "=", "incoming"],
-                    ["stock_move_id.origin_returned_move_id", "=", False],
-                    ["product_id.active", "=", True],
-                    ["product_id.detailed_type", "=", "product"],
+                    ("stock_move_id.picking_type_id.code", "=", "incoming"),
+                    ("stock_move_id.origin_returned_move_id", "=", False),
                 ],
             },
             {
                 "name": _("Return"),
                 "filter": [
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
-                    ["stock_move_id.origin_returned_move_id", "!=", False],
-                    ["reference", "ilike", "/OUT/"],
-                    ["product_id.active", "=", True],
-                    ["product_id.detailed_type", "=", "product"],
+                    ("stock_move_id.origin_returned_move_id", "!=", False),
+                    ("reference", "ilike", "/OUT/"),
                 ],
             },
             {
                 "name": _("Delivery"),
                 "filter": [
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
-                    ["stock_move_id.picking_type_id.code", "=", "internal"],
-                    ["stock_move_id.origin_returned_move_id", "=", False],
-                    ["product_id.active", "=", True],
-                    ["product_id.detailed_type", "=", "product"],
+                    ("stock_move_id.picking_type_id.code", "=", "internal"),
+                    ("stock_move_id.origin_returned_move_id", "=", False),
                 ],
             },
             {
                 "name": _("Inventory Adjustment"),
                 "filter": [
-                    "&",
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
-                    ["product_id.active", "=", True],
-                    ["product_id.detailed_type", "=", "product"],
                     "|",
-                    [
+                    (
                         "stock_move_id.location_id",
                         "ilike",
                         "Virtual Locations/Inventory adjustment",
-                    ],
-                    [
+                    ),
+                    (
                         "stock_move_id.location_dest_id",
                         "ilike",
                         "Virtual Locations/Inventory adjustment",
-                    ],
+                    ),
                 ],
             },
             {
                 "name": _("Subcontracting"),
                 "filter": [
-                    "&",
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
-                    ["product_id.active", "=", True],
-                    ["product_id.detailed_type", "=", "product"],
                     "|",
-                    [
+                    (
                         "stock_move_id.location_id",
                         "ilike",
                         "Physical Locations/Subcontracting Location",
-                    ],
-                    [
+                    ),
+                    (
                         "stock_move_id.location_dest_id",
                         "ilike",
                         "Physical Locations/Subcontracting Location",
-                    ],
+                    ),
+                    ("stock_move_id.unbuild_id", "=", False),
                 ],
             },
             {
                 "name": _("Price Update"),
                 "filter": [
-                    ["accounting_date", ">=", wizard.date_start],
-                    ["accounting_date", "<=", wizard.date_end],
-                    ["stock_move_id", "=", False],
-                    ["product_id.active", "=", True],
-                    ["product_id.detailed_type", "=", "product"],
+                    ("stock_move_id", "=", False),
+                ],
+            },
+            {
+                "name": _("Unbuild"),
+                "filter": [
+                    ("stock_move_id.unbuild_id", "!=", False),
                 ],
             },
         ]
@@ -203,7 +192,8 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
-            valuations = valuation_obj.search(category["filter"])
+            domain = expression.AND([base_storable_domain, category["filter"]])
+            valuations = valuation_obj.search(domain)
 
             # Write the data to the worksheet
             for row, valuation in enumerate(valuations, start=1):
@@ -237,27 +227,25 @@ class InventoryReportXlsx(models.AbstractModel):
                 )
 
     def generate_consumable_report(self, workbook, wizard):
+        base_consu_domain = [
+            ("stock_move_id.date", ">=", wizard.date_start),
+            ("stock_move_id.date", "<=", wizard.date_end),
+            ("product_id.active", "=", True),
+            ("product_id.detailed_type", "!=", "product"),
+        ]
         categories = [
             {
                 "name": _("Receipt"),
                 "filter": [
-                    ["stock_move_id.date", ">=", wizard.date_start],
-                    ["stock_move_id.date", "<=", wizard.date_end],
-                    ["stock_move_id.picking_type_id.code", "=", "incoming"],
-                    ["stock_move_id.origin_returned_move_id", "=", False],
-                    ["product_id.active", "=", True],
-                    ["product_id.detailed_type", "!=", "product"],
+                    ("stock_move_id.picking_type_id.code", "=", "incoming"),
+                    ("stock_move_id.origin_returned_move_id", "=", False),
                 ],
             },
             {
                 "name": _("Return"),
                 "filter": [
-                    ["stock_move_id.date", ">=", wizard.date_start],
-                    ["stock_move_id.date", "<=", wizard.date_end],
-                    ["stock_move_id.picking_type_id.code", "=", "outgoing"],
-                    ["stock_move_id.origin_returned_move_id", "!=", False],
-                    ["product_id.active", "=", True],
-                    ["product_id.detailed_type", "!=", "product"],
+                    ("stock_move_id.picking_type_id.code", "=", "outgoing"),
+                    ("stock_move_id.origin_returned_move_id", "!=", False),
                 ],
             },
         ]
@@ -290,7 +278,8 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
-            valuations = valuation_obj.search(category["filter"])
+            domain = expression.AND([base_consu_domain, category["filter"]])
+            valuations = valuation_obj.search(domain)
 
             # Write the data to the worksheet
             for row, valuation in enumerate(valuations, start=1):
