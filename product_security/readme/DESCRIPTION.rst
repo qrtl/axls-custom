@@ -1,5 +1,5 @@
 This module restricts the updating of product categories for products to only those users
-in the group_product_category_management group.
+in the group_product_manager group.
 
 Background
 ~~~~~~~~~~
