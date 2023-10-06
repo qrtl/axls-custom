@@ -59,9 +59,15 @@ class ProductPlm(models.Model):
                 best_score = score_mapping
         return matched_map
 
+    def _get_name(self):
+        self.ensure_one()
+        return ", ".join([s for s in [self.generic_name, self.name] if s])
+
     def _get_description_purchase(self):
         self.ensure_one()
-        return " / ".join([s for s in [self.description, self.drawing, self.spec] if s])
+        return " / ".join(
+            [s for s in [self.generic_name, self.drawing, self.spec] if s]
+        )
 
     def _get_uom(self):
         self.ensure_one()
@@ -84,7 +90,8 @@ class ProductPlm(models.Model):
         mapping = self.mapping_id
         vals = {
             "default_code": self.part_number,
-            "name": self.name,
+            "name": self._get_name(),
+            "sale_ok": False,
             "alt_code": self.esc_code,
             "detailed_type": mapping.product_type,
             "categ_id": mapping.product_categ_id.id,
