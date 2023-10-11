@@ -17,7 +17,7 @@ class PurchaseOrder(models.Model):
                 raise UserError(
                     _(
                         "Please select the owner. if you don't want to select any owner for"
-                        " this order, you can set no owner field as True."
+                        " this order, you can set No Owner field as True."
                     )
                 )
 
