@@ -21,6 +21,13 @@ class PlmProductMapping(models.Model):
         .selection,
         required=True,
     )
+    purchase_description_rule = fields.Selection(
+        selection=[
+            ("standard", "Standard: [Generic Name] / [Drawing] / [Spec]"),
+            ("generic_name", "Generic Name"),
+        ],
+        default="standard",
+    )
     product_categ_id = fields.Many2one(
         "product.category",
         string="Product Category",

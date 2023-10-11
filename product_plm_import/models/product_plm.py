@@ -65,9 +65,11 @@ class ProductPlm(models.Model):
 
     def _get_description_purchase(self):
         self.ensure_one()
-        return " / ".join(
-            [s for s in [self.generic_name, self.drawing, self.spec] if s]
-        )
+        if self.mapping_id.purchase_description_rule == "standard":
+            return " / ".join(
+                [s for s in [self.generic_name, self.drawing, self.spec] if s]
+            )
+        return self.description
 
     def _get_uom(self):
         self.ensure_one()
