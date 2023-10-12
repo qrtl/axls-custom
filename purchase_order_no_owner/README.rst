@@ -13,28 +13,22 @@ Purchase Order No Owner
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fpurchase--reporting-lightgray.png?logo=github
-    :target: https://github.com/OCA/purchase-reporting/tree/16.0/purchase_order_no_owner
-    :alt: OCA/purchase-reporting
-.. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/purchase-reporting-16-0/purchase-reporting-16-0-purchase_order_no_owner
-    :alt: Translate me on Weblate
-.. |badge5| image:: https://img.shields.io/badge/runbot-Try%20me-875A7B.png
-    :target: https://runbot.odoo-community.org/runbot/141/16.0
-    :alt: Try me on Runbot
+.. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github
+    :target: https://github.com/qrtl/axls-custom/tree/16.0/purchase_order_no_owner
+    :alt: qrtl/axls-custom
 
-|badge1| |badge2| |badge3| |badge4| |badge5| 
+|badge1| |badge2| |badge3| 
 
 This module is designed to prevent users from accidentally forgetting to input owner information on a purchase order
-by implementing an order confirmation prevention if the owner_id is not filled in. 
+by implementing an order confirmation prevention if the owner_id is not filled in.
 If the order is not associated with any specific owner, users have the option to set the no_owner field to "True" instead.
 
 Background
 ~~~~~~~~~~
 
-users may unintentionally overlook filling out the owner_id field when creating a purchase order
+Users may unintentionally overlook filling out the owner_id field when creating a purchase order
 for inventory items that should be linked to a specific owner and subsequently confirm the order.
-Once the PO is confirmed, users will not be able to edit the owner_id field to fill in the correct owner.
+Once the PO is confirmed, users are not be able to edit the owner_id field to fill in the correct owner.
 
 **Table of contents**
 
@@ -44,10 +38,10 @@ Once the PO is confirmed, users will not be able to edit the owner_id field to f
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/OCA/purchase-reporting/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/qrtl/axls-custom/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/purchase-reporting/issues/new?body=module:%20purchase_order_no_owner%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/qrtl/axls-custom/issues/new?body=module:%20purchase_order_no_owner%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -62,16 +56,6 @@ Authors
 Maintainers
 ~~~~~~~~~~~
 
-This module is maintained by the OCA.
+This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/purchase_order_no_owner>`_ project on GitHub.
 
-.. image:: https://odoo-community.org/logo.png
-   :alt: Odoo Community Association
-   :target: https://odoo-community.org
-
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
-
-This module is part of the `OCA/purchase-reporting <https://github.com/OCA/purchase-reporting/tree/16.0/purchase_order_no_owner>`_ project on GitHub.
-
-You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
+You are welcome to contribute.

@@ -5,6 +5,6 @@ If the order is not associated with any specific owner, users have the option to
 Background
 ~~~~~~~~~~
 
-users may unintentionally overlook filling out the owner_id field when creating a purchase order
+Users may unintentionally overlook filling out the owner_id field when creating a purchase order
 for inventory items that should be linked to a specific owner and subsequently confirm the order.
-Once the PO is confirmed, users will not be able to edit the owner_id field to fill in the correct owner.
+Once the PO is confirmed, users are not be able to edit the owner_id field to fill in the correct owner.
