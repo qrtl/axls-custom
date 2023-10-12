@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-12 03:36+0000\n"
-"PO-Revision-Date: 2023-09-12 03:36+0000\n"
+"POT-Creation-Date: 2023-10-12 03:04+0000\n"
+"PO-Revision-Date: 2023-10-12 03:04+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -471,6 +471,11 @@ msgid "PLM Data Import Log"
 msgstr "PLMデータインポートログ"
 
 #. module: product_plm_import
+#: model:ir.model.fields.selection,name:product_plm_import.selection__plm_product_mapping__purchase_description_rule__plm
+msgid "PLM Description"
+msgstr "PLM説明"
+
+#. module: product_plm_import
 #: model_terms:ir.ui.view,arch_db:product_plm_import.product_template_form_view
 #: model_terms:ir.ui.view,arch_db:product_plm_import.view_company_form
 msgid "PLM I/F"
@@ -508,6 +513,13 @@ msgid "PLM Path"
 msgstr "PLMパス"
 
 #. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/wizards/product_plm_import.py:0
+#, python-format
+msgid "PLM Path Access Error"
+msgstr ""
+
+#. module: product_plm_import
 #: model:ir.model,name:product_plm_import.model_plm_procure_flag
 msgid "PLM Procure Flag"
 msgstr "PLM調達フラグ"
@@ -538,7 +550,6 @@ msgid "PLM-Product Mapping"
 msgstr "PLM-プロダクトマッピング"
 
 #. module: product_plm_import
-#: model:ir.actions.server,name:product_plm_import.create_products_for_plm_import_ir_actions_server
 #: model:ir.actions.server,name:product_plm_import.ir_cron_create_products_for_plm_import_ir_actions_server
 #: model:ir.cron,cron_name:product_plm_import.ir_cron_create_products_for_plm_import
 msgid "PLM: Create products based on imported PLM records"
@@ -566,8 +577,7 @@ msgstr "部品番号"
 msgid ""
 "Path to PLM CSV files. It can end with a slash (/) or without - both are "
 "acceptable."
-msgstr ""
-"PLMのCSVファイルディレクトリのパス。末尾はスラッシュ(/)があってもなくてもよいです。"
+msgstr "PLMのCSVファイルディレクトリのパス。末尾はスラッシュ(/)があってもなくてもよいです。"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__plm_product_state
@@ -629,6 +639,11 @@ msgid "Product Type"
 msgstr "プロダクトタイプ"
 
 #. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__purchase_description_rule
+msgid "Purchase Description Rule"
+msgstr "仕入説明規則"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_user_id
 msgid "Responsible User"
 msgstr "担当者"
@@ -652,6 +667,11 @@ msgstr "解決済"
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm__spec
 msgid "Spec"
 msgstr "規格"
+
+#. module: product_plm_import
+#: model:ir.model.fields.selection,name:product_plm_import.selection__plm_product_mapping__purchase_description_rule__standard
+msgid "Standard Description"
+msgstr "標準説明"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__state
@@ -682,8 +702,7 @@ msgstr "%s に対応するプロダクトが既に存在します。"
 msgid ""
 "This date is updated every time PLM files for import are searched in PLM "
 "Path, and is used as a threshold for the next search."
-msgstr ""
-"この日付はPLMパスにてインポート対象ファイルが検索される度に更新され、次回の検索の基準日として使われます。"
+msgstr "この日付はPLMパスにてインポート対象ファイルが検索される度に更新され、次回の検索の基準日として使われます。"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__tracking
