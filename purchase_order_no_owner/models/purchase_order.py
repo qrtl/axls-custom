@@ -10,8 +10,7 @@ class PurchaseOrder(models.Model):
 
     no_owner = fields.Boolean()
 
-    @api.constrains("no_owner", "owner_id")
-    def _check_owner_id(self):
+    def button_confirm(self):
         for record in self:
             if not record.no_owner and not record.owner_id:
                 raise UserError(
@@ -20,6 +19,7 @@ class PurchaseOrder(models.Model):
                         " this order, you can set No Owner field as True."
                     )
                 )
+        return super(PurchaseOrder, self).button_confirm()
 
     @api.onchange("no_owner")
     def onchange_no_owner(self):
