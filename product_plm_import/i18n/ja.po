@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-12 03:04+0000\n"
-"PO-Revision-Date: 2023-10-12 03:04+0000\n"
+"POT-Creation-Date: 2023-10-12 09:38+0000\n"
+"PO-Revision-Date: 2023-10-12 09:38+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -213,6 +213,7 @@ msgstr ""
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm__generic_name
+#: model:ir.model.fields.selection,name:product_plm_import.selection__plm_product_mapping__purchase_description_rule__generic_name
 msgid "Generic Name"
 msgstr "汎用名称"
 
@@ -471,11 +472,6 @@ msgid "PLM Data Import Log"
 msgstr "PLMデータインポートログ"
 
 #. module: product_plm_import
-#: model:ir.model.fields.selection,name:product_plm_import.selection__plm_product_mapping__purchase_description_rule__plm
-msgid "PLM Description"
-msgstr "PLM説明"
-
-#. module: product_plm_import
 #: model_terms:ir.ui.view,arch_db:product_plm_import.product_template_form_view
 #: model_terms:ir.ui.view,arch_db:product_plm_import.view_company_form
 msgid "PLM I/F"
@@ -670,8 +666,8 @@ msgstr "規格"
 
 #. module: product_plm_import
 #: model:ir.model.fields.selection,name:product_plm_import.selection__plm_product_mapping__purchase_description_rule__standard
-msgid "Standard Description"
-msgstr "標準説明"
+msgid "Standard: [Generic Name] / [Drawing] / [Spec]"
+msgstr "標準: [汎用名称] / [図面番号] / [規格]"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__state
