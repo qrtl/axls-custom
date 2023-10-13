@@ -13,9 +13,9 @@ Product PLM Import
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Fqrtl--custom-lightgray.png?logo=github
-    :target: https://github.com/qrtl/qrtl-custom/tree/16.0/product_plm_import
-    :alt: qrtl/qrtl-custom
+.. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github
+    :target: https://github.com/qrtl/axls-custom/tree/16.0/product_plm_import
+    :alt: qrtl/axls-custom
 
 |badge1| |badge2| |badge3| 
 
@@ -37,6 +37,14 @@ Update fields in the company (in the 'PLM I/F' tab):
 - PLM Path: the absolute path to the PLM directory to fetch the files from.
 - PLM Notification Body: the text will be included in the notification email body.
 - PLM Notified Groups: assign groups to notify when a new file is fetched from the PLM.
+
+The PLM-Product Mapping menu enables users to define product policies, 
+such as Product Type, Product Category, Routes, etc., which will be applied to the product in Odoo. 
+The values of item_type_id, category_ids, and procure_flag_ids serve as keys to identify 
+which policy will be applied.
+
+To configure the policy, go to *Data Import > Data Import Settings > PLM-Product Mapping*.
+ 
 
 Usage
 =====
@@ -61,10 +69,10 @@ or marked as 'Solved' for all the imported records.
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/qrtl/qrtl-custom/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/qrtl/axls-custom/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed
-`feedback <https://github.com/qrtl/qrtl-custom/issues/new?body=module:%20product_plm_import%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/qrtl/axls-custom/issues/new?body=module:%20product_plm_import%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -79,6 +87,6 @@ Authors
 Maintainers
 ~~~~~~~~~~~
 
-This module is part of the `qrtl/qrtl-custom <https://github.com/qrtl/qrtl-custom/tree/16.0/product_plm_import>`_ project on GitHub.
+This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/product_plm_import>`_ project on GitHub.
 
 You are welcome to contribute.

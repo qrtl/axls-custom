@@ -16,6 +16,7 @@
                 <field name="product_type" />
                 <field name="product_categ_id" />
                 <field name="route_ids" widget="many2many_tags" />
+                <field name="purchase_description_rule" />
                 <field
                     name="tracking"
                     attrs="{'readonly':[('product_type','!=','product')]}"
