@@ -392,10 +392,11 @@ from the PLM system.</p>
 <li>PLM Notification Body: the text will be included in the notification email body.</li>
 <li>PLM Notified Groups: assign groups to notify when a new file is fetched from the PLM.</li>
 </ul>
-<p>To configure the mapping policy, go to <em>Data Import &gt; Data Import Settings &gt; PLM-Product Mapping</em>.</p>
-<p>The PLM-Product Mapping menu enables users to define a policy for mappings,
-using the item_type_id value to identify and link imported records from PLM
-for updating the corresponding fields in the product records in Odoo.</p>
+<p>The PLM-Product Mapping menu enables users to define product policies,
+such as Product Type, Product Category, Routes, etc., which will be applied to the product in Odoo.
+The values of item_type_id, category_ids, and procure_flag_ids serve as keys to identify
+which policy will be applied.</p>
+<p>To configure the policy, go to <em>Data Import &gt; Data Import Settings &gt; PLM-Product Mapping</em>.</p>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#id2">Usage</a></h1>
