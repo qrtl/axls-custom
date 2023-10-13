@@ -1,0 +1,20 @@
+# Copyright 2023 Quartile Limited
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+from odoo import fields, models
+
+
+class StockPicking(models.Model):
+    _inherit = "stock.picking"
+
+    show_consumable_date = fields.Boolean(compute="_compute_show_consumable_date")
+
+    def _compute_show_consumable_date(self):
+        for pick in self:
+            pick.show_consumable_date = False
+            if pick.picking_type_code not in ("incoming", "outgoing"):
+                continue
+            if pick.move_ids.with_company(pick.company_id).product_id.filtered(
+                lambda x: x.detailed_type == "consu"
+            ):
+                pick.show_consumable_date = True

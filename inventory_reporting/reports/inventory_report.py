@@ -227,12 +227,20 @@ class InventoryReportXlsx(models.AbstractModel):
                 )
 
     def generate_consumable_report(self, workbook, wizard):
-        base_consu_domain = [
-            ("stock_move_id.date", ">=", wizard.date_start),
-            ("stock_move_id.date", "<=", wizard.date_end),
-            ("product_id.active", "=", True),
-            ("product_id.detailed_type", "!=", "product"),
-        ]
+        query = """
+            SELECT svl.id FROM stock_valuation_layer svl
+            JOIN stock_move move ON svl.stock_move_id = move.id
+            JOIN stock_picking pick ON move.picking_id = pick.id
+            JOIN product_product prod ON svl.product_id = prod.id
+            JOIN product_template tmpl ON prod.product_tmpl_id = tmpl.id
+            WHERE COALESCE(pick.accounting_date, move.date) BETWEEN %s AND %s
+            AND prod.active = TRUE
+            AND tmpl.detailed_type != 'product'
+        """
+        self.env.cr.execute(query, (wizard.date_start, wizard.date_end))
+        svl_ids = [row[0] for row in self.env.cr.fetchall()]
+
+        base_consu_domain = [("id", "in", svl_ids)]
         categories = [
             {
                 "name": _("Receipt"),
