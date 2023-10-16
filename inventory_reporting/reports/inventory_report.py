@@ -23,6 +23,13 @@ class InventoryReportXlsx(models.AbstractModel):
             return soup.get_text()
         return False
 
+    def get_base_domain(self, wizard):
+        return [
+            ("stock_move_id.accounting_date", ">=", wizard.date_start),
+            ("stock_move_id.accounting_date", "<=", wizard.date_end),
+            ("product_id.active", "=", True),
+        ]
+
     def generate_valuation_report(self, workbook, wizard):
         category_objs = self.env["product.category"].search(
             [("is_report_category", "=", True)]
@@ -88,12 +95,10 @@ class InventoryReportXlsx(models.AbstractModel):
                 row += 1
 
     def generate_storable_report(self, workbook, wizard):
-        base_storable_domain = [
-            ("accounting_date", ">=", wizard.date_start),
-            ("accounting_date", "<=", wizard.date_end),
-            ("product_id.active", "=", True),
-            ("product_id.detailed_type", "=", "product"),
-        ]
+        base_domain = self.get_base_domain(wizard)
+        base_storable_domain = expression.AND(
+            [base_domain, [("product_id.detailed_type", "=", "product")]]
+        )
 
         categories = [
             {
@@ -227,20 +232,16 @@ class InventoryReportXlsx(models.AbstractModel):
                 )
 
     def generate_consumable_report(self, workbook, wizard):
-        query = """
-            SELECT svl.id FROM stock_valuation_layer svl
-            JOIN stock_move move ON svl.stock_move_id = move.id
-            JOIN stock_picking pick ON move.picking_id = pick.id
-            JOIN product_product prod ON svl.product_id = prod.id
-            JOIN product_template tmpl ON prod.product_tmpl_id = tmpl.id
-            WHERE COALESCE(pick.accounting_date, move.date) BETWEEN %s AND %s
-            AND prod.active = TRUE
-            AND tmpl.detailed_type != 'product'
-        """
-        self.env.cr.execute(query, (wizard.date_start, wizard.date_end))
-        svl_ids = [row[0] for row in self.env.cr.fetchall()]
+        base_domain = self.get_base_domain(wizard)
+        base_consu_domain = expression.AND(
+            [
+                base_domain,
+                [
+                    ("product_id.detailed_type", "!=", "product"),
+                ],
+            ]
+        )
 
-        base_consu_domain = [("id", "in", svl_ids)]
         categories = [
             {
                 "name": _("Receipt"),
@@ -291,10 +292,12 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Write the data to the worksheet
             for row, valuation in enumerate(valuations, start=1):
-                date = fields.Date.from_string(valuation.stock_move_id.date)
+                accounting_date = fields.Date.from_string(
+                    valuation.stock_move_id.accounting_date
+                )
                 ws.write(row, 0, valuation.reference)
                 ws.write(row, 1, valuation.stock_move_id.origin)
-                ws.write(row, 2, date.strftime("%Y-%m-%d"))
+                ws.write(row, 2, accounting_date.strftime("%Y-%m-%d"))
                 ws.write(
                     row,
                     3,
