@@ -369,21 +369,26 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external" href="https://github.com/qrtl/axls-custom/tree/16.0/stock_picking_consumable_effective_date"><img alt="qrtl/axls-custom" src="https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github" /></a></p>
 <p>This module adds a computed field show_consumable_date to stock.picking.
-When there is consumable product in picking, the accounting_date field
-will display with the label “Consumable Effective Date”.</p>
+When all the items in the picking are consumable products, the accounting_date field
+will be displayed as ‘Consumable Effective Date’.
+If certain transfers in Odoo cannot be confirmed on the same date as the products are
+received or delivered, the accounting_date for consumable products will be used to
+record the actual transfer date.</p>
+<div class="section" id="background">
+<h1>Background</h1>
+<p>For companies that must accurately record incoming and outgoing transfers date,
+regardless of whether a product is designated as a Storable Product,
+it becomes challenging to capture the actual transfer date when the transfer occurs at a later time,
+as in Odoo’s default behavior, the effective date is set to the confirmation date of the records and cannot be modified.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
 <li><a class="reference internal" href="#bug-tracker" id="id1">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="id2">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="id3">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="id4">Maintainers</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#credits" id="id2">Credits</a></li>
 </ul>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#id1">Bug Tracker</a></h1>
+<h2><a class="toc-backref" href="#id1">Bug Tracker</a></h2>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/qrtl/axls-custom/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us smashing it by providing a detailed and welcomed
@@ -391,18 +396,19 @@ If you spotted it first, help us smashing it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#id2">Credits</a></h1>
+<h2><a class="toc-backref" href="#id2">Credits</a></h2>
+</div>
+</div>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#id3">Authors</a></h2>
+<h1>Authors</h1>
 <ul class="simple">
 <li>Quartile Limited</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#id4">Maintainers</a></h2>
+<h1>Maintainers</h1>
 <p>This module is part of the <a class="reference external" href="https://github.com/qrtl/axls-custom/tree/16.0/stock_picking_consumable_effective_date">qrtl/axls-custom</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
-</div>
 </div>
 </div>
 </body>
