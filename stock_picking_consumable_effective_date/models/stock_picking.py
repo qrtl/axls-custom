@@ -14,7 +14,9 @@ class StockPicking(models.Model):
             pick.show_consumable_date = False
             if pick.picking_type_code not in ("incoming", "outgoing"):
                 continue
-            if pick.move_ids.with_company(pick.company_id).product_id.filtered(
-                lambda x: x.detailed_type == "consu"
+            moves = pick.move_ids
+            # When all moves are consumables.
+            if moves and not moves.with_company(pick.company_id).product_id.filtered(
+                lambda x: x.detailed_type == "product"
             ):
                 pick.show_consumable_date = True
