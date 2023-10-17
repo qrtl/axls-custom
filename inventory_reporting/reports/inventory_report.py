@@ -234,12 +234,7 @@ class InventoryReportXlsx(models.AbstractModel):
     def generate_consumable_report(self, workbook, wizard):
         base_domain = self.get_base_domain(wizard)
         base_consu_domain = expression.AND(
-            [
-                base_domain,
-                [
-                    ("product_id.detailed_type", "!=", "product"),
-                ],
-            ]
+            [base_domain, [("product_id.detailed_type", "!=", "product")]]
         )
 
         categories = [
