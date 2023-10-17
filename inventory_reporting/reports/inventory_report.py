@@ -25,8 +25,8 @@ class InventoryReportXlsx(models.AbstractModel):
 
     def get_base_domain(self, wizard):
         return [
-            ("stock_move_id.accounting_date", ">=", wizard.date_start),
-            ("stock_move_id.accounting_date", "<=", wizard.date_end),
+            ("accounting_date", ">=", wizard.date_start),
+            ("accounting_date", "<=", wizard.date_end),
             ("product_id.active", "=", True),
         ]
 
