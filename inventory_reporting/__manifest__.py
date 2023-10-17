@@ -14,7 +14,6 @@
         "report_xlsx",
         "stock_analytic",
         "stock_valuation_layer_accounting_date",
-        "stock_picking_accounting_date",
         "web_ir_actions_act_multi",
     ],
     "data": [
