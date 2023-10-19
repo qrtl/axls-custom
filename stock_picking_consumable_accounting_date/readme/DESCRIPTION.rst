@@ -1,6 +1,6 @@
-This module adds a computed field show_consumable_date to stock.picking.
+This module adds a computed field show_consumable_accounting_date to stock.picking.
 When all the items in the picking are consumable products, the accounting_date field
-will be displayed as 'Consumable Effective Date'.
+will be displayed as 'Consumable Accounting Date'.
 If certain transfers in Odoo cannot be confirmed on the same date as the products are
 received or delivered, the accounting_date for consumable products will be used to
 record the actual transfer date.

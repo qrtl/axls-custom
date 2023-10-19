@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 {
-    "name": "Stock Picking Consumable Effective Date",
+    "name": "Stock Picking Consumable Accounting Date",
     "version": "16.0.1.0.0",
     "author": "Quartile Limited",
     "website": "https://www.quartile.co",

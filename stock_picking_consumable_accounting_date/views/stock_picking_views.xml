@@ -9,11 +9,11 @@
         />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='accounting_date']" position="before">
-                <field name="show_consumable_date" invisible="1" />
+                <field name="show_consumable_accounting_date" invisible="1" />
                 <field
                     name="accounting_date"
                     string="Consumable Accounting Date"
-                    attrs="{'invisible': [('show_consumable_date', '=', False)],'readonly': [('state', '=', 'cancel')]}"
+                    attrs="{'invisible': [('show_consumable_accounting_date', '=', False)],'readonly': [('state', '=', 'cancel')]}"
                 />
             </xpath>
         </field>

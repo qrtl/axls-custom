@@ -7,11 +7,13 @@ from odoo import fields, models
 class StockPicking(models.Model):
     _inherit = "stock.picking"
 
-    show_consumable_date = fields.Boolean(compute="_compute_show_consumable_date")
+    show_consumable_accounting_date = fields.Boolean(
+        compute="_compute_show_consumable_accounting_date"
+    )
 
-    def _compute_show_consumable_date(self):
+    def _compute_show_consumable_accounting_date(self):
         for pick in self:
-            pick.show_consumable_date = False
+            pick.show_consumable_accounting_date = False
             if pick.picking_type_code not in ("incoming", "outgoing"):
                 continue
             moves = pick.move_ids
@@ -19,4 +21,4 @@ class StockPicking(models.Model):
             if moves and not moves.with_company(pick.company_id).product_id.filtered(
                 lambda x: x.detailed_type == "product"
             ):
-                pick.show_consumable_date = True
+                pick.show_consumable_accounting_date = True
