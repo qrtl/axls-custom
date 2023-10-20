@@ -2,8 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import csv
+from collections import defaultdict
 from itertools import groupby
-from operator import attrgetter
 
 from odoo import _, models
 from odoo.exceptions import UserError
@@ -15,6 +15,7 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def _get_fields(self):
         return [
+            "GL0010000",  # asterisk
             "GL0010001",  # date
             "GL0012002",  # debit account
             "GL0012101",  # debit base amount
@@ -135,80 +136,66 @@ class AccountMoveObcCsv(models.AbstractModel):
         vals[fields["project"][drcr]] = project.code or ""
         return vals
 
-    def _get_report_vals_dict(self, records):
-        vals_list = []
-        total_debit, total_credit = 0, 0
-        credit_account = ""
-        for record in records:
-            vals_dict = {}
-            accounting_date = record.date.strftime("%Y/%m/%d")
-            move_analytic_accounts = record.line_ids.analytic_line_ids.mapped(
-                "account_id"
-            )
-            # Sort lines so that the tax line(s) will come at the end of a journal entry
-            move_lines = record.line_ids.filtered(lambda x: not x.tax_line_id).sorted(
-                lambda x: abs(x.balance), reverse=True
-            )
-            move_lines += record.line_ids.filtered(lambda x: x.tax_line_id)
-            purchase_line = record.stock_move_id.purchase_line_id
-            for line in move_lines:
-                vals_dict["GL0010001"] = accounting_date
-                vals_dict["GL0010008"] = record.name
-                remarks = line.name
-                if purchase_line:
-                    # This adjustment is so that the accounting staff can easily find
-                    # the related journal items for receipts based on the same string
-                    # set on those for vendor bill lines.
-                    remarks = "%s: %s, %s" % (
-                        purchase_line.order_id.name,
-                        purchase_line.name,
-                        line.name,
-                    )
-                vals_dict["GL0011001"] = remarks
-
-                if line.debit:
-                    vals_dict = self._update_vals(
-                        vals_dict, line, move_analytic_accounts, "dr"
-                    )
-                    total_debit += vals_dict["GL0012101"]
-                    vals_dict["GL0012101"] = 0
-                if line.credit:
-                    vals_dict = self._update_vals(
-                        vals_dict, line, move_analytic_accounts, "cr"
-                    )
-                    total_credit += vals_dict["GL0013101"]
-                    vals_dict["GL0013101"] = 0
-            # Assuming have same account for the JE that have same picking
-            credit_account = vals_dict["GL0013002"]
-            debit_account = vals_dict["GL0012002"]
-            vals_dict["GL0013002"] = ""
-            vals_dict["GL0012002"] = ""
-            vals_list.append(vals_dict)
-
-        # After processing all records for the same picking, assign the sums to the first line
-        if vals_list:
-            vals_list[0]["GL0012002"] = debit_account
-            vals_list[0]["GL0013002"] = credit_account
-            vals_list[0]["GL0012101"] = total_debit
-            vals_list[0]["GL0013101"] = total_credit
-
-        return vals_list
+    def _get_report_vals_dict(self, record):
+        accounting_date = record.date.strftime("%Y/%m/%d")
+        move_analytic_accounts = record.line_ids.analytic_line_ids.mapped("account_id")
+        # Sort lines so that the tax line(s) will come at the end of a journal entry
+        move_lines = record.line_ids.filtered(lambda x: not x.tax_line_id).sorted(
+            lambda x: abs(x.balance), reverse=True
+        )
+        move_lines += record.line_ids.filtered(lambda x: x.tax_line_id)
+        vals_dict = defaultdict(dict)
+        first_debit, first_credit = True, True
+        line_count = 1
+        purchase_line = record.stock_move_id.purchase_line_id
+        for line in move_lines:
+            first_line = False
+            if (line.debit and first_debit) or (line.credit and first_credit):
+                first_line = True
+            line_num = 1 if first_line else line_count
+            vals = vals_dict[1] if first_line else {}
+            vals["GL0010001"] = accounting_date
+            vals["GL0010008"] = record.name
+            remarks = line.name
+            if purchase_line:
+                # This adjustment is so that the accounting staff can easily find
+                # the related journal items for receipts based on the same string
+                # set on those for vendor bill lines.
+                remarks = "%s: %s, %s" % (
+                    purchase_line.order_id.name,
+                    purchase_line.name,
+                    line.name,
+                )
+            vals["GL0011001"] = remarks
+            if line.debit:
+                vals = self._update_vals(vals, line, move_analytic_accounts, "dr")
+                first_debit = False
+            if line.credit:
+                vals = self._update_vals(vals, line, move_analytic_accounts, "cr")
+                first_credit = False
+            vals_dict[line_num] = vals
+            line_count += 1
+        return vals_dict
 
     def generate_csv_report(self, writer, data, records):
         self._check_records(records)
-        sorted_records = sorted(records, key=lambda r: r.stock_move_id.picking_id.id)
-        move_grouped_records = {
-            k: list(v)
-            for k, v in groupby(
-                sorted_records, key=attrgetter("stock_move_id.picking_id.id")
-            )
-        }
+        # Sort records by date and then by picking_id
+        sorted_records = sorted(
+            records, key=lambda r: (r.date, r.stock_move_id.picking_id.id)
+        )
         writer.writeheader()
-        for _i, grouped_by_picking in move_grouped_records.items():
-            vals_list = self._get_report_vals_dict(grouped_by_picking)
-            for vals_dict in vals_list:
-                writer.writerow(vals_dict)
-            for record in grouped_by_picking:
+        # Group records by picking_id
+        for _p, grouped_records in groupby(
+            sorted_records, key=lambda r: r.stock_move_id.picking_id.id
+        ):
+            first_record = True
+            for record in grouped_records:
+                vals_dict = self._get_report_vals_dict(record)
+                if first_record:
+                    vals_dict[1]["GL0010000"] = "*"
+                    first_record = False
+                for _k, v in sorted(vals_dict.items()):
+                    writer.writerow(v)
                 record.is_exported = True
 
     def csv_report_options(self):
