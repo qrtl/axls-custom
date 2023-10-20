@@ -21,7 +21,7 @@ FIELD_VALS = [
     ["procure_flag", "Procure flag", "char", True],
     ["item_type", "Item Type", "char", True],
     ["category", "Category", "char", True],
-    ["uom", "Unit of Material", "char", True],
+    ["uom", "Unit of Material", "char", False],
     ["description", "Description", "char", True],
     ["spec", "Spec", "char", False],
     ["drawing", "Drawing No", "char", False],
