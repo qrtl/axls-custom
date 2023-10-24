@@ -13,7 +13,7 @@
                 <field
                     name="accounting_date"
                     string="Consumable Accounting Date"
-                    attrs="{'invisible': [('show_consumable_accounting_date', '=', False)],'readonly': [('state', '=', 'cancel')]}"
+                    attrs="{'invisible': [('show_consumable_accounting_date', '=', False)]}"
                 />
             </xpath>
         </field>
