@@ -3,7 +3,6 @@
 
 import csv
 from collections import defaultdict
-from itertools import groupby
 
 from odoo import _, models
 from odoo.exceptions import UserError
@@ -120,6 +119,13 @@ class AccountMoveObcCsv(models.AbstractModel):
             != line.product_id.categ_id.property_stock_account_input_categ_id
         ):
             tax = line.tax_ids[:1]
+        partner_ref = line.partner_id.ref or ""
+        stock_move_id = line.move_id.stock_move_id
+        if (
+            not line.partner_id
+            and stock_move_id.location_dest_id.is_subcontracting_location
+        ):
+            partner_ref = stock_move_id.group_id.partner_id.ref or ""
         fields = self._get_field_map()
         vals[fields["account"][drcr]] = account_code
         vals[fields["base_amount"][drcr]] = line.debit if drcr == "dr" else line.credit
@@ -132,7 +138,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         )
         vals[fields["tax_rate"][drcr]] = tax.amount or 0
         vals[fields["tax_auto_calc"][drcr]] = 0  # No tax calculation
-        vals[fields["partner"][drcr]] = line.partner_id.ref or ""
+        vals[fields["partner"][drcr]] = partner_ref
         vals[fields["project"][drcr]] = project.code or ""
         return vals
 
@@ -184,19 +190,21 @@ class AccountMoveObcCsv(models.AbstractModel):
             records, key=lambda r: (r.date, r.stock_move_id.picking_id.id)
         )
         writer.writeheader()
-        # Group records by picking_id
-        for _p, grouped_records in groupby(
-            sorted_records, key=lambda r: r.stock_move_id.picking_id.id
-        ):
-            first_record = True
-            for record in grouped_records:
-                vals_dict = self._get_report_vals_dict(record)
-                if first_record:
-                    vals_dict[1]["GL0010000"] = "*"
-                    first_record = False
-                for _k, v in sorted(vals_dict.items()):
-                    writer.writerow(v)
-                record.is_exported = True
+        picking = self.env["stock.picking"]
+        for record in sorted_records:
+            vals_dict = self._get_report_vals_dict(record)
+            first_record = False
+            record_picking = record.stock_move_id.picking_id
+            if not record_picking:
+                first_record = True
+            elif picking != record_picking:
+                first_record = True
+                picking = record_picking
+            if first_record:
+                vals_dict[1]["GL0010000"] = "*"
+            for _k, v in sorted(vals_dict.items()):
+                writer.writerow(v)
+            record.is_exported = True
 
     def csv_report_options(self):
         res = super().csv_report_options()
