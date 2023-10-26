@@ -14,7 +14,7 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def _get_fields(self):
         return [
-            "GL0010000",  # asterisk
+            "GL0010000",  # demarkator: indicates the start of a new OBC record
             "GL0010001",  # date
             "GL0012002",  # debit account
             "GL0012101",  # debit base amount
@@ -188,38 +188,42 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def generate_csv_report(self, writer, data, records):
         self._check_records(records)
-        # Sort records by date and then by picking_id
+        # Sort records by date, production id and picking id
         sorted_records = sorted(
-            records, key=lambda r: (r.date, r.stock_move_id.picking_id.id)
+            records,
+            key=lambda r: (
+                r.date,
+                r.stock_move_id.production_id.id
+                or r.stock_move_id.raw_material_production_id.id,
+                r.stock_move_id.picking_id.id,
+            ),
         )
         writer.writeheader()
         picking = self.env["stock.picking"]
         mo = self.env["mrp.production"]
-        for record in sorted_records:
-            vals_dict = self._get_report_vals_dict(record)
+        for rec in sorted_records:
+            vals_dict = self._get_report_vals_dict(rec)
             # Assign a demarkation symbol ('*') to the first journal entry of a picking
-            # to consolidate the entries into one record in the OBC system. This is to
-            # ease the operation of attaching the proof documents to the entries in the
-            # system.
-            first_record = False
-            record_picking = record.stock_move_id.picking_id
-            record_mo = (
-                record.stock_move_id.production_id
-                or record.stock_move_id.raw_material_production_id
-            )
-            if not record_picking and not record_mo:
-                first_record = True
-            elif not record_mo and picking != record_picking:
-                first_record = True
-                picking = record_picking
-            elif not record_picking and mo != record_mo:
-                first_record = True
-                mo = record_mo
+            # or a production order to consolidate the entries into one record in the
+            # OBC system. This is to ease the operation of attaching the proof documents
+            # to the entries in the system.
+            first_record = True
+            stock_move = rec.stock_move_id
+            rec_mo = stock_move.production_id or stock_move.raw_material_production_id
+            rec_picking = stock_move.picking_id
+            if rec_mo:
+                if rec_mo == mo:
+                    first_record = False
+                mo = rec_mo
+            elif rec_picking:
+                if rec_picking == picking:
+                    first_record = False
+                picking = rec_picking
             if first_record:
                 vals_dict[1]["GL0010000"] = "*"
             for _k, v in sorted(vals_dict.items()):
                 writer.writerow(v)
-            record.is_exported = True
+            rec.is_exported = True
 
     def csv_report_options(self):
         res = super().csv_report_options()
