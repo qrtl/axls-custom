@@ -194,6 +194,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         )
         writer.writeheader()
         picking = self.env["stock.picking"]
+        mo = self.env["mrp.production"]
         for record in sorted_records:
             vals_dict = self._get_report_vals_dict(record)
             # Assign a demarkation symbol ('*') to the first journal entry of a picking
@@ -202,11 +203,18 @@ class AccountMoveObcCsv(models.AbstractModel):
             # system.
             first_record = False
             record_picking = record.stock_move_id.picking_id
-            if not record_picking:
+            record_mo = (
+                record.stock_move_id.production_id
+                or record.stock_move_id.raw_material_production_id
+            )
+            if not record_picking and not record_mo:
                 first_record = True
-            elif picking != record_picking:
+            elif not record_mo and picking != record_picking:
                 first_record = True
                 picking = record_picking
+            elif not record_picking and mo != record_mo:
+                first_record = True
+                mo = record_mo
             if first_record:
                 vals_dict[1]["GL0010000"] = "*"
             for _k, v in sorted(vals_dict.items()):
