@@ -87,9 +87,7 @@ class ProductPlmImport(models.TransientModel):
         if not self.import_log_id.input_file and attachment:
             self.import_log_id.input_file = attachment
         field_defs = self._get_field_defs(FIELD_KEYS, FIELD_VALS)
-        sheet_fields, csv_iterator = self._load_import_file(
-            field_defs, ["cp932", "utf-8-sig", "utf-8"]
-        )
+        sheet_fields, csv_iterator = self._load_import_file(field_defs, ["utf-8"])
         vals_list = []
         # csv_iterator.line_num gets incremented by more than 1 when there is a text
         # field with a line break. Therefore, we need to use our own counter.
