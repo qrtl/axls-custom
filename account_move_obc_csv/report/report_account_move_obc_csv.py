@@ -4,7 +4,7 @@
 import csv
 from collections import defaultdict
 
-from odoo import _, models
+from odoo import _, api, models
 from odoo.exceptions import UserError
 
 
@@ -14,6 +14,7 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def _get_fields(self):
         return [
+            "GL0010000",  # demarkator: indicates the start of a new OBC record
             "GL0010001",  # date
             "GL0012002",  # debit account
             "GL0012101",  # debit base amount
@@ -75,6 +76,15 @@ class AccountMoveObcCsv(models.AbstractModel):
                 % ("\n".join(exported_records.mapped("name")))
             )
 
+    @api.model
+    def _get_partner(self, line):
+        if line.partner_id:
+            return line.partner_id
+        # Try identifying the subcontracted partner from the production order.
+        stock_move = line.move_id.stock_move_id
+        production = stock_move.production_id or stock_move.raw_material_production_id
+        return production.subcontractor_id
+
     def _update_vals(self, vals, line, move_analytic_accounts, drcr):
         account_code = line.account_id.code
         subaccount_code = ""
@@ -118,6 +128,7 @@ class AccountMoveObcCsv(models.AbstractModel):
             != line.product_id.categ_id.property_stock_account_input_categ_id
         ):
             tax = line.tax_ids[:1]
+        partner = self._get_partner(line)
         fields = self._get_field_map()
         vals[fields["account"][drcr]] = account_code
         vals[fields["base_amount"][drcr]] = line.debit if drcr == "dr" else line.credit
@@ -130,7 +141,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         )
         vals[fields["tax_rate"][drcr]] = tax.amount or 0
         vals[fields["tax_auto_calc"][drcr]] = 0  # No tax calculation
-        vals[fields["partner"][drcr]] = line.partner_id.ref or ""
+        vals[fields["partner"][drcr]] = partner.ref or ""
         vals[fields["project"][drcr]] = project.code or ""
         return vals
 
@@ -177,12 +188,42 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def generate_csv_report(self, writer, data, records):
         self._check_records(records)
+        # Sort records by date, production id and picking id
+        sorted_records = sorted(
+            records,
+            key=lambda r: (
+                r.date,
+                r.stock_move_id.production_id.id
+                or r.stock_move_id.raw_material_production_id.id,
+                r.stock_move_id.picking_id.id,
+            ),
+        )
         writer.writeheader()
-        for record in records:
-            vals_dict = self._get_report_vals_dict(record)
+        picking = self.env["stock.picking"]
+        mo = self.env["mrp.production"]
+        for rec in sorted_records:
+            vals_dict = self._get_report_vals_dict(rec)
+            # Assign a demarkation symbol ('*') to the first journal entry of a picking
+            # or a production order to consolidate the entries into one record in the
+            # OBC system. This is to ease the operation of attaching the proof documents
+            # to the entries in the system.
+            first_record = True
+            stock_move = rec.stock_move_id
+            rec_mo = stock_move.production_id or stock_move.raw_material_production_id
+            rec_picking = stock_move.picking_id
+            if rec_mo:
+                if rec_mo == mo:
+                    first_record = False
+                mo = rec_mo
+            elif rec_picking:
+                if rec_picking == picking:
+                    first_record = False
+                picking = rec_picking
+            if first_record:
+                vals_dict[1]["GL0010000"] = "*"
             for _k, v in sorted(vals_dict.items()):
                 writer.writerow(v)
-            record.is_exported = True
+            rec.is_exported = True
 
     def csv_report_options(self):
         res = super().csv_report_options()
