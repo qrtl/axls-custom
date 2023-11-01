@@ -148,6 +148,13 @@ class InventoryReportXlsx(models.AbstractModel):
                         "Physical Locations/Subcontracting Location",
                     ),
                     ("stock_move_id.unbuild_id", "=", False),
+                    "|",
+                    (
+                        "stock_move_id.production_id",
+                        "!=",
+                        False,
+                    ),
+                    ("stock_move_id.raw_material_production_id", "!=", False),
                 ],
             },
             {
