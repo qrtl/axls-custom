@@ -1,1 +1,1 @@
-This module allows you attach several customizable exceptions to your opportunity.
+This module allows you to attach several customizable exceptions to your opportunities.

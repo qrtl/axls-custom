@@ -14,17 +14,14 @@ class CrmLead(models.Model):
         return "crm_lead_ids"
 
     def _fields_trigger_check_exception(self):
-        return ["ignore_exception", "stage_id"]
-
-    def crm_check_exception(self):
-        self._check_exception()
+        return ["stage_id"]
 
     def _check_crm_lead_check_exception(self, vals):
         check_exceptions = any(
             field in vals for field in self._fields_trigger_check_exception()
         )
         if check_exceptions:
-            self.crm_check_exception()
+            self._check_exception()
 
     def write(self, vals):
         result = super().write(vals)
