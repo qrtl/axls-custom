@@ -8,6 +8,6 @@
     "website": "https://www.quartile.co",
     "depends": ["crm", "base_exception"],
     "license": "AGPL-3",
-    "data": [],
+    "data": ["views/crm_lead_views.xml"],
     "installable": True,
 }

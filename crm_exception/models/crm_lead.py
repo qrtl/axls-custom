@@ -14,7 +14,7 @@ class CrmLead(models.Model):
         return "crm_lead_ids"
 
     def _fields_trigger_check_exception(self):
-        return ["stage_id"]
+        return ["ignore_exception", "stage_id"]
 
     def _check_crm_lead_check_exception(self, vals):
         check_exceptions = any(
