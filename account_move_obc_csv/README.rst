@@ -24,7 +24,8 @@ Account Move OBC CSV
 
 This module does the following:
 
-- Let users export journal entries in CSV format to be uploaded to OBC accounting system.
+-  Let users export journal entries in CSV format to be uploaded to OBC
+   accounting system.
 
 This module depends on report_csv module from OCA.
 
@@ -38,16 +39,17 @@ Configuration
 
 Following settings should be updated:
 
-* Set Plan Type in relevant analytic plans. Plan Type decides which column of the OBC
-  data the analytic account will be mapped to.
-* Set 'OBC Tax Category' and 'OBC Tax Rate Type' in tax records. These settings are
-  used to show in the corresponding columns in the exported CSV file.
+-  Set Plan Type in relevant analytic plans. Plan Type decides which
+   column of the OBC data the analytic account will be mapped to.
+-  Set 'OBC Tax Category' and 'OBC Tax Rate Type' in tax records. These
+   settings are used to show in the corresponding columns in the
+   exported CSV file.
 
 Usage
 =====
 
-Select journal entries that should be exported, and then go to *Print > OBC CSV* to
-export the data.
+Select journal entries that should be exported, and then go to *Print >
+OBC CSV* to export the data.
 
 Bug Tracker
 ===========
@@ -63,12 +65,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/account_move_obc_csv>`_ project on GitHub.
 

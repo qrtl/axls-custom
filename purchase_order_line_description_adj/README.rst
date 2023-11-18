@@ -22,7 +22,8 @@ Purchase Order Line Description Adj
 
 |badge1| |badge2| |badge3|
 
-This module removes the default code from purchase order line description.
+This module removes the default code from purchase order line
+description.
 
 **Table of contents**
 
@@ -43,12 +44,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/purchase_order_line_description_adj>`_ project on GitHub.
 

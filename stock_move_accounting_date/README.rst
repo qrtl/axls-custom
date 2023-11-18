@@ -22,9 +22,11 @@ Stock Move Accounting Date
 
 |badge1| |badge2| |badge3|
 
-This module adds Accounting Date on stock move. When Accounting Date is specified in the stock picking,
-the Accounting Date field will be populated with the value of the accounting date from stock picking.
-Otherwise, the Accounting Date field will be populated with the value of Effective Date.
+This module adds Accounting Date on stock move. When Accounting Date is
+specified in the stock picking, the Accounting Date field will be
+populated with the value of the accounting date from stock picking.
+Otherwise, the Accounting Date field will be populated with the value of
+Effective Date.
 
 **Table of contents**
 
@@ -45,12 +47,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_move_accounting_date>`_ project on GitHub.
 

@@ -22,8 +22,8 @@ Product PLM Import
 
 |badge1| |badge2| |badge3|
 
-This module adds a CSV import function to create new products based on the data received
-from the PLM system.
+This module adds a CSV import function to create new products based on
+the data received from the PLM system.
 
 This module depends on base_data_import module.
 
@@ -37,36 +37,42 @@ Configuration
 
 Update fields in the company (in the 'PLM I/F' tab):
 
-- PLM Path: the absolute path to the PLM directory to fetch the files from.
-- PLM Notification Body: the text will be included in the notification email body.
-- PLM Notified Groups: assign groups to notify when a new file is fetched from the PLM.
+-  PLM Path: the absolute path to the PLM directory to fetch the files
+   from.
+-  PLM Notification Body: the text will be included in the notification
+   email body.
+-  PLM Notified Groups: assign groups to notify when a new file is
+   fetched from the PLM.
 
 The PLM-Product Mapping menu enables users to define product policies,
-such as Product Type, Product Category, Routes, etc., which will be applied to the product in Odoo.
-The values of item_type_id, category_ids, and procure_flag_ids serve as keys to identify
-which policy will be applied.
+such as Product Type, Product Category, Routes, etc., which will be
+applied to the product in Odoo. The values of item_type_id,
+category_ids, and procure_flag_ids serve as keys to identify which
+policy will be applied.
 
-To configure the policy, go to *Data Import > Data Import Settings > PLM-Product Mapping*.
+To configure the policy, go to *Data Import > Data Import Settings >
+PLM-Product Mapping*.
 
 Usage
 =====
 
 There are three ir.cron records added by this module:
 
-#. PLM: Import PLM Products
-   The main cron job that imports PLM product records into Odoo in a periodical manner.
-#. PLM: Create products based on imported PLM records
-   A job that creates products in Odoo based on the imported PLM records. Triggerd by
-   the main job.
-#. PLM: Send email notification on PLM data import
-   A job that sends email notifications to the relevant users. Triggerd by the main job.
-   Notification email is designed to be sent only once per the log record.
+1. PLM: Import PLM Products The main cron job that imports PLM product
+   records into Odoo in a periodical manner.
+2. PLM: Create products based on imported PLM records A job that creates
+   products in Odoo based on the imported PLM records. Triggerd by the
+   main job.
+3. PLM: Send email notification on PLM data import A job that sends
+   email notifications to the relevant users. Triggerd by the main job.
+   Notification email is designed to be sent only once per the log
+   record.
 
-Alternatively, users can import PLM product records manually via 'Product PLM Import'
-wizard, which also triggers the last two jobs.
+Alternatively, users can import PLM product records manually via
+'Product PLM Import' wizard, which also triggers the last two jobs.
 
-The status of an import log record becomes 'Done' when a product is successfully created
-or marked as 'Solved' for all the imported records.
+The status of an import log record becomes 'Done' when a product is
+successfully created or marked as 'Solved' for all the imported records.
 
 Bug Tracker
 ===========
@@ -82,12 +88,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/product_plm_import>`_ project on GitHub.
 

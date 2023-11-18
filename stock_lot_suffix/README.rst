@@ -22,12 +22,14 @@ Stock Lot Suffix
 
 |badge1| |badge2| |badge3|
 
-This module provides the functionality to add suffixes to the display name of lots/serials.
+This module provides the functionality to add suffixes to the display
+name of lots/serials.
 
-Suffixes are added to lots/serials created from purchase receipts with following conditions:
+Suffixes are added to lots/serials created from purchase receipts with
+following conditions:
 
-- Purchase order has the channel_category set.
-- Purchase order line has an analytic account with lot suffix.
+-  Purchase order has the channel_category set.
+-  Purchase order line has an analytic account with lot suffix.
 
 **Table of contents**
 
@@ -48,12 +50,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_lot_suffix>`_ project on GitHub.
 

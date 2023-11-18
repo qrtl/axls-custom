@@ -22,16 +22,17 @@ Stock Move Ingore Last Purchase Date
 
 |badge1| |badge2| |badge3|
 
-This module adds the *Ignore Last Purchase Date* field to the stock move to adjust
-assigning to last_purchase_date of product.
+This module adds the *Ignore Last Purchase Date* field to the stock move
+to adjust assigning to last_purchase_date of product.
 
 Background
-~~~~~~~~~~
+----------
 
-Certain receipts might be validated later than their actual reception date.
-Therefore, the "last purchase date" should not always correspond to the validation date.
-In such cases, instead of assigning the validation date to the "last purchase date",
-the "man last purchase date" should be used instead.
+Certain receipts might be validated later than their actual reception
+date. Therefore, the "last purchase date" should not always correspond
+to the validation date. In such cases, instead of assigning the
+validation date to the "last purchase date", the "man last purchase
+date" should be used instead.
 
 **Table of contents**
 
@@ -52,12 +53,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_move_ignore_last_purchase_date>`_ project on GitHub.
 

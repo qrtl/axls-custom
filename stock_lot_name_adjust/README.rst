@@ -24,7 +24,8 @@ Stock Lot Name Adjust
 
 This module does the following:
 
-* Adds the default code field to the lot, which should be part of the lot display name presentation and can also be used in product search.
+-  Adds the default code field to the lot, which should be part of the
+   lot display name presentation and can also be used in product search.
 
 **Table of contents**
 
@@ -45,12 +46,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_lot_name_adjust>`_ project on GitHub.
 

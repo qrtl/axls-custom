@@ -22,11 +22,11 @@ Product Last Purchase Date
 
 |badge1| |badge2| |badge3|
 
-This module adds the *Last Purchase Date* field to the product, for the purpose of rough
-aging monitoring of products.
+This module adds the *Last Purchase Date* field to the product, for the
+purpose of rough aging monitoring of products.
 
-For products with no past receipt history, the option of updating the date with *Last
-Purchase Date (Man.)* is available.
+For products with no past receipt history, the option of updating the
+date with *Last Purchase Date (Man.)* is available.
 
 **Table of contents**
 
@@ -47,12 +47,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/product_last_purchase_date>`_ project on GitHub.
 

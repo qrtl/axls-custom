@@ -24,11 +24,11 @@ Base Data Import
 
 This module does the following:
 
-- Adds a generic wizard to import a CSV file to create/update records.
-- Adds a generic logging models and views for import results.
+-  Adds a generic wizard to import a CSV file to create/update records.
+-  Adds a generic logging models and views for import results.
 
-This module is not useful by itself, but is expected to be used as a dependency
-of specific data import functions.
+This module is not useful by itself, but is expected to be used as a
+dependency of specific data import functions.
 
 **Table of contents**
 
@@ -49,12 +49,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/base_data_import>`_ project on GitHub.
 

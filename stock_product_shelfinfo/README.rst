@@ -22,9 +22,10 @@ Stock Product Shelf Information
 
 |badge1| |badge2| |badge3|
 
-This module adds a new model Product Shelf Information (product.shelfinfo) to keep
-the static shelf details per product per location, and show the information in
-relevant transactions and reports to facilitate warehouse operations.
+This module adds a new model Product Shelf Information
+(product.shelfinfo) to keep the static shelf details per product per
+location, and show the information in relevant transactions and reports
+to facilitate warehouse operations.
 
 **Table of contents**
 
@@ -34,20 +35,21 @@ relevant transactions and reports to facilitate warehouse operations.
 Configuration
 =============
 
-Go to the menu items under *Inventory > Settings > Product Shelf Info* and create
-area 1, area 2 and position records to be selected in the product shelf information
-accordingly.
+Go to the menu items under *Inventory > Settings > Product Shelf Info*
+and create area 1, area 2 and position records to be selected in the
+product shelf information accordingly.
 
 Usage
 =====
 
-Go to *Inventory > Products > Product Shelf Information* and create records for
-combinations of product, location and company. These records show in product forms
-(Inventory tab) as well.
+Go to *Inventory > Products > Product Shelf Information* and create
+records for combinations of product, location and company. These records
+show in product forms (Inventory tab) as well.
 
-Generated ID (name) of the Shelf Information record should show for relevant internal
-locations in the stock move records of the picking form, as well as in the picking
-report, to facilitate the picking/store operations.
+Generated ID (name) of the Shelf Information record should show for
+relevant internal locations in the stock move records of the picking
+form, as well as in the picking report, to facilitate the picking/store
+operations.
 
 Bug Tracker
 ===========
@@ -63,12 +65,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_product_shelfinfo>`_ project on GitHub.
 

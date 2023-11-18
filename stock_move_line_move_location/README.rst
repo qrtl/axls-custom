@@ -22,12 +22,13 @@ Move Stock Line Move Location
 
 |badge1| |badge2| |badge3|
 
-This module extends the function of stock_move_location module to allow creation of
-transfers based on stock.move.line records.
+This module extends the function of stock_move_location module to allow
+creation of transfers based on stock.move.line records.
 
-The module was developed for a rather peculiar need of just removing the inventory
-of the received products, which has been consumed in production straight away, where
-the user of the manufacturing order has not been implemented.
+The module was developed for a rather peculiar need of just removing the
+inventory of the received products, which has been consumed in
+production straight away, where the user of the manufacturing order has
+not been implemented.
 
 **Table of contents**
 
@@ -48,12 +49,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_move_line_move_location>`_ project on GitHub.
 

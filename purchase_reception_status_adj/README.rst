@@ -22,8 +22,9 @@ Purchase Reception Status Adjust
 
 |badge1| |badge2| |badge3|
 
-This module adds the 'purchase_user' group to the 'force_received' field, enabling the purchase users to confirm it
-when the 'purchase_reception_status' module is installed.
+This module adds the 'purchase_user' group to the 'force_received'
+field, enabling the purchase users to confirm it when the
+'purchase_reception_status' module is installed.
 
 **Table of contents**
 
@@ -44,12 +45,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/purchase_reception_status_adj>`_ project on GitHub.
 

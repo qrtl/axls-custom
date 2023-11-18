@@ -24,7 +24,9 @@ Product Alternative Code
 
 This module does the following:
 
-* Adds the alternative code field to the product, which should be part of the product display name presentation and can also be used in product search.
+-  Adds the alternative code field to the product, which should be part
+   of the product display name presentation and can also be used in
+   product search.
 
 **Table of contents**
 
@@ -45,12 +47,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/product_alternative_code>`_ project on GitHub.
 

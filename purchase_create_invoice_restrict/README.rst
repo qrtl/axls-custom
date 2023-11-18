@@ -22,9 +22,13 @@ Purchase Create Invoice Restrict
 
 |badge1| |badge2| |badge3|
 
-This module adds a new group group_create_bill_allowed, and hides "Create Bill" button of the purchase order form for users without group_account_invoice or group_create_bill_allowed.
+This module adds a new group group_create_bill_allowed, and hides
+"Create Bill" button of the purchase order form for users without
+group_account_invoice or group_create_bill_allowed.
 
-This functionality intends to prevent the situation where purchase users accidentally create vendor bills from purchase orders, when bills are supposed to be created by authorized users.
+This functionality intends to prevent the situation where purchase users
+accidentally create vendor bills from purchase orders, when bills are
+supposed to be created by authorized users.
 
 **Table of contents**
 
@@ -45,12 +49,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Quartile Limited
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/purchase_create_invoice_restrict>`_ project on GitHub.
 
