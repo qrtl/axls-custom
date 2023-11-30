@@ -119,7 +119,6 @@ class InventoryReportXlsx(models.AbstractModel):
                 "name": _("Delivery"),
                 "filter": [
                     ("stock_move_id.picking_type_id.code", "=", "internal"),
-                    ("stock_move_id.origin_returned_move_id", "=", False),
                 ],
             },
             {
