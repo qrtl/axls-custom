@@ -141,6 +141,11 @@ class InventoryReportXlsx(models.AbstractModel):
                         "ilike",
                         "Virtual Locations/Inventory adjustment",
                     ),
+                    (
+                        "stock_move_id.picking_id",
+                        "=",
+                        False,
+                    ),
                 ],
             },
             {
