@@ -118,7 +118,13 @@ class InventoryReportXlsx(models.AbstractModel):
             {
                 "name": _("Delivery"),
                 "filter": [
+                    "|",
                     ("stock_move_id.picking_type_id.code", "=", "internal"),
+                    (
+                        "stock_move_id.reference",
+                        "ilike",
+                        "/SHIP/",
+                    ),
                 ],
             },
             {
@@ -134,6 +140,21 @@ class InventoryReportXlsx(models.AbstractModel):
                         "stock_move_id.location_dest_id",
                         "ilike",
                         "Virtual Locations/Inventory adjustment",
+                    ),
+                ],
+            },
+            {
+                "name": _("Scrap"),
+                "filter": [
+                    (
+                        "stock_move_id.scrapped",
+                        "!=",
+                        False,
+                    ),
+                    (
+                        "stock_move_id.picking_code",
+                        "!=",
+                        "internal",
                     ),
                 ],
             },
