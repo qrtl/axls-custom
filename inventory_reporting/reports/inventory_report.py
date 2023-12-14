@@ -106,6 +106,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 "filter": [
                     ("stock_move_id.picking_type_id.code", "=", "incoming"),
                     ("stock_move_id.origin_returned_move_id", "=", False),
+                    ("stock_move_id.unbuild_id", "=", False),
                 ],
             },
             {
