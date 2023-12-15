@@ -112,8 +112,10 @@ class InventoryReportXlsx(models.AbstractModel):
             {
                 "name": _("Return"),
                 "filter": [
+                    "|",
+                    ("stock_move_id.picking_type_id.code", "=", "internal"),
+                    ("stock_move_id.picking_type_id.code", "=", "outgoing"),
                     ("stock_move_id.origin_returned_move_id", "!=", False),
-                    ("reference", "ilike", "/OUT/"),
                 ],
             },
             {
@@ -121,71 +123,35 @@ class InventoryReportXlsx(models.AbstractModel):
                 "filter": [
                     "|",
                     ("stock_move_id.picking_type_id.code", "=", "internal"),
-                    (
-                        "stock_move_id.reference",
-                        "ilike",
-                        "/SHIP/",
-                    ),
+                    ("stock_move_id.picking_type_id.code", "=", "outgoing"),
+                    ("stock_move_id.unbuild_id", "=", False),
+                    ("stock_move_id.origin_returned_move_id", "=", False),
+                    ("stock_move_id.location_dest_id.usage", "=", "production"),
                 ],
             },
             {
                 "name": _("Inventory Adjustment"),
                 "filter": [
-                    "|",
-                    (
-                        "stock_move_id.location_id",
-                        "ilike",
-                        "Virtual Locations/Inventory adjustment",
-                    ),
-                    (
-                        "stock_move_id.location_dest_id",
-                        "ilike",
-                        "Virtual Locations/Inventory adjustment",
-                    ),
-                    (
-                        "stock_move_id.picking_id",
-                        "=",
-                        False,
-                    ),
+                    ("stock_move_id.location_id.usage", "!=", "production"),
+                    ("stock_move_id.location_dest_id.usage", "!=", "production"),
+                    ("stock_move_id.picking_id", "=", False),
+                    ("stock_move_id.unbuild_id", "=", False),
                 ],
             },
             {
                 "name": _("Scrap"),
                 "filter": [
-                    (
-                        "stock_move_id.scrapped",
-                        "!=",
-                        False,
-                    ),
-                    (
-                        "stock_move_id.picking_code",
-                        "!=",
-                        "internal",
-                    ),
+                    ("stock_move_id.scrapped", "=", True),
                 ],
             },
             {
                 "name": _("Subcontracting"),
                 "filter": [
                     "|",
-                    (
-                        "stock_move_id.location_id",
-                        "ilike",
-                        "Physical Locations/Subcontracting Location",
-                    ),
-                    (
-                        "stock_move_id.location_dest_id",
-                        "ilike",
-                        "Physical Locations/Subcontracting Location",
-                    ),
+                    ("stock_move_id.location_id.usage", "=", "production"),
+                    ("stock_move_id.location_dest_id.usage", "=", "production"),
+                    ("stock_move_id.picking_id", "=", False),
                     ("stock_move_id.unbuild_id", "=", False),
-                    "|",
-                    (
-                        "stock_move_id.production_id",
-                        "!=",
-                        False,
-                    ),
-                    ("stock_move_id.raw_material_production_id", "!=", False),
                 ],
             },
             {
