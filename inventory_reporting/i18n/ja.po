@@ -62,7 +62,7 @@ msgstr "期間"
 #. odoo-python
 #: code:addons/inventory_reporting/reports/inventory_report.py:0
 #, python-format
-msgid "Delivery"
+msgid "Component Flush"
 msgstr "出庫"
 
 #. module: inventory_reporting

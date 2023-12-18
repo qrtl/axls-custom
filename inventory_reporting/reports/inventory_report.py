@@ -110,16 +110,14 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": _("Return"),
+                "name": _("Return"),  # supplier returns
                 "filter": [
-                    "|",
-                    ("stock_move_id.picking_type_id.code", "=", "internal"),
-                    ("stock_move_id.picking_type_id.code", "=", "outgoing"),
+                    ("stock_move_id.picking_code", "in", ("internal", "outgoing")),
                     ("stock_move_id.origin_returned_move_id", "!=", False),
                 ],
             },
             {
-                "name": _("Delivery"),
+                "name": _("Component Flush"),
                 "filter": [
                     "|",
                     ("stock_move_id.picking_type_id.code", "=", "internal"),
@@ -132,8 +130,9 @@ class InventoryReportXlsx(models.AbstractModel):
             {
                 "name": _("Inventory Adjustment"),
                 "filter": [
-                    ("stock_move_id.location_id.usage", "!=", "production"),
-                    ("stock_move_id.location_dest_id.usage", "!=", "production"),
+                    "|",
+                    ("stock_move_id.location_id.usage", "=", "inventory"),
+                    ("stock_move_id.location_dest_id.usage", "=", "inventory"),
                     ("stock_move_id.picking_id", "=", False),
                     ("stock_move_id.unbuild_id", "=", False),
                 ],
@@ -148,8 +147,16 @@ class InventoryReportXlsx(models.AbstractModel):
                 "name": _("Subcontracting"),
                 "filter": [
                     "|",
+                    "&",
                     ("stock_move_id.location_id.usage", "=", "production"),
+                    (
+                        "stock_move_id.location_dest_id.is_subcontracting_location",
+                        "=",
+                        True,
+                    ),
+                    "&",
                     ("stock_move_id.location_dest_id.usage", "=", "production"),
+                    ("stock_move_id.location_id.is_subcontracting_location", "=", True),
                     ("stock_move_id.picking_id", "=", False),
                     ("stock_move_id.unbuild_id", "=", False),
                 ],
