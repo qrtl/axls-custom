@@ -112,17 +112,18 @@ class InventoryReportXlsx(models.AbstractModel):
             {
                 "name": _("Return"),  # supplier returns
                 "filter": [
-                    ("stock_move_id.picking_code", "in", ("internal", "outgoing")),
+                    ("stock_move_id.picking_code", "=", "outgoing"),
                     ("stock_move_id.origin_returned_move_id", "!=", False),
                 ],
             },
             {
                 "name": _("Component Flush"),
                 "filter": [
+                    "|",
+                    ("stock_move_id.location_dest_id.usage", "=", "production"),
+                    ("stock_move_id.location_id.usage", "=", "production"),
                     ("stock_move_id.picking_code", "in", ("internal", "outgoing")),
                     ("stock_move_id.unbuild_id", "=", False),
-                    ("stock_move_id.origin_returned_move_id", "=", False),
-                    ("stock_move_id.location_dest_id.usage", "=", "production"),
                 ],
             },
             {
