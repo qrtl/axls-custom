@@ -6,7 +6,10 @@
         <field name="inherit_id" ref="purchase_order_owner.purchase_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='owner_id']" position="before">
-                <field name="no_owner" />
+                <field
+                    name="no_owner"
+                    attrs="{'readonly': [('state', 'in', ('purchase','done','cancel'))]}"
+                />
             </xpath>
             <xpath expr="//field[@name='owner_id']" position="attributes">
                 <attribute
