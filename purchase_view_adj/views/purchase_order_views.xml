@@ -11,6 +11,13 @@
             >
                 <attribute name="optional">show</attribute>
             </xpath>
+            <!-- Make price_unit editable even when there is billed qty -->
+            <xpath
+                expr="//field[@name='order_line']/tree/field[@name='price_unit']"
+                position="attributes"
+            >
+                <attribute name="attrs">{}</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>
