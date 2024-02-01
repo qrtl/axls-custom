@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="purchase_order_form" model="ir.ui.view">
+        <field name="name">purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_unit']" position="attributes">
+                <attribute
+                    name="groups"
+                >!purchase_group_edit_price.group_edit_price</attribute>
+            </xpath>
+            <xpath expr="//field[@name='price_unit']" position="after">
+                <field
+                    name="price_unit"
+                    groups="purchase_group_edit_price.group_edit_price"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
