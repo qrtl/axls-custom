@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="group_edit_purchase_price" model="res.groups">
+        <field name="name">Edit Purchase Price</field>
+        <field name="category_id" ref="base.module_category_usability" />
+    </record>
+</odoo>
