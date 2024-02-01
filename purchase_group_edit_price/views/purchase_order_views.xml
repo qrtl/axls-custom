@@ -8,12 +8,12 @@
             <xpath expr="//field[@name='price_unit']" position="attributes">
                 <attribute
                     name="groups"
-                >!purchase_security_adjust.group_edit_purchase_price</attribute>
+                >!purchase_group_edit_price.group_edit_price</attribute>
             </xpath>
             <xpath expr="//field[@name='price_unit']" position="after">
                 <field
                     name="price_unit"
-                    groups="purchase_security_adjust.group_edit_purchase_price"
+                    groups="purchase_group_edit_price.group_edit_price"
                 />
             </xpath>
         </field>
