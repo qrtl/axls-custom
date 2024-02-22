@@ -15,7 +15,8 @@ class MrpProduction(models.Model):
                 raise UserError(
                     _(
                         "%s is not allowed to be produced according to "
-                        "the product category setting." % product.name
+                        "the product category setting.",
+                        product.name,
                     )
                 )
         return super().action_confirm()

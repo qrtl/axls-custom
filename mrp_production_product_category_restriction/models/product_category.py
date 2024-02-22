@@ -8,8 +8,7 @@ class ProductCategory(models.Model):
     _inherit = "product.category"
 
     produce_ok = fields.Boolean(
-        help=(
-            "If disabled, products within this category will be prohibited "
-            "from being manufactured by the MRP system."
-        ),
+        "Can be Manufactured",
+        help="If disabled, products with this category will be disallowed to be "
+        "manufactured.",
     )
