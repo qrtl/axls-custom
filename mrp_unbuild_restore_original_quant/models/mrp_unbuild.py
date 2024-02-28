@@ -20,6 +20,13 @@ class MrpUnbuild(models.Model):
         return super().action_unbuild()
 
     def _generate_produce_moves(self):
+        """This logic is a bit hard to understand but necessary due to how the following
+        steps are written in the standard code:
+        https://github.com/OCA/OCB/blob/52bec03/addons/mrp/models/mrp_unbuild.py#L189-L207
+        In short, we want to prepare stock.move.line records in advance with the
+        "correct" content before the standard code generates them with incorrectly
+        (without owner).
+        """
         if not self.env.context.get("exact_unbuild"):
             return super()._generate_produce_moves()
         # i.e. There is production order for the unbuild
@@ -56,4 +63,4 @@ class MrpUnbuild(models.Model):
                         )
                     move.write({"state": "confirmed"})
                 moves += move
-        return moves
+        return moves.with_context(produce_moves=True)

@@ -8,6 +8,10 @@ class StockMove(models.Model):
     _inherit = "stock.move"
 
     def _action_confirm(self, merge=True, merge_into=False):
-        if self.env.context.get("exact_unbuild"):
+        # We particularly want to skip
+        # https://github.com/OCA/OCB/blob/53e1941/addons/mrp/models/mrp_unbuild.py#L148
+        # for component receipts to avoid generation of stock.move.line records with
+        # the standard logic.
+        if self._context.get("exact_unbuild") and self._context.get("produce_moves"):
             return self
-        return super(StockMove, self)._action_confirm(merge, merge_into)
+        return super()._action_confirm(merge, merge_into)
