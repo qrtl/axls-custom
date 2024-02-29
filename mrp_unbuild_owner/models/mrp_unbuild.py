@@ -41,6 +41,7 @@ class MrpUnbuild(models.Model):
         if not self.env.context.get("exact_unbuild"):
             return super()._generate_produce_moves()
         # i.e. There is production order for the unbuild
+        self = self.with_context(default_lot_id=False)
         moves = self.env["stock.move"]
         for unbuild in self:
             raw_moves = unbuild.mo_id.move_raw_ids.filtered(
