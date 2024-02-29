@@ -19,6 +19,17 @@ class MrpUnbuild(models.Model):
             self = self.with_context(exact_unbuild=True)
         return super().action_unbuild()
 
+    def _get_move_line_vals(self, move, move_line):
+        return {
+            "move_id": move.id,
+            "owner_id": move_line.owner_id.id,
+            "qty_done": min(move.product_uom_qty, move_line.qty_done),
+            "product_id": move.product_id.id,
+            "product_uom_id": move.product_uom.id,
+            "location_id": move.location_id.id,
+            "location_dest_id": move.location_dest_id.id,
+        }
+
     def _generate_produce_moves(self):
         """This logic is a bit hard to understand but necessary due to how the following
         steps are written in the standard code:
@@ -49,18 +60,11 @@ class MrpUnbuild(models.Model):
                     self.location_dest_id,
                 )
                 if move.has_tracking == "none":
+                    vals_list = []
                     for move_line in raw_move.move_line_ids:
-                        self.env["stock.move.line"].create(
-                            {
-                                "move_id": move.id,
-                                "owner_id": move_line.owner_id.id,
-                                "qty_done": move_line.qty_done,
-                                "product_id": move.product_id.id,
-                                "product_uom_id": move.product_uom.id,
-                                "location_id": move.location_id.id,
-                                "location_dest_id": move.location_dest_id.id,
-                            }
-                        )
+                        vals = self._get_move_line_vals(move, move_line)
+                        vals_list.append(vals)
+                    self.env["stock.move.line"].create(vals_list)
                     move.write({"state": "confirmed"})
                 moves += move
         return moves.with_context(produce_moves=True)
