@@ -10,6 +10,8 @@ class MrpProduction(models.Model):
 
     def action_confirm(self):
         for production in self:
+            if production.subcontractor_id:
+                continue
             product = production.product_id
             if not product.categ_id.produce_ok:
                 raise UserError(
