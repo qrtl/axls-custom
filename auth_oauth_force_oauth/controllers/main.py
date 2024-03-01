@@ -47,5 +47,4 @@ class CustomAuthSignup(main.AuthSignupHome):
         qcontext["error"] = _(
             "You are not allowed to login with password. Please use OAuth login."
         )
-        response = request.render("auth_signup.reset_password", qcontext)
-        return response
+        return request.render("auth_signup.reset_password", qcontext)

@@ -12,8 +12,5 @@ class ResUsers(models.Model):
         force_domains = self.company_id.force_oauth_domains
         if not force_domains:
             return True
-        # Check if the login ends with any of the force domains
         force_domains_list = [domain.strip() for domain in force_domains.split(",")]
-        if not any(self.login.endswith(domain) for domain in force_domains_list):
-            return True
-        return False
+        return not any(self.login.endswith(domain) for domain in force_domains_list)
