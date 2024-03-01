@@ -7,4 +7,6 @@ from odoo import fields, models
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    force_oauth_domains = fields.Char(help="Fill in the domains, separated by commas.")
+    force_oauth_domains = fields.Char(
+        "Force OAuth Domains", help="Fill in the domains, separated by commas."
+    )
