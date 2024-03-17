@@ -8,3 +8,5 @@ git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/stock_picking_auto_
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/stock_valuation_layer_accounting_date
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/web_ir_actions_act_multi
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_order_owner
+git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_deposit
+git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_analytic
