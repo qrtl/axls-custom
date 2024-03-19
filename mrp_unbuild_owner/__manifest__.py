@@ -7,6 +7,6 @@
     "author": "Quartile Limited",
     "website": "https://www.quartile.co",
     "version": "16.0.1.0.0",
-    "depends": ["mrp"],
+    "depends": ["mrp", "mrp_stock_owner_restriction"],
     "installable": True,
 }

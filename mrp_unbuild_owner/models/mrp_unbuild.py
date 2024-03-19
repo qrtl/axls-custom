@@ -7,10 +7,15 @@ from odoo import models
 class MrpUnbuild(models.Model):
     _inherit = "mrp.unbuild"
 
+    def action_validate(self):
+        owner = self.mo_id.owner_id
+        if owner:
+            self = self.with_context(force_restricted_owner_id=owner)
+        return super().action_validate()
+
     def _prepare_move_line_vals(self, move, origin_move_line, taken_quantity):
         vals = super()._prepare_move_line_vals(move, origin_move_line, taken_quantity)
-        if origin_move_line.owner_id:
-            vals["owner_id"] = origin_move_line.owner_id.id
+        vals["owner_id"] = origin_move_line.owner_id.id
         return vals
 
     def action_unbuild(self):
@@ -41,7 +46,9 @@ class MrpUnbuild(models.Model):
         if not self.env.context.get("exact_unbuild"):
             return super()._generate_produce_moves()
         # i.e. There is production order for the unbuild
-        self = self.with_context(default_lot_id=False)
+        # We need to remove the force_restrict_owner_id assignment to respect the owner
+        # of the original move line.
+        self = self.with_context(default_lot_id=False, force_restricted_owner_id=False)
         moves = self.env["stock.move"]
         for unbuild in self:
             raw_moves = unbuild.mo_id.move_raw_ids.filtered(
