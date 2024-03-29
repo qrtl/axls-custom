@@ -42,6 +42,7 @@ class InventoryReportXlsx(models.AbstractModel):
             # Write the header
             headers = [
                 _("Product Name"),
+                _("Internal Reference"),
                 _("Quantity"),
                 _("Unit of Measurement"),
                 _("Unit Price"),
@@ -83,15 +84,16 @@ class InventoryReportXlsx(models.AbstractModel):
                     rounding_method="UP",
                 )
                 ws.write(row, 0, product.name)
-                ws.write(row, 1, valuation_data["quantity"])
-                ws.write(row, 2, product.uom_id.name)
-                ws.write(row, 3, unit_cost)
-                ws.write(row, 4, valuation_data["value"])
+                ws.write(row, 1, product.default_code)
+                ws.write(row, 2, valuation_data["quantity"])
+                ws.write(row, 3, product.uom_id.name)
+                ws.write(row, 4, unit_cost)
+                ws.write(row, 5, valuation_data["value"])
 
                 # Convert the date to the desired format (YYYY-MM-DD)
                 last_purchase_date = fields.Date.from_string(product.last_purchase_date)
                 if last_purchase_date:
-                    ws.write(row, 5, last_purchase_date.strftime("%Y-%m-%d"))
+                    ws.write(row, 6, last_purchase_date.strftime("%Y-%m-%d"))
                 row += 1
 
     def generate_storable_report(self, workbook, wizard):
