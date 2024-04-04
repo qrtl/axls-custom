@@ -10,3 +10,4 @@ git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/web_ir_actions_act_
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_order_owner
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_deposit
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_analytic
+odoo-addon-mrp-stock-owner-restriction @ git+https://github.com/qrtl/axls-oca.git@refs/pull/105/head#subdirectory=setup/mrp_stock_owner_restriction
