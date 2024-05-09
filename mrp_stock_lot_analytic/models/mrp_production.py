@@ -8,7 +8,6 @@ class MrpProduction(models.Model):
     _inherit = "mrp.production"
 
     def _prepare_stock_lot_values(self):
-        self.ensure_one()
         vals = super()._prepare_stock_lot_values()
         if self.analytic_distribution:
             vals["analytic_distribution"] = self.analytic_distribution
