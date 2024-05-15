@@ -1,5 +1,5 @@
 # Copyright 2024 Quartile Limited
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import datetime
 from datetime import timedelta
@@ -10,7 +10,7 @@ from odoo.tests.common import Form, TransactionCase
 class TestProductLastPurchaseDate(TransactionCase):
     @classmethod
     def setUpClass(cls):
-        super(TestProductLastPurchaseDate, cls).setUpClass()
+        super().setUpClass()
         cls.product_template = cls.env["product.template"].create(
             {"name": "Test Product", "type": "product"}
         )
@@ -42,7 +42,6 @@ class TestProductLastPurchaseDate(TransactionCase):
         )
         picking.action_confirm()
         picking.action_assign()
-        picking.button_validate()
         immediate_wizard = picking.button_validate()
         self.assertEqual(immediate_wizard.get("res_model"), "stock.immediate.transfer")
         immediate_wizard_form = Form(
@@ -79,14 +78,14 @@ class TestProductLastPurchaseDate(TransactionCase):
         self.assertEqual(self.product_template.last_purchase_date, current_date)
 
         # Ensure 'man_last_purchase_date' later than 'last_purchase_date' updates fields.
-        date = datetime.date.today() + timedelta(days=3)
-        self.product.man_last_purchase_date = date
-        self.assertEqual(self.product.last_purchase_date, date)
-        self.assertEqual(self.product.man_last_purchase_date, date)
-        self.assertEqual(self.product_template.last_purchase_date, date)
-        self.assertEqual(self.product_template.man_last_purchase_date, date)
+        manual_date = datetime.date.today() + timedelta(days=3)
+        self.product.man_last_purchase_date = manual_date
+        self.assertEqual(self.product.last_purchase_date, manual_date)
+        self.assertEqual(self.product.man_last_purchase_date, manual_date)
+        self.assertEqual(self.product_template.last_purchase_date, manual_date)
+        self.assertEqual(self.product_template.man_last_purchase_date, manual_date)
 
         # Create picking with current date and check dates do not revert
         self.create_incoming_receipt()
-        self.assertNotEqual(self.product.last_purchase_date, current_date)
-        self.assertNotEqual(self.product_template.last_purchase_date, current_date)
+        self.assertEqual(self.product.last_purchase_date, manual_date)
+        self.assertEqual(self.product_template.last_purchase_date, manual_date)
