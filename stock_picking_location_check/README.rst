@@ -22,13 +22,34 @@ Stock Picking Location Check
 
 |badge1| |badge2| |badge3|
 
-This module verifies the consistency of locations between pickings and
-their stock move lines, ensuring alignment without discrepancies.
+This module intends to ensure the consistency between the picking and
+its stock move lines at the time of validation.
+
+Here 'consistency' means being in the state where all the internal
+locations in stock move lines are the same as or under that of the
+corresponding location in the picking.
 
 **Table of contents**
 
 .. contents::
    :local:
+
+Use Cases / Context
+===================
+
+Users sometimes change locations (location_id/location_dest_id) in the
+picking after reserving stock, and forget to update the corresponding
+locations in the detailed operations. This oversight can lead to the
+generation of stock transactions with incorrect locations.
+
+Usage
+=====
+
+An error should be displayed when validating a picking in case any of
+the internal locations involved in the move lines is not part of the
+corresponding location in the picking.
+
+Selecting 'Allow Location Inconsistency' lets users bypass this error.
 
 Bug Tracker
 ===========

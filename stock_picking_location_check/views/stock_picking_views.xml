@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='location_id']" position="before">
                 <field
-                    name="allow_location_discrepancy"
+                    name="allow_location_inconsistency"
                     groups="stock.group_stock_multi_locations"
                     attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"
                 />
