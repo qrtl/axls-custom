@@ -37,7 +37,6 @@ class Product(models.Model):
             ):
                 last_purchase_date = man_last_purchase_date
             product.last_purchase_date = last_purchase_date
-            product.product_tmpl_id._compute_last_purchase_date()
 
     def _get_move_domain(self, product):
         return [
