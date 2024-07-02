@@ -34,6 +34,7 @@ class StockPicking(models.Model):
                 response = picking.make_api_call(
                     "jobcan", endpoint="v2/requests", params=params
                 )
+                response.raise_for_status()
                 results = response.json().get("results", [])
                 if results and results[0].get("status") == "completed":
                     validated_pickings |= picking
