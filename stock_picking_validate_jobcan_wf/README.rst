@@ -1,6 +1,6 @@
-=============================
-Stock Picking Validate Jobcan
-=============================
+================================
+Stock Picking Validate Jobcan WF
+================================
 
 .. 
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -17,16 +17,23 @@ Stock Picking Validate Jobcan
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github
-    :target: https://github.com/qrtl/axls-custom/tree/16.0/stock_picking_validate_jobcan
+    :target: https://github.com/qrtl/axls-custom/tree/16.0/stock_picking_validate_jobcan_wf
     :alt: qrtl/axls-custom
 
 |badge1| |badge2| |badge3|
 
-This module retrieves the workflow status from Jobcan using an external
-API and decides whether to allow validation in the transfers.
+This module intends to enforce checking of relevant Jobcan workflow
+status in validating outgoing transfers that meet any of the following
+conditions:
+
+-  Involves owner stock in any of the stock move line
+-  Skip Jobcan Workflow is NOT selected
 
 For the API configuration, follow the instructions provided by
 base_api_connection.
+
+Refer to https://ssl.wf.jobcan.jp/api_doc for Jobcan WF API
+specification.
 
 **Table of contents**
 
@@ -36,15 +43,11 @@ base_api_connection.
 Configuration
 =============
 
-In your api configuration,
+Create the API configuration record 'Jobcan WF' with a valid API token
+(in API Key or Token) taken from the Jobcan WF admin page.
 
--  Set the value of the code to 'jobcan'.
--  Set the value of the Header API Key String to 'Authorization'.
--  Set the value of the API Key or Token to the concatenation of 'Token
-   ' and your token.
-
-This module depends on the 'base_api_connection'. Therefore, please
-adhere to the configuration steps outlined in this module.
+This module depends on the 'base_api_connection'. Therefore, adhere to
+the configuration steps outlined in this module.
 
 Bug Tracker
 ===========
@@ -52,7 +55,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/qrtl/axls-custom/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/qrtl/axls-custom/issues/new?body=module:%20stock_picking_validate_jobcan%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/qrtl/axls-custom/issues/new?body=module:%20stock_picking_validate_jobcan_wf%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -67,6 +70,6 @@ Authors
 Maintainers
 -----------
 
-This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_picking_validate_jobcan>`_ project on GitHub.
+This module is part of the `qrtl/axls-custom <https://github.com/qrtl/axls-custom/tree/16.0/stock_picking_validate_jobcan_wf>`_ project on GitHub.
 
 You are welcome to contribute.
