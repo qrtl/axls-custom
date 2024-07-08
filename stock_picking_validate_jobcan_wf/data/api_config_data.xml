@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="api_configuration_jobcanwf" model="api.config">
+        <field name="name">Jobcan WF</field>
+        <field name="base_url">https://ssl.wf.jobcan.jp/wf_api</field>
+        <field name="external_system">generic</field>
+        <field name="code">jobcan_wf</field>
+        <field name="header_api_key_string">Authorization</field>
+        <field name="api_key">dummytoken</field>
+    </record>
+</odoo>
