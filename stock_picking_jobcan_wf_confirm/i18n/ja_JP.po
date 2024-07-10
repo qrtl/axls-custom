@@ -1,0 +1,88 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_picking_jobcan_wf_confirm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0-20221116\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-10 06:30+0000\n"
+"PO-Revision-Date: 2024-07-10 06:30+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_picking_jobcan_wf_confirm
+#. odoo-python
+#: code:addons/stock_picking_jobcan_wf_confirm/models/stock_picking_jobcan_wf_confirm.py:0
+#, python-format
+msgid "API call failed: {}"
+msgstr "API呼び出しに失敗しました: {}"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.model.fields,field_description:stock_picking_jobcan_wf_confirm.field_stock_picking_jobcan_wf_confirm__create_uid
+msgid "Created by"
+msgstr "作成者"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.model.fields,field_description:stock_picking_jobcan_wf_confirm.field_stock_picking_jobcan_wf_confirm__create_date
+msgid "Created on"
+msgstr "作成日"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.model.fields,field_description:stock_picking_jobcan_wf_confirm.field_stock_picking_jobcan_wf_confirm__display_name
+msgid "Display Name"
+msgstr "名称"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.model.fields,field_description:stock_picking_jobcan_wf_confirm.field_stock_picking_jobcan_wf_confirm__id
+msgid "ID"
+msgstr ""
+
+#. module: stock_picking_jobcan_wf_confirm
+#. odoo-python
+#: code:addons/stock_picking_jobcan_wf_confirm/models/stock_picking_jobcan_wf_confirm.py:0
+#, python-format
+msgid ""
+"JobCan WF ID %s has been approved but picking <a href=\"%s\">%s</a> failed "
+"to confirm.<br/>Details:<br/>%s"
+msgstr ""
+"JobCan WF ID %s は承認されました。しかし、在庫移動 <a href=\"%s\">%s</a> の検証に失敗しています。 "
+"<br/>詳細:<br/>%s"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.model.fields,field_description:stock_picking_jobcan_wf_confirm.field_stock_picking_jobcan_wf_confirm____last_update
+msgid "Last Modified on"
+msgstr "最終変更日"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.model.fields,field_description:stock_picking_jobcan_wf_confirm.field_stock_picking_jobcan_wf_confirm__write_uid
+msgid "Last Updated by"
+msgstr "最終更新者"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.model.fields,field_description:stock_picking_jobcan_wf_confirm.field_stock_picking_jobcan_wf_confirm__write_date
+msgid "Last Updated on"
+msgstr "最終更新日"
+
+#. module: stock_picking_jobcan_wf_confirm
+#. odoo-python
+#: code:addons/stock_picking_jobcan_wf_confirm/models/stock_picking_jobcan_wf_confirm.py:0
+#, python-format
+msgid "Picking Confirmation Failed: %s"
+msgstr "在庫移動の検証に失敗しました: %s"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.actions.server,name:stock_picking_jobcan_wf_confirm.ir_cron_stock_picking_jobcan_wf_confirm_ir_actions_server
+#: model:ir.cron,cron_name:stock_picking_jobcan_wf_confirm.ir_cron_stock_picking_jobcan_wf_confirm
+#: model:ir.cron,name:stock_picking_jobcan_wf_confirm.ir_cron_stock_picking_jobcan_wf_confirm
+msgid "Stock Move JobCan Confirm"
+msgstr "JobCan承認後の在庫移動検証機能"
+
+#. module: stock_picking_jobcan_wf_confirm
+#: model:ir.model,name:stock_picking_jobcan_wf_confirm.model_stock_picking_jobcan_wf_confirm
+msgid "Stock Picking Jobcan Workflow Confirm"
+msgstr "JobCan承認後の在庫移動検証機能"
