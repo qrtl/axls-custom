@@ -67,7 +67,8 @@ class StockPickingJobcanWfConfirm(models.Model):
             channel = self._get_or_create_channel(picking)
             picking_url = f"/web#id={picking.id}&model=stock.picking&view_type=form"
             message_body = _(
-                'JobCan WF ID %(wf_id)s has been approved but picking <a href="%(url)s">%(name)s</a> failed to confirm.<br/>Details:<br/>%(message)s'
+                "JobCan WF ID %(wf_id)s has been approved but picking "
+                '<a href="%(url)s">%(name)s</a> failed to confirm.<br/>Details:<br/>%(message)s'
             ) % {
                 "wf_id": picking.jobcan_wf_number,
                 "url": picking_url,
