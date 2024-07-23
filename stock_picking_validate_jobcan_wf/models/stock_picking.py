@@ -29,10 +29,10 @@ class StockPicking(models.Model):
         self.ensure_one()
         if not self.move_ids:
             return False
-        move = self.move_ids[0]
-        if move.origin_returned_move_id and move._is_out():
-            return True
-        return False
+        for move in self.move_ids:
+            if not (move.origin_returned_move_id and move._is_out()):
+                return False
+        return True
 
     def _compute_show_skip_jobcan_wf(self):
         for pick in self:
