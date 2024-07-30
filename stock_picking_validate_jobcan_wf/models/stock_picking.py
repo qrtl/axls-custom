@@ -25,18 +25,29 @@ class StockPicking(models.Model):
             "transit",
         ] and self.location_dest_id.usage not in ["internal", "transit"]
 
+    def _receipt_return_picking(self):
+        self.ensure_one()
+        if self.move_ids and self.move_ids == self.move_ids.filtered(
+            lambda x: x.picking_id._is_outgoing() and x.origin_returned_move_id
+        ):
+            return True
+        return False
+
     def _compute_show_skip_jobcan_wf(self):
         for pick in self:
-            if not pick._is_outgoing() or pick.move_line_ids.mapped("owner_id"):
-                pick.show_skip_jobcan_wf = False
-            else:
+            pick.show_skip_jobcan_wf = False
+            if (
+                pick._is_outgoing()
+                and not pick._receipt_return_picking()
+                and not pick.move_line_ids.mapped("owner_id")
+            ):
                 pick.show_skip_jobcan_wf = True
 
     @api.depends("skip_jobcan_wf")
     def _compute_show_jobcan_wf_number(self):
         for pick in self:
             pick.show_jobcan_wf_number = False
-            if pick._is_outgoing() and not pick.skip_jobcan_wf:
+            if pick.show_skip_jobcan_wf and not pick.skip_jobcan_wf:
                 pick.show_jobcan_wf_number = True
 
     def get_api_key(self, config):

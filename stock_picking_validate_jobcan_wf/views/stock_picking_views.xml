@@ -10,11 +10,11 @@
                 <field name="show_skip_jobcan_wf" invisible="1" />
                 <field
                     name="skip_jobcan_wf"
-                    attrs="{'invisible': [('show_skip_jobcan_wf', '=', False)]}"
+                    attrs="{'invisible': [('show_skip_jobcan_wf','=',False)]}"
                 />
                 <field
                     name="jobcan_wf_number"
-                    attrs="{'invisible': [('show_jobcan_wf_number', '=', False)]}"
+                    attrs="{'invisible': [('show_jobcan_wf_number','=',False)]}"
                 />
             </xpath>
         </field>
