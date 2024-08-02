@@ -22,7 +22,7 @@ class Product(models.Model):
 
     @api.depends(
         "stock_move_ids.state",
-        "stock_move_ids.account_move_ids.date",
+        "stock_move_ids.account_move_ids.state",
         "man_last_purchase_date",
     )
     def _compute_last_purchase_date(self):
@@ -33,9 +33,13 @@ class Product(models.Model):
                 self._get_move_domain(product), order="id desc", limit=1
             )
             if move:
-                last_purchase_date = fields.Date.context_today(self, move.date)
-                if move.account_move_ids:
-                    last_purchase_date = move.account_move_ids[0].date
+                posted_moves = move.account_move_ids.filtered(
+                    lambda x: x.state == "posted"
+                )
+                if posted_moves:
+                    last_purchase_date = posted_moves[0].date
+                else:
+                    last_purchase_date = fields.Date.context_today(self, move.date)
             if (
                 not last_purchase_date
                 or man_last_purchase_date
