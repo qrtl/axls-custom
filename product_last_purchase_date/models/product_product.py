@@ -20,7 +20,11 @@ class Product(models.Model):
         help="Date of the last receipt from the supplier.",
     )
 
-    @api.depends("stock_move_ids.state", "man_last_purchase_date")
+    @api.depends(
+        "stock_move_ids.state",
+        "stock_move_ids.account_move_ids.date",
+        "man_last_purchase_date",
+    )
     def _compute_last_purchase_date(self):
         for product in self:
             last_purchase_date = False
@@ -30,6 +34,8 @@ class Product(models.Model):
             )
             if move:
                 last_purchase_date = fields.Date.context_today(self, move.date)
+                if move.account_move_ids:
+                    last_purchase_date = move.account_move_ids[0].date
             if (
                 not last_purchase_date
                 or man_last_purchase_date
