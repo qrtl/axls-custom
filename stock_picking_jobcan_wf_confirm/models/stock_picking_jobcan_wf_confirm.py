@@ -24,7 +24,7 @@ class StockPickingJobcanWfConfirm(models.Model):
             [("state", "=", "assigned"), ("jobcan_wf_number", "!=", False)]
         )
 
-    def _get_confirmed_pickings(self, pickings):
+    def _get_jobcan_wf_confirmed_pickings(self, pickings):
         confirm_pickings = []
         for picking in pickings:
             try:
