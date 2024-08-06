@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_cbs_info_search" model="ir.ui.view">
+        <field name="name">cbs.info.search</field>
+        <field name="model">cbs.info</field>
+        <field name="arch" type="xml">
+            <search string="CBS Information Search">
+                <field name="order_line_id" />
+                <field name="code" />
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Purchase Order Line"
+                        name="group_by_order_line_id"
+                        context="{'group_by':'order_line_id'}"
+                    />
+                    <filter
+                        string="Code"
+                        name="group_by_code"
+                        context="{'group_by':'code'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_cbs_info_tree" model="ir.ui.view">
+        <field name="name">cbs.info.tree</field>
+        <field name="model">cbs.info</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="order_line_id" />
+                <field name="code" />
+                <field name="quantity" />
+                <field name="purchase_order_line_price" />
+                <field name="cbs_price_unit" />
+                <field name="currency_id" invisible="1" />
+                <field name="price_total" />
+            </tree>
+        </field>
+    </record>
+    <record id="action_cbs_info" model="ir.actions.act_window">
+        <field name="name">CBS Information</field>
+        <field name="res_model">cbs.info</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="view_cbs_info_search" />
+        <field name="context">{}</field>
+    </record>
+    <menuitem
+        id="cbs_info_menu"
+        name="CBS Information"
+        action="action_cbs_info"
+        parent="purchase.menu_procurement_management"
+        sequence="7"
+    />
+</odoo>
