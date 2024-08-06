@@ -9,8 +9,8 @@
     "license": "AGPL-3",
     "depends": ["stock", "stock_picking_validate_jobcan_wf"],
     "data": [
-        "data/cron_data.xml",
         "security/ir.model.access.csv",
+        "data/cron_data.xml",
     ],
     "installable": True,
     "application": False,
