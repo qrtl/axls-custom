@@ -7,7 +7,7 @@
     "website": "https://www.quartile.co",
     "category": "Stock",
     "license": "AGPL-3",
-    "depends": ["stock", "stock_picking_validate_jobcan_wf"],
+    "depends": ["stock_picking_validate_jobcan_wf"],
     "data": [
         "security/ir.model.access.csv",
         "data/cron_data.xml",
