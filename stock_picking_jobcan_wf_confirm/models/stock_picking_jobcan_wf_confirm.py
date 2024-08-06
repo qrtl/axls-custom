@@ -11,14 +11,6 @@ class StockPickingJobcanWfConfirm(models.Model):
     _description = "Stock Picking Jobcan Workflow Confirm"
     _inherit = ["api.call.mixin"]
 
-    @api.model
-    def _scheduled_update(self):
-        _logger.info("Scheduled stock picking JobCan WF confirmation...")
-        pickings = self._get_assigned_pickings_with_jobcan_wf()
-        confirm_pickings = self._get_confirmed_pickings(pickings)
-
-        self._validate_confirmed_pickings(confirm_pickings)
-
     def _get_assigned_pickings_with_jobcan_wf(self):
         return self.env["stock.picking"].search(
             [("state", "=", "assigned"), ("jobcan_wf_number", "!=", False)]
@@ -47,7 +39,6 @@ class StockPickingJobcanWfConfirm(models.Model):
             _logger.error(
                 "API call failed for picking %s with error: %s", picking.id, str(e)
             )
-            raise UserError(_("API call failed: {}".format(str(e)))) from e
 
     def _validate_confirmed_pickings(self, confirm_pickings):
         for picking in confirm_pickings:
@@ -100,3 +91,10 @@ class StockPickingJobcanWfConfirm(models.Model):
                 }
             )
         return channel
+
+    @api.model
+    def _scheduled_update(self):
+        _logger.info("Scheduled stock picking JobCan WF confirmation...")
+        pickings = self._get_assigned_pickings_with_jobcan_wf()
+        confirm_pickings = self._get_confirmed_pickings(pickings)
+        self._validate_confirmed_pickings(confirm_pickings)
