@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<!--
+    Copyright 2024 Axelspace Corporation (https://axelspace.com)
+-->
+<odoo>
+    <record model="ir.cron" id="ir_cron_stock_picking_jobcan_wf_confirm">
+        <field name="name">Stock Picking JobCan Confirm</field>
+        <field name="interval_number">10</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="state">code</field>
+        <field name="doall" eval="False" />
+        <field
+            name="model_id"
+            ref="stock_picking_validate_jobcan_wf.model_stock_picking"
+        />
+        <field name="code">model._run_stock_picking_jobcan_wf_confirmation()</field>
+    </record>
+</odoo>

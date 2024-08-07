@@ -381,6 +381,15 @@ conditions:</p>
 base_api_connection.</p>
 <p>Refer to <a class="reference external" href="https://ssl.wf.jobcan.jp/api_doc">https://ssl.wf.jobcan.jp/api_doc</a> for Jobcan WF API
 specification.</p>
+<p>This module also adds functionality to automatically confirm stock
+picking workflows using a scheduled cron job and notifies assigned users
+of any validation failures via Odoo chat messages.</p>
+<p>The cron job confirms stock pickings that meet the following conditions:</p>
+<ul class="simple">
+<li>The state is assigned.</li>
+<li>The Jobcan_wf_number is set.</li>
+<li>The status of the JobCan WF is finished</li>
+</ul>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">

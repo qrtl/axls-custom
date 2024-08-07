@@ -1,4 +1,5 @@
 # Copyright 2024 Quartile
+# Copyright 2024 Axelspace Corporation (https://axelspace.com)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl)
 
 import logging
@@ -93,3 +94,62 @@ class StockPicking(models.Model):
                     )
                 )
         return super().button_validate()
+
+    @api.model
+    def _get_or_create_channel(self):
+        channel_name = f"picking_{self.id}_notifications"
+        channel = self.env["mail.channel"].search(
+            [("name", "=", channel_name)], limit=1
+        )
+        if not channel:
+            channel = self.env["mail.channel"].create(
+                {
+                    "name": channel_name,
+                    "channel_type": "chat",
+                    "channel_partner_ids": [(4, self.user_id.partner_id.id)],
+                }
+            )
+        return channel
+
+    @api.model
+    def notify_user(self, message):
+        self.ensure_one()
+        if self.user_id:
+            channel = self._get_or_create_channel()
+            self_url = f"/web#id={self.id}&model=stock.picking&view_type=form"
+            message_body = _(
+                "JobCan WF ID %(wf_id)s has been approved but picking "
+                '<a href="%(url)s">%(name)s</a> failed to confirm.<br/>Details:<br/>%(message)s'
+            ) % {
+                "wf_id": self.jobcan_wf_number,
+                "url": self_url,
+                "name": self.name,
+                "message": message,
+            }
+            subject = _("Picking Confirmation Failed: %(name)s") % {"name": self.name}
+            channel.message_post(
+                body=message_body,
+                subject=subject,
+                message_type="comment",
+                subtype_xmlid="mail.mt_comment",
+                partner_ids=[self.user_id.partner_id.id],
+            )
+
+    def _get_assigned_pickings_with_jobcan_wf(self):
+        return self.env["stock.picking"].search(
+            [("state", "=", "assigned"), ("jobcan_wf_number", "!=", False)]
+        )
+
+    @api.model
+    def _validate_pickings(self):
+        for picking in self:
+            try:
+                picking.button_validate()
+            except UserError as e:
+                picking.notify_user(str(e))
+
+    @api.model
+    def _run_stock_picking_jobcan_wf_confirmation(self):
+        _logger.info("Scheduled stock picking JobCan WF confirmation...")
+        pickings = self._get_assigned_pickings_with_jobcan_wf()
+        pickings._validate_pickings()
