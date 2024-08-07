@@ -8,23 +8,21 @@ from odoo import _, api, fields, models
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
-    cbs_info_ids = fields.One2many("cbs.info", "order_line_id")
-    cbs_info_codes = fields.Char(
-        string="CBS Info Codes", compute="_compute_cbs_info_codes"
-    )
+    budget_line_ids = fields.One2many("purchase.budget.line", "order_line_id")
+    budget_line_codes = fields.Char(compute="_compute_budget_line_codes")
 
-    @api.depends("cbs_info_ids.code")
-    def _compute_cbs_info_codes(self):
+    @api.depends("budget_line_ids.code")
+    def _compute_budget_line_codes(self):
         for line in self:
-            line.cbs_info_codes = ", ".join(line.cbs_info_ids.mapped("code"))
+            line.budget_line_codes = ", ".join(line.budget_line_ids.mapped("code"))
 
-    def action_show_cbs_infos(self):
+    def action_show_budget_lines(self):
         self.ensure_one()
         view = self.env.ref(
-            "purchase_order_line_cbs_info.view_purchase_order_line_cbs_info_form"
+            "purchase_budget_line.view_purchase_order_line_budget_line_form"
         )
         return {
-            "name": _("CBS Infos"),
+            "name": _("Purchase Budget Lines"),
             "type": "ir.actions.act_window",
             "view_mode": "form",
             "res_model": "purchase.order.line",

@@ -9,24 +9,24 @@
                 expr="//field[@name='order_line']//tree//field[@name='price_unit']"
                 position="after"
             >
-                <field name="cbs_info_codes" optional="hide" />
+                <field name="budget_line_codes" optional="hide" />
             </xpath>
             <xpath
                 expr="//field[@name='order_line']//tree//field[@name='price_subtotal']"
                 position="after"
             >
                 <button
-                    name="action_show_cbs_infos"
+                    name="action_show_budget_lines"
                     type="object"
                     icon="fa-list"
                     width="0.1"
-                    title="CBS Infos"
+                    title="Purchase Budget Lines"
                 />
             </xpath>
         </field>
     </record>
-    <record id="view_purchase_order_line_cbs_info_form" model="ir.ui.view">
-        <field name="name">purchase.order.line.cbs.info.form</field>
+    <record id="view_purchase_order_line_budget_line_form" model="ir.ui.view">
+        <field name="name">purchase.order.line.budget.line.form</field>
         <field name="model">purchase.order.line</field>
         <field name="arch" type="xml">
             <form>
@@ -35,12 +35,12 @@
                         <field name="product_id" readonly="1" />
                         <field name="product_uom_qty" readonly="1" />
                     </group>
-                    <field name="cbs_info_ids">
+                    <field name="budget_line_ids">
                         <tree editable="bottom">
                             <field name="code" />
                             <field name="quantity" />
                             <field name="purchase_order_line_price" />
-                            <field name="cbs_price_unit" />
+                            <field name="budget_price_unit" />
                             <field name="currency_id" invisible="1" />
                             <field name="price_total" />
                         </tree>

@@ -5,9 +5,9 @@
 from odoo import api, fields, models
 
 
-class CBSINFO(models.Model):
-    _name = "cbs.info"
-    _description = "CBS Information"
+class PurchaseBudgetLine(models.Model):
+    _name = "purchase.budget.line"
+    _description = "Purchase Budget Line"
 
     code = fields.Char(required=True)
     order_line_id = fields.Many2one(
@@ -22,7 +22,7 @@ class CBSINFO(models.Model):
         readonly=True,
         store=True,
     )
-    cbs_price_unit = fields.Float(string="CBS Price Unit", digits="Product Price")
+    budget_price_unit = fields.Float(digits="Product Price")
     price_total = fields.Monetary(
         compute="_compute_price_total", string="Total", store=True
     )
@@ -30,7 +30,7 @@ class CBSINFO(models.Model):
         related="order_line_id.currency_id", store=True, readonly=True
     )
 
-    @api.depends("quantity", "cbs_price_unit")
+    @api.depends("quantity", "budget_price_unit")
     def _compute_price_total(self):
         for line in self:
-            line.price_total = line.quantity * line.cbs_price_unit
+            line.price_total = line.quantity * line.budget_price_unit
