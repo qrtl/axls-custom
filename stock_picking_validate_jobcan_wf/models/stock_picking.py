@@ -57,43 +57,41 @@ class StockPicking(models.Model):
             api_key = "Token " + api_key
         return api_key
 
-    def button_validate(self):
-        wf_transfers = self.filtered(lambda x: x.show_jobcan_wf_number)
-        for pick in wf_transfers:
-            results = []
-            if not pick.jobcan_wf_number:
-                raise UserError(_("Jobcan Workflow Number missing: %s") % (pick.name))
-            try:
-                params = {"id": pick.jobcan_wf_number}
-                response = pick.make_api_call(
-                    "jobcan_wf", endpoint="v2/requests", params=params
+    def _check_jobcan_wf_status(self):
+        self.ensure_one()
+        results = []
+        if not self.jobcan_wf_number:
+            raise UserError(_("Jobcan Workflow Number missing: %s") % (self.name))
+        try:
+            params = {"id": self.jobcan_wf_number}
+            response = self.make_api_call(
+                "jobcan_wf", endpoint="v2/requests", params=params
+            )
+            response.raise_for_status()
+            results = response.json().get("results", [])
+        except Exception as e:
+            _logger.error(
+                "API call failed for picking %s with error: %s", self.id, str(e)
+            )
+            raise UserError(_("API call failed: {}".format(str(e)))) from e
+        if not results:
+            raise UserError(
+                _(
+                    "Specified Jobcan Workflow Number '%(jobcan_wf_number)s' does "
+                    "not exist: %(pick_name)s",
+                    jobcan_wf_number=self.jobcan_wf_number,
+                    pick_name=self.name,
                 )
-                response.raise_for_status()
-                results = response.json().get("results", [])
-            except Exception as e:
-                _logger.error(
-                    "API call failed for picking %s with error: %s", pick.id, str(e)
+            )
+        if results[0].get("status") != "completed":
+            raise UserError(
+                _(
+                    "Jobcan workflow '%(jobcan_wf_number)s' is not completed: "
+                    "%(pick_name)s",
+                    jobcan_wf_number=self.jobcan_wf_number,
+                    pick_name=self.name,
                 )
-                raise UserError(_("API call failed: {}".format(str(e)))) from e
-            if not results:
-                raise UserError(
-                    _(
-                        "Specified Jobcan Workflow Number '%(jobcan_wf_number)s' does "
-                        "not exist: %(pick_name)s",
-                        jobcan_wf_number=pick.jobcan_wf_number,
-                        pick_name=pick.name,
-                    )
-                )
-            if results[0].get("status") != "completed":
-                raise UserError(
-                    _(
-                        "Jobcan workflow '%(jobcan_wf_number)s' is not completed: "
-                        "%(pick_name)s",
-                        jobcan_wf_number=pick.jobcan_wf_number,
-                        pick_name=pick.name,
-                    )
-                )
-        return super().button_validate()
+            )
 
     @api.model
     def _get_or_create_channel(self):
@@ -111,7 +109,6 @@ class StockPicking(models.Model):
             )
         return channel
 
-    @api.model
     def notify_user(self, message):
         self.ensure_one()
         if self.user_id:
@@ -135,21 +132,25 @@ class StockPicking(models.Model):
                 partner_ids=[self.user_id.partner_id.id],
             )
 
+    def button_validate(self):
+        wf_transfers = self.filtered(lambda x: x.show_jobcan_wf_number)
+        for pick in wf_transfers:
+            if self.env.user == self.env.ref("base.user_root"):
+                try:
+                    pick._check_jobcan_wf_status()
+                except UserError as e:
+                    pick.notify_user(str(e))
+            else:
+                pick._check_jobcan_wf_status()
+        return super().button_validate()
+
     def _get_assigned_pickings_with_jobcan_wf(self):
-        return self.env["stock.picking"].search(
+        return self.search(
             [("state", "=", "assigned"), ("jobcan_wf_number", "!=", False)]
         )
-
-    @api.model
-    def _validate_pickings(self):
-        for picking in self:
-            try:
-                picking.button_validate()
-            except UserError as e:
-                picking.notify_user(str(e))
 
     @api.model
     def _run_stock_picking_jobcan_wf_confirmation(self):
         _logger.info("Scheduled stock picking JobCan WF confirmation...")
         pickings = self._get_assigned_pickings_with_jobcan_wf()
-        pickings._validate_pickings()
+        pickings.button_validate()
