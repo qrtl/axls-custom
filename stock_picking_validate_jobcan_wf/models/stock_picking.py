@@ -93,26 +93,14 @@ class StockPicking(models.Model):
                 )
             )
 
-    @api.model
-    def _get_or_create_channel(self):
-        channel_name = f"picking_{self.id}_notifications"
-        channel = self.env["mail.channel"].search(
-            [("name", "=", channel_name)], limit=1
-        )
-        if not channel:
-            channel = self.env["mail.channel"].create(
-                {
-                    "name": channel_name,
-                    "channel_type": "chat",
-                    "channel_partner_ids": [(4, self.user_id.partner_id.id)],
-                }
-            )
-        return channel
-
     def notify_user(self, message):
         self.ensure_one()
         if self.user_id:
-            channel = self._get_or_create_channel()
+            odoobot_id = self.env["ir.model.data"]._xmlid_to_res_id("base.partner_root")
+            channel_info = self.env["mail.channel"].channel_get(
+                [odoobot_id, self.user_id.partner_id.id]
+            )
+            channel = self.env["mail.channel"].browse(channel_info["id"])
             self_url = f"/web#id={self.id}&model=stock.picking&view_type=form"
             message_body = _(
                 "JobCan WF ID %(wf_id)s has been approved but picking "
@@ -139,10 +127,11 @@ class StockPicking(models.Model):
                 try:
                     pick._check_jobcan_wf_status()
                 except UserError as e:
+                    self -= pick
                     pick.notify_user(str(e))
             else:
                 pick._check_jobcan_wf_status()
-        return super().button_validate()
+        return super(StockPicking, self).button_validate()
 
     def _get_assigned_pickings_with_jobcan_wf(self):
         return self.search(
