@@ -123,23 +123,24 @@ class StockPicking(models.Model):
     def button_validate(self):
         wf_transfers = self.filtered(lambda x: x.show_jobcan_wf_number)
         for pick in wf_transfers:
-            if self.env.user == self.env.ref("base.user_root"):
-                try:
-                    pick._check_jobcan_wf_status()
-                except UserError as e:
-                    self -= pick
-                    pick.notify_user(str(e))
-            else:
-                pick._check_jobcan_wf_status()
-        return super(StockPicking, self).button_validate()
+            pick._check_jobcan_wf_status()
+        return super().button_validate()
 
     def _get_assigned_pickings_with_jobcan_wf(self):
         return self.search(
             [("state", "=", "assigned"), ("jobcan_wf_number", "!=", False)]
         )
 
+    def _validate_pickings(self):
+        for pick in self.with_context(skip_immediate=True):
+            try:
+                pick.move_ids._set_quantities_to_reservation()
+                pick.button_validate()
+            except Exception as e:
+                pick.notify_user(str(e))
+
     @api.model
     def _run_stock_picking_jobcan_wf_confirmation(self):
         _logger.info("Scheduled stock picking JobCan WF confirmation...")
         pickings = self._get_assigned_pickings_with_jobcan_wf()
-        pickings.button_validate()
+        pickings._validate_pickings()
