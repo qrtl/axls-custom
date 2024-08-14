@@ -96,11 +96,6 @@ class StockPicking(models.Model):
     def notify_user(self, message):
         self.ensure_one()
         if self.user_id:
-            odoobot_id = self.env["ir.model.data"]._xmlid_to_res_id("base.partner_root")
-            channel_info = self.env["mail.channel"].channel_get(
-                [odoobot_id, self.user_id.partner_id.id]
-            )
-            channel = self.env["mail.channel"].browse(channel_info["id"])
             self_url = f"/web#id={self.id}&model=stock.picking&view_type=form"
             message_body = _(
                 "JobCan WF ID %(wf_id)s has been approved but picking "
@@ -112,11 +107,11 @@ class StockPicking(models.Model):
                 "message": message,
             }
             subject = _("Picking Confirmation Failed: %(name)s") % {"name": self.name}
-            channel.message_post(
+            self.message_post(
                 body=message_body,
                 subject=subject,
                 message_type="comment",
-                subtype_xmlid="mail.mt_comment",
+                subtype_xmlid="mail.mt_note",
                 partner_ids=[self.user_id.partner_id.id],
             )
 
