@@ -3,7 +3,7 @@
 {
     "name": "Purchase Budget Line",
     "version": "16.0.1.0.0",
-    "author": "Quartile",
+    "author": "Quartile Limited",
     "website": "https://www.quartile.co",
     "category": "Purchase",
     "license": "AGPL-3",
@@ -11,7 +11,7 @@
     "data": [
         "security/ir.model.access.csv",
         "views/purchase_budget_line_views.xml",
-        "views/purchase_order_line_views.xml",
+        "views/purchase_order_views.xml",
     ],
     "installable": True,
 }

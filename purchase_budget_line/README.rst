@@ -22,8 +22,10 @@ Purchase Budget Line
 
 |badge1| |badge2| |badge3|
 
-This module adds a purchase budget line to the purchase order line. It
-is designed to help manage CBS information effectively.
+This module adds the purchase budget line model whose records are linked
+to the purchase order line with one2many relationship (multiple budget
+lines per order line). It aims to help manage the CBS information
+effectively.
 
 **Table of contents**
 
@@ -46,7 +48,7 @@ Credits
 Authors
 -------
 
-* Quartile
+* Quartile Limited
 
 Maintainers
 -----------

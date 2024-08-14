@@ -5,18 +5,75 @@
         <field name="model">purchase.budget.line</field>
         <field name="arch" type="xml">
             <search>
-                <field name="order_line_id" />
                 <field name="code" />
+                <field name="partner_id" />
+                <field name="product_id" />
+                <field name="order_line_id" />
+                <filter
+                    name="order_state_draft"
+                    string="RFQ"
+                    domain="[('order_state','=','draft')]"
+                />
+                <filter
+                    name="order_state_sent"
+                    string="RFQ Sent"
+                    domain="[('order_state','=','sent')]"
+                />
+                <filter
+                    name="order_state_to_approve"
+                    string="To Approve"
+                    domain="[('order_state','=','to_approve')]"
+                />
+                <filter
+                    name="order_state_purchase"
+                    string="Purchase Order"
+                    domain="[('order_state','=','purchase')]"
+                />
+                <filter
+                    name="order_state_done"
+                    string="Locked"
+                    domain="[('order_state','=','done')]"
+                />
+                <filter
+                    name="order_state_cancel"
+                    string="Cancelled"
+                    domain="[('order_state','=','cancel')]"
+                />
+                <separator />
+                <filter name="date_order" string="Order Date" date="date_order" />
+                <separator />
+                <filter name="date_planned" string="Planned Date" date="date_planned" />
+                <separator />
                 <group expand="1" string="Group By">
-                    <filter
-                        string="Purchase Order Line"
-                        name="group_by_order_line_id"
-                        context="{'group_by':'order_line_id'}"
-                    />
                     <filter
                         string="Code"
                         name="group_by_code"
                         context="{'group_by':'code'}"
+                    />
+                    <filter
+                        string="Partner"
+                        name="group_by_partner_id"
+                        context="{'group_by':'partner_id'}"
+                    />
+                    <filter
+                        string="Product"
+                        name="group_by_product_id"
+                        context="{'group_by':'product_id'}"
+                    />
+                    <filter
+                        string="Order"
+                        name="group_by_order_id"
+                        context="{'group_by':'order_id'}"
+                    />
+                    <filter
+                        name="groupby_date_order"
+                        string="Order Date"
+                        context="{'group_by':'date_order'}"
+                    />
+                    <filter
+                        name="groupby_date_planned"
+                        string="Planned Date"
+                        context="{'group_by':'date_planned'}"
                     />
                 </group>
             </search>
@@ -26,14 +83,28 @@
         <field name="name">purchase.budget.line.tree</field>
         <field name="model">purchase.budget.line</field>
         <field name="arch" type="xml">
-            <tree>
-                <field name="order_line_id" />
+            <tree editable="top" create="0">
+                <field name="order_id" />
+                <field name="product_id" optional="show" />
+                <field name="order_line_id" optional="hide" />
                 <field name="code" />
+                <field name="partner_id" optional="show" />
                 <field name="quantity" />
-                <field name="purchase_order_line_price" />
+                <field name="purchase_price_unit" optional="show" />
                 <field name="budget_price_unit" />
                 <field name="currency_id" invisible="1" />
                 <field name="price_total" />
+                <field name="date_order" widget="date" />
+                <field name="date_planned" widget="date" />
+                <field
+                    name="order_state"
+                    optional="show"
+                    widget="badge"
+                    decoration-success="order_state == 'purchase' or order_state == 'done'"
+                    decoration-warning="order_state == 'to approve'"
+                    decoration-info="order_state == 'draft' or order_state == 'sent'"
+                />
+                <field name="invoice_ids" widget="many2many_tags" />
             </tree>
         </field>
     </record>

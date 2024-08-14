@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="purchase_order_form" model="ir.ui.view">
+        <field name="name">purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <!-- <div
+                    class="alert alert-danger"
+                    role="alert"
+                    attrs="{'invisible':[('budget_qty_inconsistency_warning','=','')]}"
+                > -->
+                <div
+                    class="alert alert-danger"
+                    role="alert"
+                    attrs="{'invisible':[('budget_qty_inconsistency_warning','=',False)]}"
+                >
+                    <field name="budget_qty_inconsistency_warning" class="oe_inline" />
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='price_subtotal']" position="before">
+                <button
+                    name="action_show_budget_lines"
+                    type="object"
+                    icon="fa-list"
+                    title="Purchase Budget Lines"
+                />
+                <field name="budget_line_codes" optional="hide" />
+            </xpath>
+        </field>
+    </record>
+    <record id="view_purchase_order_line_budget_line_form" model="ir.ui.view">
+        <field name="name">purchase.order.line.budget.line.form</field>
+        <field name="model">purchase.order.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="product_id" readonly="1" />
+                        <label for="product_qty" />
+                        <div class="o_row">
+                            <span><field name="budget_qty" nolabel="1" /></span>
+                            <span> / </span>
+                            <span>
+                                <field name="product_qty" readonly="1" nolabel="1" />
+                            </span>
+                        </div>
+                    </group>
+                    <field name="price_unit" invisible="1" />
+                    <field name="quick_encoding_budget_qty" invisible="1" />
+                    <field
+                        name="budget_line_ids"
+                        context="{'default_budget_price_unit':price_unit,'default_quantity':quick_encoding_budget_qty}"
+                    >
+                        <tree editable="bottom">
+                            <field name="code" />
+                            <field name="quantity" />
+                            <field name="uom_id" string="UoM" groups="uom.group_uom" />
+                            <field name="purchase_price_unit" />
+                            <field name="budget_price_unit" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="price_total" />
+                        </tree>
+                    </field>
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>
