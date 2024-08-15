@@ -93,27 +93,24 @@ class StockPicking(models.Model):
                 )
             )
 
-    def notify_user(self, message):
+    def jobcan_validate_error_send_mail(self, message):
         self.ensure_one()
-        if self.user_id:
-            self_url = f"/web#id={self.id}&model=stock.picking&view_type=form"
-            message_body = _(
-                "JobCan WF ID %(wf_id)s has been approved but picking "
-                '<a href="%(url)s">%(name)s</a> failed to confirm.<br/>Details:<br/>%(message)s'
-            ) % {
-                "wf_id": self.jobcan_wf_number,
-                "url": self_url,
-                "name": self.name,
-                "message": message,
-            }
-            subject = _("Picking Confirmation Failed: %(name)s") % {"name": self.name}
-            self.message_post(
-                body=message_body,
-                subject=subject,
-                message_type="comment",
-                subtype_xmlid="mail.mt_note",
-                partner_ids=[self.user_id.partner_id.id],
-            )
+        self_url = f"/web#id={self.id}&model=stock.picking&view_type=form"
+        message_body = _(
+            "JobCan WF ID %(wf_id)s has been approved but picking "
+            '<a href="%(url)s">%(name)s</a> failed to confirm.<br/>Details:<br/>%(message)s'
+        ) % {
+            "wf_id": self.jobcan_wf_number,
+            "url": self_url,
+            "name": self.name,
+            "message": message,
+        }
+        subject = _("Picking Confirmation Failed: %(name)s") % {"name": self.name}
+        self.message_post(
+            body=message_body,
+            subject=subject,
+            subtype_xmlid="mail.mt_comment",
+        )
 
     def button_validate(self):
         wf_transfers = self.filtered(lambda x: x.show_jobcan_wf_number)
@@ -132,7 +129,7 @@ class StockPicking(models.Model):
                 pick.move_ids._set_quantities_to_reservation()
                 pick.button_validate()
             except Exception as e:
-                pick.notify_user(str(e))
+                pick.jobcan_validate_error_send_mail(str(e))
 
     @api.model
     def _run_stock_picking_jobcan_wf_confirmation(self):
