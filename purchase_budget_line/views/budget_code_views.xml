@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_budget_code_tree" model="ir.ui.view">
+        <field name="name">budget.code.tree</field>
+        <field name="model">budget.code</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code" />
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_budget_code_form" model="ir.ui.view">
+        <field name="name">budget.code.form</field>
+        <field name="model">budget.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="code" string="Code" />
+                        <h1><field name="code" /></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="parent_id" />
+                            <field name="name" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_budget_code" model="ir.actions.act_window">
+        <field name="name">Budget Codes</field>
+        <field name="res_model">budget.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+    </record>
+    <menuitem
+        id="budget_code_menu"
+        name="Budget Codes"
+        action="action_budget_code"
+        parent="purchase.menu_procurement_management"
+        sequence="10"
+    />
+</odoo>

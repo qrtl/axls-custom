@@ -10,6 +10,7 @@
     "depends": ["purchase"],
     "data": [
         "security/ir.model.access.csv",
+        "views/budget_code_views.xml",
         "views/purchase_budget_line_views.xml",
         "views/purchase_order_views.xml",
     ],
