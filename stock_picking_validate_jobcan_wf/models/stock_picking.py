@@ -105,11 +105,11 @@ class StockPicking(models.Model):
             "name": self.name,
             "message": message,
         }
-        subject = _("Picking Confirmation Failed: %(name)s") % {"name": self.name}
+        subject = _("Picking Validation Failed: %(name)s") % {"name": self.name}
         self.message_post(
             body=message_body,
             subject=subject,
-            subtype_xmlid="mail.mt_comment",
+            subtype_xmlid="mail.mt_note",
         )
 
     def button_validate(self):
@@ -129,6 +129,9 @@ class StockPicking(models.Model):
                 pick.move_ids._set_quantities_to_reservation()
                 pick.button_validate()
             except Exception as e:
+                # Avoid sending out the same message repeatedly.
+                if str(e) in pick.message_ids[:1].body:
+                    continue
                 pick.jobcan_validate_error_send_mail(str(e))
 
     @api.model

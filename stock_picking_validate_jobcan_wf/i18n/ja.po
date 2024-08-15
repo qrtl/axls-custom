@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-13 05:23+0000\n"
-"PO-Revision-Date: 2024-08-13 05:23+0000\n"
+"POT-Creation-Date: 2024-08-15 06:47+0000\n"
+"PO-Revision-Date: 2024-08-15 06:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -30,7 +30,9 @@ msgid ""
 "JobCan WF ID %(wf_id)s has been approved but picking <a "
 "href=\"%(url)s\">%(name)s</a> failed to "
 "confirm.<br/>Details:<br/>%(message)s"
-msgstr "ジョブカンWF ID %(wf_id)s が承認されましたが、運送 <a href=\"%(url)s\">%(name)s</a> の確認に失敗しました。<br/>詳細:<br/>%(message)s"
+msgstr ""
+"ジョブカンWF ID %(wf_id)s が承認されましたが、運送 <a href=\"%(url)s\">%(name)s</a> "
+"の確認に失敗しました。<br/>詳細:<br/>%(message)s"
 
 #. module: stock_picking_validate_jobcan_wf
 #: model:ir.model.fields,field_description:stock_picking_validate_jobcan_wf.field_stock_picking__jobcan_wf_number
@@ -55,8 +57,8 @@ msgstr "ジョブカンWF '%(jobcan_wf_number)s' は未完了です: %(pick_name
 #. odoo-python
 #: code:addons/stock_picking_validate_jobcan_wf/models/stock_picking.py:0
 #, python-format
-msgid "Picking Confirmation Failed: %(name)s"
-msgstr "運送の確認に失敗しました: %(name)s"
+msgid "Picking Validation Failed: %(name)s"
+msgstr "運送の検証に失敗しました: %(name)s"
 
 #. module: stock_picking_validate_jobcan_wf
 #: model:ir.model.fields,field_description:stock_picking_validate_jobcan_wf.field_stock_picking__show_jobcan_wf_number
