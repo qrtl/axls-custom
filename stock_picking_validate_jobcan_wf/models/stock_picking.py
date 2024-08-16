@@ -1,4 +1,5 @@
 # Copyright 2024 Quartile
+# Copyright 2024 Axelspace Corporation (https://axelspace.com)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl)
 
 import logging
@@ -56,40 +57,85 @@ class StockPicking(models.Model):
             api_key = "Token " + api_key
         return api_key
 
+    def _check_jobcan_wf_status(self):
+        self.ensure_one()
+        results = []
+        if not self.jobcan_wf_number:
+            raise UserError(_("Jobcan Workflow Number missing: %s") % (self.name))
+        try:
+            params = {"id": self.jobcan_wf_number}
+            response = self.make_api_call(
+                "jobcan_wf", endpoint="v2/requests", params=params
+            )
+            response.raise_for_status()
+            results = response.json().get("results", [])
+        except Exception as e:
+            _logger.error(
+                "API call failed for picking %s with error: %s", self.id, str(e)
+            )
+            raise UserError(_("API call failed: {}".format(str(e)))) from e
+        if not results:
+            raise UserError(
+                _(
+                    "Specified Jobcan Workflow Number '%(jobcan_wf_number)s' does "
+                    "not exist: %(pick_name)s",
+                    jobcan_wf_number=self.jobcan_wf_number,
+                    pick_name=self.name,
+                )
+            )
+        if results[0].get("status") != "completed":
+            raise UserError(
+                _(
+                    "Jobcan workflow '%(jobcan_wf_number)s' is not completed: "
+                    "%(pick_name)s",
+                    jobcan_wf_number=self.jobcan_wf_number,
+                    pick_name=self.name,
+                )
+            )
+
+    def jobcan_validate_error_send_message(self, message):
+        self.ensure_one()
+        self_url = f"/web#id={self.id}&model=stock.picking&view_type=form"
+        message_body = _(
+            "JobCan WF ID %(wf_id)s has been approved but picking "
+            '<a href="%(url)s">%(name)s</a> failed to confirm.<br/>Details:<br/>%(message)s'
+        ) % {
+            "wf_id": self.jobcan_wf_number,
+            "url": self_url,
+            "name": self.name,
+            "message": message,
+        }
+        subject = _("Picking Validation Failed: %(name)s") % {"name": self.name}
+        self.message_post(
+            body=message_body,
+            subject=subject,
+            subtype_xmlid="stock_picking_validate_jobcan_wf.mt_jobcan_validate_error",
+        )
+
     def button_validate(self):
         wf_transfers = self.filtered(lambda x: x.show_jobcan_wf_number)
         for pick in wf_transfers:
-            results = []
-            if not pick.jobcan_wf_number:
-                raise UserError(_("Jobcan Workflow Number missing: %s") % (pick.name))
-            try:
-                params = {"id": pick.jobcan_wf_number}
-                response = pick.make_api_call(
-                    "jobcan_wf", endpoint="v2/requests", params=params
-                )
-                response.raise_for_status()
-                results = response.json().get("results", [])
-            except Exception as e:
-                _logger.error(
-                    "API call failed for picking %s with error: %s", pick.id, str(e)
-                )
-                raise UserError(_("API call failed: {}".format(str(e)))) from e
-            if not results:
-                raise UserError(
-                    _(
-                        "Specified Jobcan Workflow Number '%(jobcan_wf_number)s' does "
-                        "not exist: %(pick_name)s",
-                        jobcan_wf_number=pick.jobcan_wf_number,
-                        pick_name=pick.name,
-                    )
-                )
-            if results[0].get("status") != "completed":
-                raise UserError(
-                    _(
-                        "Jobcan workflow '%(jobcan_wf_number)s' is not completed: "
-                        "%(pick_name)s",
-                        jobcan_wf_number=pick.jobcan_wf_number,
-                        pick_name=pick.name,
-                    )
-                )
+            pick._check_jobcan_wf_status()
         return super().button_validate()
+
+    def _get_assigned_pickings_with_jobcan_wf(self):
+        return self.search(
+            [("state", "=", "assigned"), ("jobcan_wf_number", "!=", False)]
+        )
+
+    def _validate_pickings(self):
+        for pick in self.with_context(skip_immediate=True):
+            try:
+                pick.move_ids._set_quantities_to_reservation()
+                pick.button_validate()
+            except Exception as e:
+                # Avoid sending out the same message repeatedly.
+                if str(e) in pick.message_ids[:1].body:
+                    continue
+                pick.jobcan_validate_error_send_message(str(e))
+
+    @api.model
+    def _run_stock_picking_jobcan_wf_confirmation(self):
+        _logger.info("Scheduled stock picking JobCan WF confirmation...")
+        pickings = self._get_assigned_pickings_with_jobcan_wf()
+        pickings._validate_pickings()
