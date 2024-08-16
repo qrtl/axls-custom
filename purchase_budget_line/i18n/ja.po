@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-14 14:19+0000\n"
-"PO-Revision-Date: 2024-08-14 14:19+0000\n"
+"POT-Creation-Date: 2024-08-16 05:42+0000\n"
+"PO-Revision-Date: 2024-08-16 05:42+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,9 +21,41 @@ msgid "<span> / </span>"
 msgstr ""
 
 #. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__active
+msgid "Active"
+msgstr "有効"
+
+#. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__analytic_account_id
+#: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_budget_code_search
+msgid "Analytic Account"
+msgstr "分析勘定"
+
+#. module: purchase_budget_line
+#: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_budget_code_form
+#: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_budget_code_search
+msgid "Archived"
+msgstr "アーカイブ済"
+
+#. module: purchase_budget_line
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__invoice_ids
 msgid "Bills"
 msgstr "請求書"
+
+#. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__budget_code_id
+#: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_order__budget_code_ids
+#: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_order_line__budget_code_ids
+#: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_budget_code_search
+#: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_purchase_budget_line_search
+msgid "Budget Code"
+msgstr "予算コード"
+
+#. module: purchase_budget_line
+#: model:ir.actions.act_window,name:purchase_budget_line.action_budget_code
+#: model:ir.ui.menu,name:purchase_budget_line.budget_code_menu
+msgid "Budget Codes"
+msgstr "予算コード"
 
 #. module: purchase_budget_line
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_order_line__budget_line_ids
@@ -31,14 +63,9 @@ msgid "Budget Line"
 msgstr "予算明細"
 
 #. module: purchase_budget_line
-#: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_order_line__budget_line_codes
-msgid "Budget Line Codes"
-msgstr "予算明細コード"
-
-#. module: purchase_budget_line
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_order__budget_qty_inconsistency_warning
 msgid "Budget Qty Inconsistency Warning"
-msgstr ""
+msgstr "予算数量不整合警告"
 
 #. module: purchase_budget_line
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_order_line__budget_qty
@@ -56,17 +83,39 @@ msgid "Cancelled"
 msgstr "取消済"
 
 #. module: purchase_budget_line
-#: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__code
-#: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_purchase_budget_line_search
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__child_ids
+msgid "Child Budget Codes"
+msgstr "子予算コード"
+
+#. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__code
 msgid "Code"
 msgstr "コード"
 
 #. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__complete_code
+#: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_budget_code_search
+msgid "Complete Code"
+msgstr "完全コード"
+
+#. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__complete_name_en
+msgid "Complete Name En"
+msgstr "完全名称(英)"
+
+#. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__complete_name_ja
+msgid "Complete Name Ja"
+msgstr "完全名称(日)"
+
+#. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__create_uid
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__create_uid
 msgid "Created by"
 msgstr "作成者"
 
 #. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__create_date
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__create_date
 msgid "Created on"
 msgstr "作成日"
@@ -91,6 +140,7 @@ msgid ""
 msgstr ""
 
 #. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__display_name
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__display_name
 msgid "Display Name"
 msgstr "表示名"
@@ -101,26 +151,31 @@ msgid "Expected Arrival"
 msgstr "入荷予定日"
 
 #. module: purchase_budget_line
+#: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_budget_code_search
 #: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_purchase_budget_line_search
 msgid "Group By"
-msgstr ""
+msgstr "グループ化"
 
 #. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__id
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__id
 msgid "ID"
 msgstr ""
 
 #. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code____last_update
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line____last_update
 msgid "Last Modified on"
 msgstr "最終変更日"
 
 #. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__write_uid
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__write_uid
 msgid "Last Updated by"
 msgstr "最終更新者"
 
 #. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__write_date
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__write_date
 msgid "Last Updated on"
 msgstr "最終更新日"
@@ -129,6 +184,11 @@ msgstr "最終更新日"
 #: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_purchase_budget_line_search
 msgid "Locked"
 msgstr "ロック済"
+
+#. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__name
+msgid "Name"
+msgstr "名称"
 
 #. module: purchase_budget_line
 #: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_purchase_budget_line_search
@@ -155,6 +215,11 @@ msgstr "オーダ参照"
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__order_state
 msgid "Order Status"
 msgstr "オーダ状態"
+
+#. module: purchase_budget_line
+#: model:ir.model.fields,field_description:purchase_budget_line.field_budget_code__parent_id
+msgid "Parent"
+msgstr "親"
 
 #. module: purchase_budget_line
 #: model:ir.model.fields,field_description:purchase_budget_line.field_purchase_budget_line__partner_id
@@ -230,10 +295,10 @@ msgstr "見積依頼送付済"
 #, python-format
 msgid ""
 "There is a line with inconsistent quantities between order and budget:\n"
-"%s."
+"%s"
 msgstr ""
 "オーダと予算で数量が不一致の明細があります:\n"
-"%s."
+"%s"
 
 #. module: purchase_budget_line
 #: model_terms:ir.ui.view,arch_db:purchase_budget_line.view_purchase_budget_line_search
@@ -258,4 +323,9 @@ msgstr "単位"
 #. module: purchase_budget_line
 #: model:ir.model.fields,help:purchase_budget_line.field_purchase_budget_line__partner_id
 msgid "You can find a vendor by its Name, TIN, Email or Internal Reference."
+msgstr ""
+
+#. module: purchase_budget_line
+#: model:ir.model,name:purchase_budget_line.model_budget_code
+msgid "budget.code"
 msgstr ""

@@ -8,10 +8,10 @@ class PurchaseBudgetLine(models.Model):
     _name = "purchase.budget.line"
     _description = "Purchase Budget Line"
 
-    code = fields.Many2one("budget.code", required=True)
     order_line_id = fields.Many2one(
         "purchase.order.line", ondelete="cascade", required=True
     )
+    budget_code_id = fields.Many2one("budget.code", required=True)
     product_id = fields.Many2one(related="order_line_id.product_id", store=True)
     quantity = fields.Float()
     uom_id = fields.Many2one(related="order_line_id.product_uom", store=True)

@@ -17,7 +17,11 @@ class PurchaseOrderLine(models.Model):
         digits="Product Unit of Measure",
         compute="_compute_budget_qty",
     )
-    budget_line_codes = fields.Char(compute="_compute_budget_line_codes")
+    budget_code_ids = fields.Many2many(
+        "budget.code",
+        compute="_compute_budget_code_ids",
+        store=True,
+    )
     quick_encoding_budget_qty = fields.Binary(
         compute="_compute_quick_encoding_budget_qty",
         exportable=False,
@@ -28,10 +32,10 @@ class PurchaseOrderLine(models.Model):
         for line in self:
             line.budget_qty = sum(line.budget_line_ids.mapped("quantity"))
 
-    @api.depends("budget_line_ids.code")
-    def _compute_budget_line_codes(self):
+    @api.depends("budget_line_ids.budget_code_id")
+    def _compute_budget_code_ids(self):
         for line in self:
-            line.budget_line_codes = ", ".join(line.budget_line_ids.mapped("code"))
+            line.budget_code_ids = line.budget_line_ids.budget_code_id
 
     @api.depends("product_qty", "budget_qty")
     def _compute_quick_encoding_budget_qty(self):

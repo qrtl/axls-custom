@@ -1,12 +1,49 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="view_budget_code_search" model="ir.ui.view">
+        <field name="name">budget.code.search</field>
+        <field name="model">budget.code</field>
+        <field name="arch" type="xml">
+            <search>
+                <field
+                    name="code"
+                    string="Budget Code"
+                    filter_domain="['|',('code','ilike',self),('name','ilike',self)]"
+                />
+                <field
+                    name="complete_code"
+                    string="Complete Code"
+                    filter_domain="['|','|',('complete_code','ilike',self),('complete_name_en','ilike',self),('complete_name_ja','ilike',self)]"
+                />
+                <field name="analytic_account_id" />
+                <separator />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active','=',False)]"
+                />
+                <group expand="1" string="Group By">
+                    <filter
+                        string="Analytic Account"
+                        name="group_by_analytic_account_id"
+                        context="{'group_by':'analytic_account_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
     <record id="view_budget_code_tree" model="ir.ui.view">
         <field name="name">budget.code.tree</field>
         <field name="model">budget.code</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="display_name" />
                 <field name="code" />
                 <field name="name" />
+                <field name="analytic_account_id" optional="show" />
+                <field name="complete_code" optional="hide" />
+                <field name="complete_name_en" optional="hide" />
+                <field name="complete_name_ja" optional="hide" />
             </tree>
         </field>
     </record>
@@ -15,15 +52,28 @@
         <field name="model">budget.code</field>
         <field name="arch" type="xml">
             <form>
+                <field name="active" invisible="1" />
                 <sheet>
+                    <widget
+                        name="web_ribbon"
+                        title="Archived"
+                        bg_color="bg-danger"
+                        attrs="{'invisible':[('active','=',True)]}"
+                    />
                     <div class="oe_title">
-                        <label for="code" string="Code" />
-                        <h1><field name="code" /></h1>
+                        <label for="name" />
+                        <h1><field name="name" /></h1>
                     </div>
                     <group>
                         <group>
                             <field name="parent_id" />
-                            <field name="name" />
+                            <field name="code" />
+                            <field name="analytic_account_id" />
+                        </group>
+                        <group>
+                            <field name="complete_code" />
+                            <field name="complete_name_en" />
+                            <field name="complete_name_ja" />
                         </group>
                     </group>
                 </sheet>
@@ -40,7 +90,7 @@
         id="budget_code_menu"
         name="Budget Codes"
         action="action_budget_code"
-        parent="purchase.menu_procurement_management"
-        sequence="10"
+        parent="purchase.menu_purchase_config"
+        sequence="5"
     />
 </odoo>

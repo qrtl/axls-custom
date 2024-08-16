@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="view_purchase_order_filter" model="ir.ui.view">
+        <field name="name">request.quotation.select</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.view_purchase_order_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="budget_code_ids" />
+            </xpath>
+        </field>
+    </record>
+    <record id="purchase_order_view_search" model="ir.ui.view">
+        <field name="name">purchase.order.select</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_view_search" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="budget_code_ids" />
+            </xpath>
+        </field>
+    </record>
     <record id="purchase_order_form" model="ir.ui.view">
         <field name="name">purchase.order.form</field>
         <field name="model">purchase.order</field>
         <field name="inherit_id" ref="purchase.purchase_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="before">
-                <!-- <div
-                    class="alert alert-danger"
-                    role="alert"
-                    attrs="{'invisible':[('budget_qty_inconsistency_warning','=','')]}"
-                > -->
                 <div
                     class="alert alert-danger"
                     role="alert"
@@ -26,7 +41,7 @@
                     icon="fa-list"
                     title="Purchase Budget Lines"
                 />
-                <field name="budget_line_codes" optional="hide" />
+                <field name="budget_code_ids" widget="many2many_tags" optional="hide" />
             </xpath>
         </field>
     </record>
@@ -54,7 +69,10 @@
                         context="{'default_budget_price_unit':price_unit,'default_quantity':quick_encoding_budget_qty}"
                     >
                         <tree editable="bottom">
-                            <field name="code" />
+                            <field
+                                name="budget_code_id"
+                                domain="[('child_ids','=',False)]"
+                            />
                             <field name="quantity" />
                             <field name="uom_id" string="UoM" groups="uom.group_uom" />
                             <field name="purchase_price_unit" />

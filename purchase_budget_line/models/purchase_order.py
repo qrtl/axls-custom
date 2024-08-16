@@ -10,6 +10,7 @@ class PurchaseOrder(models.Model):
     budget_qty_inconsistency_warning = fields.Text(
         compute="_compute_budget_qty_inconsistency_warning",
     )
+    budget_code_ids = fields.Many2many(related="order_line.budget_code_ids")
 
     @api.constrains("order_line.product_qty", "order_line.budget_qty")
     def _compute_budget_qty_inconsistency_warning(self):
@@ -23,7 +24,7 @@ class PurchaseOrder(models.Model):
             if product_names:
                 message = _(
                     "There is a line with inconsistent quantities between order and "
-                    "budget:\n%s.",
+                    "budget:\n%s",
                     product_names,
                 )
             order.budget_qty_inconsistency_warning = message

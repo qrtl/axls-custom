@@ -5,7 +5,7 @@
         <field name="model">purchase.budget.line</field>
         <field name="arch" type="xml">
             <search>
-                <field name="code" />
+                <field name="budget_code_id" />
                 <field name="partner_id" />
                 <field name="product_id" />
                 <field name="order_line_id" />
@@ -43,12 +43,11 @@
                 <filter name="date_order" string="Order Date" date="date_order" />
                 <separator />
                 <filter name="date_planned" string="Planned Date" date="date_planned" />
-                <separator />
                 <group expand="1" string="Group By">
                     <filter
-                        string="Code"
-                        name="group_by_code"
-                        context="{'group_by':'code'}"
+                        string="Budget Code"
+                        name="group_by_budget_code"
+                        context="{'group_by':'budget_code_id'}"
                     />
                     <filter
                         string="Partner"
@@ -83,11 +82,11 @@
         <field name="name">purchase.budget.line.tree</field>
         <field name="model">purchase.budget.line</field>
         <field name="arch" type="xml">
-            <tree editable="top" create="0">
+            <tree editable="top" create="0" multi_edit="1">
                 <field name="order_id" />
                 <field name="product_id" optional="show" />
                 <field name="order_line_id" optional="hide" />
-                <field name="code" />
+                <field name="budget_code_id" domain="[('child_ids','=',False)]" />
                 <field name="partner_id" optional="show" />
                 <field name="quantity" />
                 <field name="purchase_price_unit" optional="show" />
