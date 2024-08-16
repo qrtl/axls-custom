@@ -11,6 +11,7 @@
     "data": [
         "data/api_config_data.xml",
         "data/cron_data.xml",
+        "data/mail_message_subtype_data.xml",
         "views/stock_picking_views.xml",
     ],
     "installable": True,

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-15 06:47+0000\n"
-"PO-Revision-Date: 2024-08-15 06:47+0000\n"
+"POT-Creation-Date: 2024-08-16 08:33+0000\n"
+"PO-Revision-Date: 2024-08-16 08:33+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -33,6 +33,11 @@ msgid ""
 msgstr ""
 "ジョブカンWF ID %(wf_id)s が承認されましたが、運送 <a href=\"%(url)s\">%(name)s</a> "
 "の確認に失敗しました。<br/>詳細:<br/>%(message)s"
+
+#. module: stock_picking_validate_jobcan_wf
+#: model:mail.message.subtype,name:stock_picking_validate_jobcan_wf.mt_jobcan_validate_error
+msgid "Jobcan Validation Error"
+msgstr "ジョブカン検証エラー"
 
 #. module: stock_picking_validate_jobcan_wf
 #: model:ir.model.fields,field_description:stock_picking_validate_jobcan_wf.field_stock_picking__jobcan_wf_number

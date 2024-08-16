@@ -93,7 +93,7 @@ class StockPicking(models.Model):
                 )
             )
 
-    def jobcan_validate_error_send_mail(self, message):
+    def jobcan_validate_error_send_message(self, message):
         self.ensure_one()
         self_url = f"/web#id={self.id}&model=stock.picking&view_type=form"
         message_body = _(
@@ -109,7 +109,7 @@ class StockPicking(models.Model):
         self.message_post(
             body=message_body,
             subject=subject,
-            subtype_xmlid="mail.mt_note",
+            subtype_xmlid="stock_picking_validate_jobcan_wf.mt_jobcan_validate_error",
         )
 
     def button_validate(self):
@@ -132,7 +132,7 @@ class StockPicking(models.Model):
                 # Avoid sending out the same message repeatedly.
                 if str(e) in pick.message_ids[:1].body:
                     continue
-                pick.jobcan_validate_error_send_mail(str(e))
+                pick.jobcan_validate_error_send_message(str(e))
 
     @api.model
     def _run_stock_picking_jobcan_wf_confirmation(self):

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="mt_jobcan_validate_error" model="mail.message.subtype">
+        <field name="name">Jobcan Validation Error</field>
+        <field name="res_model">stock.picking</field>
+        <field name="default">True</field>
+        <field name="internal">True</field>
+    </record>
+</odoo>
