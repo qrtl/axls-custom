@@ -46,7 +46,7 @@
                 <group expand="1" string="Group By">
                     <filter
                         string="Budget Code"
-                        name="group_by_budget_code"
+                        name="group_by_budget_code_id"
                         context="{'group_by':'budget_code_id'}"
                     />
                     <filter

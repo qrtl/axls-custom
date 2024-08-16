@@ -37,11 +37,11 @@
         <field name="model">budget.code</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="display_name" />
+                <field name="complete_code" />
                 <field name="code" />
                 <field name="name" />
-                <field name="analytic_account_id" optional="show" />
-                <field name="complete_code" optional="hide" />
+                <field name="display_name" optional="hide" />
+                <field name="analytic_account_id" optional="hide" />
                 <field name="complete_name_en" optional="hide" />
                 <field name="complete_name_ja" optional="hide" />
             </tree>
