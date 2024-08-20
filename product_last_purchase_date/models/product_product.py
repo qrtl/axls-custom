@@ -15,6 +15,7 @@ class Product(models.Model):
         "of the receipt prevails.",
     )
     last_purchase_date = fields.Date(
+        "Last Purchase Accouting Date",
         compute="_compute_last_purchase_date",
         store=True,
         help="Date of the last receipt from the supplier.",
