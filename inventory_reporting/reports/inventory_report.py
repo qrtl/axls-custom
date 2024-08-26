@@ -47,7 +47,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 _("Unit of Measurement"),
                 _("Unit Price"),
                 _("Total Value"),
-                _("Last Purchase Date"),
+                _("Last Purchase Accounting Date"),
             ]
             for col, header in enumerate(headers):
                 ws.write(0, col, header)
