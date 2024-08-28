@@ -15,12 +15,17 @@ class Product(models.Model):
         "of the receipt prevails.",
     )
     last_purchase_date = fields.Date(
+        "Last Purchase Accouting Date",
         compute="_compute_last_purchase_date",
         store=True,
         help="Date of the last receipt from the supplier.",
     )
 
-    @api.depends("stock_move_ids.state", "man_last_purchase_date")
+    @api.depends(
+        "stock_move_ids.state",
+        "stock_move_ids.account_move_ids.state",
+        "man_last_purchase_date",
+    )
     def _compute_last_purchase_date(self):
         for product in self:
             last_purchase_date = False
@@ -29,7 +34,13 @@ class Product(models.Model):
                 self._get_move_domain(product), order="id desc", limit=1
             )
             if move:
-                last_purchase_date = fields.Date.context_today(self, move.date)
+                posted_moves = move.account_move_ids.filtered(
+                    lambda x: x.state == "posted"
+                )
+                if posted_moves:
+                    last_purchase_date = posted_moves[0].date
+                else:
+                    last_purchase_date = fields.Date.context_today(self, move.date)
             if (
                 not last_purchase_date
                 or man_last_purchase_date
