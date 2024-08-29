@@ -22,8 +22,7 @@ Stock Valuation Layer View Adjust
 
 |badge1| |badge2| |badge3|
 
-This module displays remaining_qty and remaining_value in the SVL tree
-view.
+This module displays remaining_qty and remaining_value in the SVL views.
 
 **Table of contents**
 
