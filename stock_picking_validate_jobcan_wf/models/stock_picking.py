@@ -48,7 +48,11 @@ class StockPicking(models.Model):
     def _compute_show_jobcan_wf_number(self):
         for pick in self:
             pick.show_jobcan_wf_number = False
-            if pick.show_skip_jobcan_wf and not pick.skip_jobcan_wf:
+            if (
+                pick._is_outgoing()
+                and not pick._receipt_return_picking()
+                and not pick.skip_jobcan_wf
+            ):
                 pick.show_jobcan_wf_number = True
 
     def get_api_key(self, config):
