@@ -15,8 +15,8 @@ class StockPicking(models.Model):
     _inherit = ["stock.picking", "api.call.mixin"]
 
     skip_jobcan_wf = fields.Boolean("Skip Jobcan Workflow", copy=False)
-    show_skip_jobcan_wf = fields.Boolean(compute="_compute_show_skip_jobcan_wf")
     jobcan_wf_number = fields.Char("Jobcan Workflow Number", copy=False)
+    show_skip_jobcan_wf = fields.Boolean(compute="_compute_show_jobcan_wf_number")
     show_jobcan_wf_number = fields.Boolean(compute="_compute_show_jobcan_wf_number")
 
     def _is_outgoing(self):
@@ -34,26 +34,14 @@ class StockPicking(models.Model):
             return True
         return False
 
-    def _compute_show_skip_jobcan_wf(self):
-        for pick in self:
-            pick.show_skip_jobcan_wf = False
-            if (
-                pick._is_outgoing()
-                and not pick._receipt_return_picking()
-                and not pick.move_line_ids.mapped("owner_id")
-            ):
-                pick.show_skip_jobcan_wf = True
-
     @api.depends("skip_jobcan_wf")
     def _compute_show_jobcan_wf_number(self):
         for pick in self:
+            pick.show_skip_jobcan_wf = False
             pick.show_jobcan_wf_number = False
-            if (
-                pick._is_outgoing()
-                and not pick._receipt_return_picking()
-                and not pick.skip_jobcan_wf
-            ):
-                pick.show_jobcan_wf_number = True
+            if pick._is_outgoing() and not pick._receipt_return_picking():
+                pick.show_skip_jobcan_wf = True
+                pick.show_jobcan_wf_number = not pick.skip_jobcan_wf
 
     def get_api_key(self, config):
         api_key = super().get_api_key(config)
