@@ -13,16 +13,21 @@ class StockMoveLine(models.Model):
     )
 
     @api.model
-    def _cron_update_stock_lot_purchase_information(self):
+    def _cron_update_stock_lot_purchase_information(self, limit):
         move_lines = self.sudo().search(
             [
                 ("move_id.purchase_line_id", "!=", False),
                 ("lot_id", "!=", False),
                 ("lot_id.purchase_id", "=", False),
-            ]
+            ],
+            limit=limit,
         )
         for line in move_lines:
             line.lot_id.purchase_id = line.move_id.purchase_line_id.order_id.id
             line.lot_id.purchase_partner_id = (
                 line.move_id.purchase_line_id.partner_id.id
             )
+        if len(move_lines) == limit:
+            self.env.ref(
+                "stock_lot_purchase_attribute.update_stock_lot_purchase_information"
+            )._trigger()
