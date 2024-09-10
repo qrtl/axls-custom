@@ -17,7 +17,7 @@ class StockMove(models.Model):
             line.lot_id.write(
                 {
                     "purchase_id": purchase_line.order_id.id,
-                    "purchase_partner_id": purchase_line.partner_id,
+                    "purchase_partner_id": purchase_line.partner_id.id,
                 }
             )
         return moves
