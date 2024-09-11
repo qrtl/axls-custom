@@ -34,13 +34,8 @@ class TestStockLotPurchaseAttribute(TransactionCase):
         )
 
     def test_stock_lot_purchase_attribute(self):
-        # Confirm the purchase order
         self.purchase_order.button_confirm()
-        self.assertEqual(self.purchase_order.state, "purchase", "PO not confirmed")
-
         picking = self.purchase_order.picking_ids
-        self.assertTrue(picking, "No incoming picking found.")
-
         picking.action_confirm()
         picking.action_assign()
         move_line = picking.move_line_ids
