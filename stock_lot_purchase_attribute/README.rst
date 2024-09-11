@@ -23,7 +23,8 @@ Stock Lot Purchase Attribute
 |badge1| |badge2| |badge3|
 
 This module adds fields to stock.lot to keep some information from the
-related purchase order.
+related purchase order. Corresponding fields are also added to relevant
+transactions, such as stock.move.line and stock.quant.
 
 **Table of contents**
 
@@ -35,7 +36,7 @@ Usage
 
 Activate the scheduled action before clicking 'RUN MANUALLY' and
 deactivate it after the process is finished. We need to activate it
-because calling \_trigger for each batch of records only works with an
+because calling \_trigger() for each batch of records only works with an
 active cron job.
 
 Bug Tracker

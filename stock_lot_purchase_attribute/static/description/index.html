@@ -370,7 +370,8 @@ ul.auto-toc {
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/licence-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/qrtl/axls-custom/tree/16.0/stock_lot_purchase_attribute"><img alt="qrtl/axls-custom" src="https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github" /></a></p>
 <p>This module adds fields to stock.lot to keep some information from the
-related purchase order.</p>
+related purchase order. Corresponding fields are also added to relevant
+transactions, such as stock.move.line and stock.quant.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -387,7 +388,7 @@ related purchase order.</p>
 <h1><a class="toc-backref" href="#toc-entry-1">Usage</a></h1>
 <p>Activate the scheduled action before clicking ‘RUN MANUALLY’ and
 deactivate it after the process is finished. We need to activate it
-because calling _trigger for each batch of records only works with an
+because calling _trigger() for each batch of records only works with an
 active cron job.</p>
 </div>
 <div class="section" id="bug-tracker">
