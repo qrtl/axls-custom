@@ -1,0 +1,1 @@
+Vendors sometimes need to know their clients' part numbers for printing on product labels, delivery slips, and other documents. Standard Odoo does not support this when vendor product codes are set for products. This module adds the internal reference value as a column named Buyer Part No. in the table of purchase reports to address this need.

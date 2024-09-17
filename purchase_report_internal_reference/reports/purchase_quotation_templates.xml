@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template
+        id="report_purchasequotation_document_inherit"
+        inherit_id="purchase.report_purchasequotation_document"
+    >
+        <xpath expr="//th[@name='th_description']" position="after">
+            <th name="th_internal_reference"><strong>Buyer Part No.</strong></th>
+        </xpath>
+        <xpath expr="//td[@id='product']" position="after">
+            <td class="text-center">
+                <span t-field="order_line.product_id.default_code" />
+            </td>
+        </xpath>
+    </template>
+</odoo>
