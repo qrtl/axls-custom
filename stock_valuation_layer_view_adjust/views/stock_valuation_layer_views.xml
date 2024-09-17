@@ -6,10 +6,8 @@
         <field name="inherit_id" ref="stock_account.stock_valuation_layer_tree" />
         <field name="arch" type="xml">
             <field name="value" position="after">
-                <!-- Not adding optional="show" because the optional attribute is not working well in the SVL tree view.
-                https://github.com/odoo/odoo/issues/178161 -->
-                <field name="remaining_qty" />
-                <field name="remaining_value" />
+                <field name="remaining_qty" sum="Remaining Qty" optional="show" />
+                <field name="remaining_value" sum="Remaining Value" optional="show" />
             </field>
         </field>
     </record>
