@@ -7,7 +7,7 @@ from odoo import fields, models
 class StockLot(models.Model):
     _inherit = "stock.lot"
 
-    # We make these field editable on purpose so that the user can change the price as
+    # We make these fields editable on purpose so that the user can change the price as
     # appropriate.
     purchase_id = fields.Many2one(
         "purchase.order",
