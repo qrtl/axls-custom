@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_quality_check_category_tree" model="ir.ui.view">
+        <field name="name">quality.check.category.tree</field>
+        <field name="model">quality.check.category</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree create="1" editable="bottom" multi_edit="1">
+                <field name="code" />
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_quality_check_category_search" model="ir.ui.view">
+        <field name="name">quality.check.category.search</field>
+        <field name="model">quality.check.category</field>
+        <field name="arch" type="xml">
+            <search string="Quality Check Category">
+                <filter
+                    string="Archived"
+                    name="inactive"
+                    domain="[('active','=',False)]"
+                />
+            </search>
+        </field>
+    </record>
+    <record id="action_quality_check_category_view" model="ir.actions.act_window">
+        <field name="name">Quality Check Categories</field>
+        <field name="res_model">quality.check.category</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <menuitem
+        id="menu_quality_check_category_config"
+        parent="stock.menu_product_in_config_stock"
+        action="action_quality_check_category_view"
+        sequence="60"
+    />
+</odoo>
