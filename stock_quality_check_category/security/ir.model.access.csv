@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_quality_check_category_user,access.quality.check.category.user,model_quality_check_category,base.group_user,1,0,0,0
-access_quality_check_category_manager,access.quality.check.category.manager,model_quality_check_category,stock.group_stock_manager,1,1,1,1
