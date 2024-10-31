@@ -22,6 +22,7 @@ FIELD_VALS = [
     ["item_type", "Item Type", "char", True],
     ["category", "Category", "char", True],
     ["uom", "Unit of Material", "char", False],
+    ["quality_check_categ_id", "Quality Check Category", "char", False],
     ["description", "Description", "char", True],
     ["spec", "Spec", "char", False],
     ["drawing", "Drawing No", "char", False],
@@ -69,6 +70,21 @@ class ProductPlmImport(models.TransientModel):
         product = self.env["product.product"].search(product_domain)
         if product:
             error_list.append(_("There is already a product for %s.", part_number))
+        quality_check_categ_code = row_dict.get("quality_check_categ_id")
+        if quality_check_categ_code:
+            quality_check_categ = self.env["quality.check.category"].search(
+                [("code", "=", quality_check_categ_code)], limit=1
+            )
+            row_dict["quality_check_categ_id"] = (
+                quality_check_categ.id if quality_check_categ else False
+            )
+            if not quality_check_categ:
+                error_list.append(
+                    _(
+                        "A non-existent inspection category (%s) is present in the I/F file."
+                    )
+                    % quality_check_categ_code
+                )
         # We update vals_list regardless of whether there is an error or not
         row_dict["company_id"] = company.id
         row_dict["log_id"] = self.import_log_id.id
