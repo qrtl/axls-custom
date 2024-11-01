@@ -36,9 +36,7 @@ class ProductPlm(models.Model):
     solved = fields.Boolean()
     log_id = fields.Many2one("plm.import.log", string="Log", copy=False)
     row_no = fields.Integer("Row No.", copy=False)
-    quality_check_categ_id = fields.Many2one(
-        "quality.check.category", string="Quality Check Category"
-    )
+    acceptance_test_categ = fields.Char(string="Quality Check Category")
     mapping_id = fields.Many2one("plm.product.mapping", string="Mapping")
 
     @api.constrains("solved", "state")
@@ -87,11 +85,31 @@ class ProductPlm(models.Model):
             uom = self.env.ref("uom.product_uom_unit")
         return uom
 
+    def _check_and_get_quality_check_category(self):
+        if self.acceptance_test_categ:
+            quality_check_categ = self.env["quality.check.category"].search(
+                [("code", "=", self.acceptance_test_categ)], limit=1
+            )
+            if quality_check_categ:
+                return quality_check_categ
+            self.write(
+                {
+                    "error_message": _(
+                        "Quality Check Category (%s) does not exist.",
+                        self.acceptance_test_categ,
+                    ),
+                    "state": "failed",
+                }
+            )
+            return
+        return False
+
     def _create_product(self):
         self.ensure_one()
         product = self.env["product.product"]
         description_purchase = self._get_description_purchase()
         uom = self._get_uom()
+        quality_check_categ = self._check_and_get_quality_check_category()
         mapping = self.mapping_id
         vals = {
             "default_code": self.part_number,
@@ -101,7 +119,9 @@ class ProductPlm(models.Model):
             "detailed_type": mapping.product_type,
             "categ_id": mapping.product_categ_id.id,
             "uom_id": uom.id,
-            "quality_check_categ_id": self.quality_check_categ_id.id,
+            "quality_check_categ_id": quality_check_categ.id
+            if quality_check_categ
+            else False,
             "uom_po_id": uom.id,
             "description": self.description,
             "description_purchase": description_purchase,
@@ -127,6 +147,7 @@ class ProductPlm(models.Model):
         domain = self._get_create_products_domain()
         plm_recs = self.search(domain, limit=batch_size)
         for plm_rec in plm_recs:
+            plm_rec._check_and_get_quality_check_category()
             if plm_rec.state != "draft" or plm_rec.error_message or plm_rec.solved:
                 continue
             product = plm_rec._create_product()
