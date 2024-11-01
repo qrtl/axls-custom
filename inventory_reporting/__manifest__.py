@@ -13,6 +13,7 @@
         "product_last_purchase_date",
         "report_xlsx",
         "stock_analytic",
+        "stock_move_actual_date",  # actual_date
         "stock_valuation_layer_accounting_date",
         "web_ir_actions_act_multi",
     ],
