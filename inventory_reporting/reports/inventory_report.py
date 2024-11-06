@@ -296,7 +296,7 @@ class InventoryReportXlsx(models.AbstractModel):
             # Write the data to the worksheet
             for row, valuation in enumerate(valuations, start=1):
                 accounting_date = fields.Date.from_string(
-                    valuation.stock_move_id.accounting_date
+                    valuation.stock_move_id.actual_date
                 )
                 ws.write(row, 0, valuation.reference)
                 ws.write(row, 1, valuation.stock_move_id.origin)
