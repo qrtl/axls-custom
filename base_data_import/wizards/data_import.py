@@ -72,6 +72,7 @@ class DataImport(models.TransientModel):
                 csv_data = csv_data.decode(encoding)
                 csv_iterator = csv.reader(io.StringIO(csv_data), delimiter=",")
                 sheet_fields = next(csv_iterator)
+                sheet_fields = [field.strip() for field in sheet_fields]
                 break
             except Exception:
                 _logger.exception("Error while capturing sheet fields.")
