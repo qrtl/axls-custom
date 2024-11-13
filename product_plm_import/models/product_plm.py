@@ -36,6 +36,10 @@ class ProductPlm(models.Model):
     solved = fields.Boolean()
     log_id = fields.Many2one("plm.import.log", string="Log", copy=False)
     row_no = fields.Integer("Row No.", copy=False)
+    acceptance_test_categ = fields.Char(string="Quality Check Category")
+    quality_check_categ_id = fields.Many2one(
+        "quality.check.category", string="Quality Check Category"
+    )
     mapping_id = fields.Many2one("plm.product.mapping", string="Mapping")
 
     @api.constrains("solved", "state")
@@ -98,6 +102,7 @@ class ProductPlm(models.Model):
             "detailed_type": mapping.product_type,
             "categ_id": mapping.product_categ_id.id,
             "uom_id": uom.id,
+            "quality_check_categ_id": self.quality_check_categ_id.id,
             "uom_po_id": uom.id,
             "description": self.description,
             "description_purchase": description_purchase,

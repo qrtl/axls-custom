@@ -13,6 +13,7 @@
         "stock_picking_auto_create_lot",  # auto_create_lot
         "base_data_import",
         "product_alternative_code",
+        "stock_quality_check_category",  # quality_check_categ_id
     ],
     "data": [
         "security/ir.model.access.csv",

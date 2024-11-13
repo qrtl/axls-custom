@@ -72,6 +72,7 @@ class DataImport(models.TransientModel):
                 csv_data = csv_data.decode(encoding)
                 csv_iterator = csv.reader(io.StringIO(csv_data), delimiter=",")
                 sheet_fields = next(csv_iterator)
+                sheet_fields = [field.strip() for field in sheet_fields]
                 break
             except Exception:
                 _logger.exception("Error while capturing sheet fields.")
@@ -112,30 +113,37 @@ class DataImport(models.TransientModel):
                 row_dict[key] = unescape(val)
         return row_dict
 
+    def _validate_field_value(
+        self, field_def, row, sheet_fields, date_formats, error_list, row_dict
+    ):
+        field = field_def["field"]
+        label = field_def["label"]
+        field_type = field_def["field_type"]
+        required = field_def["required"]
+        # Unescape the value in inheriting modules as necessary.
+        value = escape(row[sheet_fields.index(label)])
+        if required and not value:
+            error_list.append(_("%(label)s is missing.", label=label))
+        else:
+            errored_type = self._check_value_type(field_type, value, date_formats)
+            if errored_type:
+                message = _(
+                    "Unexpected value for %(label)s (%(errored_type)s)",
+                    label=label,
+                    errored_type=errored_type,
+                )
+                error_list.append(message)
+        row_dict[field] = value
+
     def _check_field_vals(self, field_defs, row, sheet_fields, date_formats=None):
         if date_formats is None:
             date_formats = ["%Y-%m-%d", "%Y/%m/%d"]
         error_list = []
         row_dict = {}
         for field_def in field_defs:
-            field = field_def["field"]
-            label = field_def["label"]
-            field_type = field_def["field_type"]
-            required = field_def["required"]
-            # Unescape the value in inheriting modules as necessary.
-            value = escape(row[sheet_fields.index(label)])
-            if required and not value:
-                error_list.append(_("%(label)s is missing.", label=label))
-            else:
-                errored_type = self._check_value_type(field_type, value, date_formats)
-                if errored_type:
-                    message = _(
-                        "Unexpected value for %(label)s (%(errored_type)s)",
-                        label=label,
-                        errored_type=errored_type,
-                    )
-                    error_list.append(message)
-            row_dict[field] = value
+            self._validate_field_value(
+                field_def, row, sheet_fields, date_formats, error_list, row_dict
+            )
         return row_dict, error_list
 
     def _action_open_import_log(self, import_log, view_id=None, log_model_name=None):

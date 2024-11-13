@@ -640,6 +640,12 @@ msgid "Purchase Description Rule"
 msgstr "仕入説明規則"
 
 #. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__acceptance_test_categ
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__quality_check_categ_id
+msgid "Quality Check Category"
+msgstr "受入検査カテゴリ"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_user_id
 msgid "Responsible User"
 msgstr "担当者"

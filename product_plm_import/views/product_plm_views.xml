@@ -21,6 +21,7 @@
                 <field name="category" optional="show" />
                 <field name="procure_flag" optional="show" />
                 <field name="uom" optional="show" />
+                <field name="acceptance_test_categ" optional="show" />
                 <field name="description" optional="show" />
                 <field name="spec" optional="show" />
                 <field name="drawing" optional="show" />
@@ -58,6 +59,7 @@
                             <field name="item_type" />
                             <field name="category" />
                             <field name="uom" />
+                            <field name="acceptance_test_categ" />
                             <field name="description" />
                         </group>
                         <group>

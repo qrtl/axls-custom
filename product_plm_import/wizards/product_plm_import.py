@@ -22,6 +22,7 @@ FIELD_VALS = [
     ["item_type", "Item Type", "char", True],
     ["category", "Category", "char", True],
     ["uom", "Unit of Material", "char", False],
+    ["acceptance_test_categ", "Acceptance Test Category", "char", False],
     ["description", "Description", "char", True],
     ["spec", "Spec", "char", False],
     ["drawing", "Drawing No", "char", False],
@@ -61,14 +62,35 @@ class ProductPlmImport(models.TransientModel):
             ("active", "=", False),
         ]
 
+    def _validate_field_value(
+        self, field_def, row, sheet_fields, date_formats, error_list, row_dict
+    ):
+        super()._validate_field_value(
+            field_def, row, sheet_fields, date_formats, error_list, row_dict
+        )
+        field = field_def["field"]
+        if field == "part_number":
+            part_number = row_dict.get(field)
+            product_domain = self._get_product_domain(part_number)
+            product = self.env["product.product"].search(product_domain)
+            if product:
+                error_list.append(_("There is already a product for %s.", part_number))
+        elif field == "acceptance_test_categ":
+            test_categ = row_dict.get(field)
+            if test_categ:
+                quality_check_categ = self.env["quality.check.category"].search(
+                    [("code", "=", test_categ)], limit=1
+                )
+                row_dict["quality_check_categ_id"] = quality_check_categ.id
+                if not quality_check_categ:
+                    error_list.append(
+                        _("Quality Check Category (%s) does not exist.", test_categ)
+                    )
+        return
+
     @api.model
     def _update_vals_list(self, row_dict, error_list, vals_list):
         company = self.env.company
-        part_number = row_dict.get("part_number")
-        product_domain = self._get_product_domain(part_number)
-        product = self.env["product.product"].search(product_domain)
-        if product:
-            error_list.append(_("There is already a product for %s.", part_number))
         # We update vals_list regardless of whether there is an error or not
         row_dict["company_id"] = company.id
         row_dict["log_id"] = self.import_log_id.id
