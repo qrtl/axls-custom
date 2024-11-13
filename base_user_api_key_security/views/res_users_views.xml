@@ -1,0 +1,12 @@
+<odoo>
+    <record id="view_users_form_simple_modif_extend" model="ir.ui.view">
+        <field name="name">res.users.preferences.form.api_key_restrict</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='api_keys']" position="attributes">
+                <attribute name="groups">base.group_system</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
