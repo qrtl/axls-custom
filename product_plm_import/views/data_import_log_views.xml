@@ -38,6 +38,7 @@
                             <field name="category" optional="show" />
                             <field name="procure_flag" optional="show" />
                             <field name="uom" optional="show" />
+                            <field name="acceptance_test_categ" optional="show" />
                             <field name="description" optional="show" />
                             <field name="spec" optional="show" />
                             <field name="drawing" optional="show" />
@@ -54,7 +55,7 @@
                                 decoration-success="state=='done'"
                                 decoration-danger="state=='failed'"
                             />
-                            <field name="product_id" />
+                            <field name="product_id" widget="many2one" />
                             <field name="error_message" />
                             <field name="solved" widget="boolean_toggle" />
                         </tree>
