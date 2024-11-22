@@ -23,4 +23,4 @@ msgstr "製品の移動(在庫移動ライン)"
 #. module: stock_move_line_price_unit
 #: model:ir.model.fields,field_description:stock_move_line_price_unit.field_stock_move_line__price_unit
 msgid "Unit Price"
-msgstr "購買単価"
+msgstr "単価"
