@@ -37,7 +37,7 @@
                     decoration-success="state=='done'"
                     decoration-warning="state=='failed'"
                 />
-                <field name="product_id" />
+                <field name="product_id" widget="many2one" />
                 <field name="error_message" />
                 <field name="solved" widget="boolean_toggle" />
             </tree>
