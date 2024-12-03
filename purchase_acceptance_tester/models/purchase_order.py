@@ -15,6 +15,8 @@ class PurchaseOrder(models.Model):
     def _compute_need_acceptance_test(self):
         for order in self:
             order.need_acceptance_test = False
+            if not order.company_id.enable_acceptance_tester_check:
+                continue
             if order.order_line.filtered(
                 lambda x: x.product_id
                 and x.product_type != "service"

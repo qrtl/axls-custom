@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form_purchase" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.purchase</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="purchase.res_config_settings_view_form_purchase"
+        />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='purchase_setting_container']" position="inside">
+                <div
+                    class="col-12 col-lg-6 o_setting_box"
+                    id="enable_acceptance_tester_check"
+                >
+                    <div class="o_setting_left_pane">
+                        <field name="enable_acceptance_tester_check" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label
+                            for="enable_acceptance_tester_check"
+                            string="Enable Acceptance Tester Check"
+                        />
+                        <div class="text-muted">
+                            If this option is ticked, the Acceptance Tester field in purchase orders becomes required under certain conditions.
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
