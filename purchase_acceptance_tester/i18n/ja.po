@@ -22,7 +22,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:purchase_acceptance_tester.purchase_order_view_search
 #: model_terms:ir.ui.view,arch_db:purchase_acceptance_tester.view_purchase_order_filter
 msgid "Acceptance Tester"
-msgstr "検査依頼先"
+msgstr "受入検査依頼先"
 
 #. module: purchase_acceptance_tester
 #: model:ir.model,name:purchase_acceptance_tester.model_res_partner

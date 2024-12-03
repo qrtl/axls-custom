@@ -9,7 +9,11 @@
                 expr="//group[@name='other_info']/field[@name='company_id']"
                 position="before"
             >
-                <field name="acceptance_tester_id" />
+                <field name="need_acceptance_test" invisible="1" />
+                <field
+                    name="acceptance_tester_id"
+                    attrs="{'required': [('need_acceptance_test', '=', True)]}"
+                />
             </xpath>
         </field>
     </record>
