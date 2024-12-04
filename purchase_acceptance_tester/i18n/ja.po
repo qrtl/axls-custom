@@ -1,0 +1,81 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_acceptance_tester
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-03 08:31+0000\n"
+"PO-Revision-Date: 2024-12-03 08:31+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model.fields,field_description:purchase_acceptance_tester.field_purchase_order__acceptance_tester_id
+#: model:ir.model.fields,field_description:purchase_acceptance_tester.field_res_partner__is_acceptance_tester
+#: model:ir.model.fields,field_description:purchase_acceptance_tester.field_res_users__is_acceptance_tester
+#: model_terms:ir.ui.view,arch_db:purchase_acceptance_tester.purchase_order_view_search
+#: model_terms:ir.ui.view,arch_db:purchase_acceptance_tester.view_purchase_order_filter
+msgid "Acceptance Tester"
+msgstr "受入検査依頼先"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model.fields,field_description:purchase_acceptance_tester.field_res_config_settings__enable_acceptance_tester_check
+msgid "Acceptance Tester Check"
+msgstr "受入検査依頼先チェック"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model,name:purchase_acceptance_tester.model_res_company
+msgid "Companies"
+msgstr "会社"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model,name:purchase_acceptance_tester.model_res_config_settings
+msgid "Config Settings"
+msgstr "コンフィグ設定"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model,name:purchase_acceptance_tester.model_res_partner
+msgid "Contact"
+msgstr "連絡先"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model.fields,field_description:purchase_acceptance_tester.field_res_company__enable_acceptance_tester_check
+#: model_terms:ir.ui.view,arch_db:purchase_acceptance_tester.res_config_settings_view_form_purchase
+msgid "Enable Acceptance Tester Check"
+msgstr "受入検査依頼先項目へのチェックを有効化"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model.fields,help:purchase_acceptance_tester.field_res_config_settings__enable_acceptance_tester_check
+msgid ""
+"Enable the check on the Acceptance Tester field in purchase orders to "
+"determine whether setting a value is required or not."
+msgstr "購買オーダの受入検査依頼先項目への必須/任意のチェックを有効化します。"
+
+#. module: purchase_acceptance_tester
+#: model_terms:ir.ui.view,arch_db:purchase_acceptance_tester.res_config_settings_view_form_purchase
+msgid ""
+"If this option is ticked, the Acceptance Tester field in purchase orders "
+"becomes required under certain conditions."
+msgstr "このオプションを選択すると、購買オーダの受入検査依頼先項目が所定の条件に応じて必須となります。"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model.fields,field_description:purchase_acceptance_tester.field_purchase_order__need_acceptance_test
+msgid "Need Acceptance Test"
+msgstr "要受入検査"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model,name:purchase_acceptance_tester.model_purchase_order
+msgid "Purchase Order"
+msgstr "購買オーダ"
+
+#. module: purchase_acceptance_tester
+#: model:ir.model.fields,help:purchase_acceptance_tester.field_res_partner__is_acceptance_tester
+#: model:ir.model.fields,help:purchase_acceptance_tester.field_res_users__is_acceptance_tester
+msgid "Select this field if the partner is an acceptance tester."
+msgstr "取引先が検査依頼先の場合は、この項目を選択してください。"
