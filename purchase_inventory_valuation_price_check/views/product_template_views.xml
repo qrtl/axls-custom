@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_product_template_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='traceability']" position="after">
+                <group string="Price Discrepancy Settings" name="price_discrepancy">
+                    <field name="price_discrepancy_threshold_type"/>
+                    <field name="price_discrepancy_threshold_value"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
