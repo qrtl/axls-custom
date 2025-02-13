@@ -10,6 +10,8 @@ class Stockpick(models.Model):
 
     allow_price_inconsistency = fields.Boolean(
         copy=False,
+        tracking=True,
+        groups="purchase_inventory_price_check.group_purchase_inventory_discrepancy",
         help="If enabled, no error is raised for price inconsistency between "
         "recieved price and valuation price",
     )
@@ -18,7 +20,7 @@ class Stockpick(models.Model):
         for pick in self:
             if pick.picking_type_id.code != 'incoming':
                 continue
-            if pick.allow_price_inconsistency:
+            if pick.sudo().allow_price_inconsistency:
                 continue            
             for move in pick.move_ids_without_package:
                 product = move.product_id
@@ -34,13 +36,11 @@ class Stockpick(models.Model):
                 if threshold_type == 'percentage':
                     percentage_difference = (price_difference / inventory_price) * 100 if inventory_price else 0
                     if percentage_difference > threshold_value:
-                        self._log_price_discrepancy(product, received_price, inventory_price)
+                        self._show_warning_price_discrepancy(product, received_price, inventory_price)
                 else:
                     if price_difference > threshold_value:
-                        self._log_price_discrepancy(product, received_price, inventory_price)
+                        self._show_warning_price_discrepancy(product, received_price, inventory_price)
         return super()._action_done()
 
-    def _log_price_discrepancy(self, product, received_price, inventory_price):
-        message = _(f"Price discrepancy detected for {product.name}: Received Price = {received_price}, Inventory Price = {inventory_price}.")
-        self.message_post(body=message)
-        raise UserError(message)
+    def _show_warning_price_discrepancy(self, product, received_price, inventory_price):
+        raise UserError(_(f"Price discrepancy detected for {product.name}: Received Price = {received_price}, Proudct Price = {inventory_price}."))
