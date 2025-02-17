@@ -22,8 +22,9 @@ Purchase Stock Price Variance
 
 |badge1| |badge2| |badge3|
 
-This module checks for variance between the receipt price and the
-product's standard price at the time of validation.
+This module checks the variance between the purchase price and the
+product's standard price at the time of receipt picking validation and
+displays an error if the variance exceeds a given threshold.
 
 **Table of contents**
 
@@ -33,25 +34,39 @@ product's standard price at the time of validation.
 Configuration
 =============
 
-Go to the product, and under the Inventory tab, set up the 'Price
-Variance Threshold Percent,' 'Price Variance Threshold Amount,' and
-'Bypass Price Variance Check' to skip the check for this product. For
-the global setup, go to Inventory > Settings and configure the 'Price
-Variance Threshold Percent' and 'Price Variance Threshold Amount'. This
-global value will be used if no specific value is set for the product.
-Assign the internal user to the 'Bypass Price Variance Check' group to
-make the 'Bypass Price Variance Check' checkbox visible in the receipt
-form.
+1. Navigate to Inventory > Configuration > Settings.
+2. Find and enable the "Enable Price Variance Threshold Check" option.
+3. Set the following global values to apply if no specific value is set
+   at the product level.:
+
+   -  Price Variance Threshold Percent – Default percentage variance for
+      all products.
+   -  Price Variance Threshold Amount – Default maximum variance for all
+      products.
+
+4. Go to Inventory > Products and open the product.
+5. Click on the Inventory tab and configure the following fields:
+
+   -  Bypass Price Variance Check – Enable this to skip the check for
+      this specific product.
+   -  Price Variance Threshold Percent – Set the allowable percentage
+      variance.
+   -  Price Variance Threshold Amount – Define the maximum allowable
+      price variance.
+
+6. Assign the internal user to the "Bypass Price Variance Check" group.
+   This will make the "Bypass Price Variance Check" checkbox updatable
+   in the receipt form.
 
 Usage
 =====
 
-A warning message will be displayed during validation if the variance
-between the receipt price and the standard price exceeds the threshold.
+An error message will be displayed during validation if the variance
+between the purchase price and the standard price exceeds a threshold.
 
-Selecting 'Bypass Price Variance Check' allows users to bypass this
-error, and it is only visible to members of the 'Bypass Price Variance
-Check' group.
+Selecting 'Bypass Price Variance Check' in the receipt picking allows
+users to bypass this error. Only members of the 'Bypass Price Variance
+Check' group can update this field.
 
 Bug Tracker
 ===========

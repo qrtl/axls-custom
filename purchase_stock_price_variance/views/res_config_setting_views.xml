@@ -7,6 +7,15 @@
         <field name="arch" type="xml">
             <xpath expr="//div[@id='warning_info']" position="after">
                 <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="price_variance_threshold" />
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="price_variance_threshold" />
+                        <div class="text-muted">
+                            Enable the feature to check the price variance between the purchase price unit and the product's standard price.
+                        </div>
+                    </div>
                     <div class="o_setting_right_pane">
                         <label for="price_variance_threshold_percent" />
                         <div class="text-muted">

@@ -31,6 +31,8 @@ class Stockpick(models.Model):
         return super().write(vals)
 
     def _action_done(self):
+        if not self.env.company.price_variance_threshold:
+            return super()._action_done()
         global_price_variance_threshold_percent = (
             self.env.company.price_variance_threshold_percent
         )
@@ -38,7 +40,7 @@ class Stockpick(models.Model):
             self.env.company.price_variance_threshold_amount
         )
         for pick in self:
-            if pick.sudo().bypass_price_variance_check:
+            if pick.bypass_price_variance_check:
                 continue
             for move in pick.move_ids:
                 if not (move._is_in() or move._is_dropshipped()):
@@ -66,9 +68,9 @@ class Stockpick(models.Model):
                 ):
                     raise UserError(
                         _(
-                            f"Price discrepancy detected for {product.name}: "
-                            f"Received Price = {received_price}, Proudct Price"
-                            f" = {standard_price}."
+                            f"Price variance exceeding a threshold detected for "
+                            f"{product.name}: Received Price = {received_price}, "
+                            f"Proudct Price = {standard_price}."
                         )
                     )
         return super()._action_done()

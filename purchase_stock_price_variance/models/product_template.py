@@ -16,7 +16,6 @@ class ProductTemplate(models.Model):
         " between the product's standard price and the purchase receipt unit price."
     )
     bypass_price_variance_check = fields.Boolean(
-        default=True,
         copy=False,
         tracking=True,
         help="If enabled, this product will not be checked for price variance between "
