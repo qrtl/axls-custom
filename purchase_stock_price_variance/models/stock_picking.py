@@ -11,10 +11,24 @@ class Stockpick(models.Model):
     bypass_price_variance_check = fields.Boolean(
         copy=False,
         tracking=True,
-        groups="purchase_stock_price_variance.group_bypass_price_variance_check",
         help="If enabled, no error is raised for price variance between "
         "the product's standard price and purchase receipt unit price.",
     )
+
+    def write(self, vals):
+        if "bypass_price_variance_check" in vals:
+            if not self.env.user.has_group(
+                "purchase_stock_price_variance.group_bypass_price_variance_check"
+            ):
+                raise UserError(
+                    _(
+                        "You do not have permission to modify the "
+                        "'Bypass Price Variance Check' field. "
+                        "Please contact an administrator or a user "
+                        "with the appropriate permissions."
+                    )
+                )
+        return super().write(vals)
 
     def _action_done(self):
         global_price_variance_threshold_percent = (
@@ -24,11 +38,11 @@ class Stockpick(models.Model):
             self.env.company.price_variance_threshold_amount
         )
         for pick in self:
-            if pick.picking_type_id.code != "incoming":
-                continue
             if pick.sudo().bypass_price_variance_check:
                 continue
-            for move in pick.move_ids_without_package:
+            for move in pick.move_ids:
+                if not (move._is_in() or move._is_dropshipped()):
+                    continue
                 product = move.product_id
                 if product.bypass_price_variance_check:
                     continue
@@ -40,7 +54,7 @@ class Stockpick(models.Model):
                     product.price_variance_threshold_amount
                     or global_price_variance_threshold_amount
                 )
-                received_price = move.price_unit
+                received_price = move._get_price_unit()
                 standard_price = product.standard_price
                 amount_difference = abs(received_price - standard_price)
                 percentage_difference = (
