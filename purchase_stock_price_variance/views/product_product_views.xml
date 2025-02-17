@@ -9,6 +9,7 @@
                 <group string="Price Discrepancy Settings" name="price_discrepancy">
                     <field name="price_variance_threshold_percent" />
                     <field name="price_variance_threshold_amount" />
+                    <field name="bypass_price_variance_check" />
                 </group>
             </xpath>
         </field>

@@ -30,6 +30,8 @@ class Stockpick(models.Model):
                 continue
             for move in pick.move_ids_without_package:
                 product = move.product_id
+                if product.bypass_price_variance_check:
+                    continue
                 threshold_percent = (
                     product.price_variance_threshold_percent
                     or global_price_variance_threshold_percent

@@ -15,3 +15,9 @@ class ProductTemplate(models.Model):
         help="Maximum allowable variance (in monetary amount, based on company currency)"
         " between the product's standard price and the purchase receipt unit price."
     )
+    bypass_price_variance_check = fields.Boolean(
+        copy=False,
+        tracking=True,
+        help="If enabled, this product will not be checked for price variance between "
+        "the product's standard price and purchase receipt unit price.",
+    )
