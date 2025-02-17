@@ -8,24 +8,24 @@
             <xpath expr="//div[@id='warning_info']" position="after">
                 <div class="col-12 col-lg-6 o_setting_box">
                     <div class="o_setting_right_pane">
-                        <label for="price_discrepancy_threshold_type" />
+                        <label for="price_variance_threshold_percent" />
                         <div class="text-muted">
-                            Select the threshold type for displaying a warning message in case of a price discrepancy.
+                            Maximum variance (in percent) allowable between the product's standard price and purchase receipt unit price.
                         </div>
                         <div class="content-group">
                             <div class="mt16">
-                                <field name="price_discrepancy_threshold_type" />
+                                <field name="price_variance_threshold_percent" />
                             </div>
                         </div>
                     </div>
                     <div class="o_setting_right_pane">
-                        <label for="price_discrepancy_threshold_value" />
+                        <label for="price_variance_threshold_amount" />
                         <div class="text-muted">
-                            Set the threshold value for detecting a price discrepancy.
+                            Maximum allowable variance (in monetary amount, based on company currency) between the product's standard price and the purchase receipt unit price.
                         </div>
                         <div class="content-group">
                             <div class="mt16">
-                                <field name="price_discrepancy_threshold_value" />
+                                <field name="price_variance_threshold_amount" />
                             </div>
                         </div>
                     </div>

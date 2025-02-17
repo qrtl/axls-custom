@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='location_id']" position="before">
                 <field
-                    name="allow_price_inconsistency"
+                    name="bypass_price_variance_check"
                     attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"
                 />
             </xpath>
