@@ -20,10 +20,12 @@
                         <label for="price_variance_threshold_percent" />
                         <div class="text-muted">
                             Maximum variance (in percent) allowable between the product's standard price and purchase receipt unit price.
+                            Keeping it at zero means that this threshold will not be checked.
                         </div>
                         <div class="content-group">
                             <div class="mt16">
                                 <field name="price_variance_threshold_percent" />
+                                <span> %</span>
                             </div>
                         </div>
                     </div>
@@ -31,6 +33,7 @@
                         <label for="price_variance_threshold_amount" />
                         <div class="text-muted">
                             Maximum allowable variance (in monetary amount, based on company currency) between the product's standard price and the purchase receipt unit price.
+                            Keeping it at zero means that this threshold will not be checked.
                         </div>
                         <div class="content-group">
                             <div class="mt16">

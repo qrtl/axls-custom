@@ -9,11 +9,13 @@ class ProductTemplate(models.Model):
 
     price_variance_threshold_percent = fields.Float(
         help="Maximum variance (in percent) allowable between the product's standard price"
-        " and purchase receipt unit price."
+        " and purchase receipt unit price. "
+        "Setting this to zero means the threshold will refer to the global setting."
     )
-    price_variance_threshold_amount = fields.Float(
+    price_variance_threshold_amount = fields.Monetary(
         help="Maximum allowable variance (in monetary amount, based on company currency)"
-        " between the product's standard price and the purchase receipt unit price."
+        " between the product's standard price and the purchase receipt unit price. "
+        "Setting this to zero means the threshold will refer to the global setting."
     )
     bypass_price_variance_check = fields.Boolean(
         copy=False,

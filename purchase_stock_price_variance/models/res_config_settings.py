@@ -16,11 +16,13 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.price_variance_threshold_percent",
         readonly=False,
         help="Maximum variance (in percent) allowable between the product's standard price"
-        " and purchase receipt unit price.",
+        " and purchase receipt unit price. "
+        "Setting this to zero means this threshold will not be checked.",
     )
-    price_variance_threshold_amount = fields.Float(
+    price_variance_threshold_amount = fields.Monetary(
         related="company_id.price_variance_threshold_amount",
         readonly=False,
         help="Maximum allowable variance (in monetary amount, based on company currency)"
-        " between the product's standard price and the purchase receipt unit price.",
+        " between the product's standard price and the purchase receipt unit price. "
+        "Setting this to zero means this threshold will not be checked.",
     )
