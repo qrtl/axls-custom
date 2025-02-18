@@ -63,9 +63,8 @@ class Stockpick(models.Model):
                     (amount_difference / standard_price) * 100 if standard_price else 0
                 )
                 if (
-                    percentage_difference > threshold_percent
-                    or amount_difference > threshold_amount
-                ):
+                    threshold_percent != 0 and percentage_difference > threshold_percent
+                ) or (threshold_amount != 0 and amount_difference > threshold_amount):
                     raise UserError(
                         _(
                             f"Price variance exceeding a threshold detected for "
