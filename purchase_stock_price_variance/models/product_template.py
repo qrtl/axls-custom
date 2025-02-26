@@ -25,14 +25,15 @@ class ProductTemplate(models.Model):
     )
     price_variance_threshold = fields.Boolean(
         compute="_compute_price_variance_threshold",
-        store=True,
+        # Set sotre=false to recalculate when page loads.
+        store=False,
     )
 
-    @api.depends("company_id", "company_id.price_variance_threshold")
+    @api.depends("company_id")
+    @api.depends_context("company")
     def _compute_price_variance_threshold(self):
-        for product in self:
-            product.price_variance_threshold = (
-                product.company_id.price_variance_threshold
-                if product.company_id
-                else False
+        company = self.company_id or self.env.company
+        for rec in self:
+            rec.price_variance_threshold = (
+                company.price_variance_threshold if company else False
             )
