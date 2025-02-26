@@ -1,7 +1,7 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -14,10 +14,20 @@ class Stockpick(models.Model):
         help="If enabled, no error is raised for price variance between "
         "the product's standard price and purchase receipt unit price.",
     )
+
     price_variance_threshold = fields.Boolean(
-        related="company_id.price_variance_threshold",
-        readonly=True,
+        compute="_compute_price_variance_threshold",
+        store=True,
     )
+
+    @api.depends("company_id", "company_id.price_variance_threshold")
+    def _compute_price_variance_threshold(self):
+        for picking in self:
+            picking.price_variance_threshold = (
+                picking.company_id.price_variance_threshold
+                if picking.company_id
+                else False
+            )
 
     def write(self, vals):
         if "bypass_price_variance_check" in vals:

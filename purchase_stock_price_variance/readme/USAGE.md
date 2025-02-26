@@ -1,6 +1,9 @@
-An error message will be displayed during validation if the variance
-between the purchase price and the standard price exceeds a threshold.
+This module logs a notification in the chatter when the variance between 
+the purchase price and the standard price exceeds a given threshold during
+the receipt process. 
 
-Selecting 'Bypass Price Variance Check' in the receipt picking allows users
-to bypass this error. Only members of the 'Bypass Price Variance Check'
-group can update this field.
+You can configure the price variance threshold at the product level.
+
+If needed, an error message can also be triggered.
+The 'Bypass Price Variance Check' option can be set both at the product
+level and in each Stock Picking to skip the error

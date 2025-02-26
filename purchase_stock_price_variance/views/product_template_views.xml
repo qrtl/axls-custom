@@ -6,14 +6,23 @@
         <field name="inherit_id" ref="product.product_template_only_form_view" />
         <field name="arch" type="xml">
             <xpath expr="//group[@name='traceability']" position="after">
-                <field name="price_variance_threshold" invisible="1" />
                 <group string="Price Discrepancy Settings" name="price_discrepancy">
+                    <field name="price_variance_threshold" invisible="1" />
                     <field
                         name="bypass_price_variance_check"
                         attrs="{'invisible': [('price_variance_threshold', '=', False)]}"
                     />
-                    <field name="price_variance_threshold_percent" />
-                    <field name="price_variance_threshold_amount" />
+                    <field
+                        name="price_variance_threshold_percent"
+                        widget="percentage"
+                        class="oe_inline"
+                        style="vertical-align:baseline"
+                    />
+                    <field
+                        name="price_variance_threshold_amount"
+                        class="oe_inline"
+                        style="vertical-align:baseline"
+                    />
                 </group>
             </xpath>
         </field>

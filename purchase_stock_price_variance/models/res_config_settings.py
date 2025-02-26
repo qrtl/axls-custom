@@ -10,7 +10,8 @@ class ResConfigSettings(models.TransientModel):
     price_variance_threshold = fields.Boolean(
         related="company_id.price_variance_threshold",
         readonly=False,
-        string="Enable price variance threshold check",
+        string="Enable the triggers an error when receiving a product"
+        "if the price difference exceeds the threshold",
     )
     price_variance_threshold_percent = fields.Float(
         related="company_id.price_variance_threshold_percent",

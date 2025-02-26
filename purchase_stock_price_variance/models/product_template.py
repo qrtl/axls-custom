@@ -1,7 +1,7 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class ProductTemplate(models.Model):
@@ -24,6 +24,15 @@ class ProductTemplate(models.Model):
         "the product's standard price and purchase receipt unit price.",
     )
     price_variance_threshold = fields.Boolean(
-        related="company_id.price_variance_threshold",
-        readonly=True,
+        compute="_compute_price_variance_threshold",
+        store=True,
     )
+
+    @api.depends("company_id", "company_id.price_variance_threshold")
+    def _compute_price_variance_threshold(self):
+        for product in self:
+            product.price_variance_threshold = (
+                product.company_id.price_variance_threshold
+                if product.company_id
+                else False
+            )

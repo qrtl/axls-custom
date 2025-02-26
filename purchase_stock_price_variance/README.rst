@@ -23,8 +23,10 @@ Purchase Stock Price Variance
 |badge1| |badge2| |badge3|
 
 This module checks the variance between the purchase price and the
-product's standard price at the time of receipt picking validation and
-displays an error if the variance exceeds a given threshold.
+product's standard price at the time of receipt picking validation. If
+the variance exceeds a given threshold, the notification can be left in
+the chatter. Additionally, an error can be triggered before receiving
+the stock if needed.
 
 **Table of contents**
 
@@ -35,7 +37,9 @@ Configuration
 =============
 
 1. Navigate to Inventory > Configuration > Settings.
-2. Find and enable the "Enable Price Variance Threshold Check" option.
+2. Find and enable the 'Enable Price Variance Threshold Check' option to
+   activate this feature an error will occur if the price difference
+   exceeds the threshold when receiving the product.
 3. Set the following global values to apply if no specific value is set
    at the product level. If the threshold value is set to 0, this
    threshold will not be checked.:
@@ -50,8 +54,8 @@ Configuration
    threshold value is set to 0, the threshold will refer to the global
    value.
 
-   - **Bypass Price Variance Check**: Enable this to skip the check for
-     this specific product.
+   - **Bypass Price Variance Check**: Enable this to skip the error
+     check for this specific product.
    - **Price Variance Threshold Percent**: Set the allowable percentage
      variance.
    - **Price Variance Threshold Amount**: Define the maximum allowable
@@ -64,12 +68,15 @@ Configuration
 Usage
 =====
 
-An error message will be displayed during validation if the variance
-between the purchase price and the standard price exceeds a threshold.
+This module logs a notification in the chatter when the variance between
+the purchase price and the standard price exceeds a given threshold
+during the receipt process.
 
-Selecting 'Bypass Price Variance Check' in the receipt picking allows
-users to bypass this error. Only members of the 'Bypass Price Variance
-Check' group can update this field.
+You can configure the price variance threshold at the product level.
+
+If needed, an error message can also be triggered. The 'Bypass Price
+Variance Check' option can be set both at the product level and in each
+Stock Picking to skip the error
 
 Bug Tracker
 ===========

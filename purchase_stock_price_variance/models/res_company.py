@@ -9,7 +9,8 @@ class ResCompany(models.Model):
     _inherit = "res.company"
 
     price_variance_threshold = fields.Boolean(
-        string="Enable price variance threshold check"
+        string="Enable the triggers an error when receiving a product"
+        "if the price difference exceeds the threshold",
     )
     price_variance_threshold_percent = fields.Float(
         help="Maximum variance (in percent) allowable between the product's standard price"

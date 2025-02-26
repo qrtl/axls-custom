@@ -13,7 +13,7 @@
                     <div class="o_setting_right_pane">
                         <label for="price_variance_threshold" />
                         <div class="text-muted">
-                            Enable the feature to check the price variance between the purchase price unit and the product's standard price.
+                            Enable the feature that triggers an error when receiving a product if the price difference exceeds the threshold.
                         </div>
                     </div>
                     <div class="o_setting_right_pane">
@@ -24,8 +24,12 @@
                         </div>
                         <div class="content-group">
                             <div class="mt16">
-                                <field name="price_variance_threshold_percent" />
-                                <span> %</span>
+                                <field
+                                    name="price_variance_threshold_percent"
+                                    widget="percentage"
+                                    class="oe_inline"
+                                    style="vertical-align:baseline"
+                                />
                             </div>
                         </div>
                     </div>
@@ -37,7 +41,11 @@
                         </div>
                         <div class="content-group">
                             <div class="mt16">
-                                <field name="price_variance_threshold_amount" />
+                                <field
+                                    name="price_variance_threshold_amount"
+                                    class="oe_inline"
+                                    style="vertical-align:baseline"
+                                />
                             </div>
                         </div>
                     </div>
