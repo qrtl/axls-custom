@@ -5,11 +5,17 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='location_id']" position="before">
-                <field
-                    name="bypass_price_variance_check"
-                    attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"
-                />
+            <xpath expr="//group[@name='other_infos']" position="before">
+                <field name="price_variance_threshold" invisible="1" />
+                <group
+                    string="Price Discrepancy Settings"
+                    attrs="{'invisible': [('price_variance_threshold', '=', False)]}"
+                >
+                    <field
+                        name="bypass_price_variance_check"
+                        attrs="{'readonly': [('state', 'in', ('done','cancel'))]}"
+                    />
+                </group>
             </xpath>
         </field>
     </record>

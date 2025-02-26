@@ -14,6 +14,10 @@ class Stockpick(models.Model):
         help="If enabled, no error is raised for price variance between "
         "the product's standard price and purchase receipt unit price.",
     )
+    price_variance_threshold = fields.Boolean(
+        related="company_id.price_variance_threshold",
+        readonly=True,
+    )
 
     def write(self, vals):
         if "bypass_price_variance_check" in vals:
@@ -31,8 +35,6 @@ class Stockpick(models.Model):
         return super().write(vals)
 
     def _action_done(self):
-        if not self.env.company.price_variance_threshold:
-            return super()._action_done()
         global_price_variance_threshold_percent = (
             self.env.company.price_variance_threshold_percent
         )
@@ -40,14 +42,10 @@ class Stockpick(models.Model):
             self.env.company.price_variance_threshold_amount
         )
         for pick in self:
-            if pick.bypass_price_variance_check:
-                continue
             for move in pick.move_ids:
                 if not (move._is_in() or move._is_dropshipped()):
                     continue
                 product = move.product_id
-                if product.bypass_price_variance_check:
-                    continue
                 threshold_percent = (
                     product.price_variance_threshold_percent
                     or global_price_variance_threshold_percent
@@ -65,11 +63,17 @@ class Stockpick(models.Model):
                 if (
                     threshold_percent and percentage_difference > threshold_percent
                 ) or (threshold_amount and amount_difference > threshold_amount):
-                    raise UserError(
-                        _(
-                            f"Price variance exceeding a threshold detected for "
-                            f"{product.name}: Received Price = {received_price}, "
-                            f"Proudct Price = {standard_price}."
-                        )
+                    error_message = (
+                        f"Price variance exceeding a threshold detected for "
+                        f"{product.name}: Received Price = {received_price}, "
+                        f"Proudct Price = {standard_price}."
                     )
+                    if (
+                        self.env.company.price_variance_threshold
+                        and not pick.bypass_price_variance_check
+                        and not product.bypass_price_variance_check
+                    ):
+                        raise UserError(_(error_message))
+                    else:
+                        self.message_post(body=error_message)
         return super()._action_done()

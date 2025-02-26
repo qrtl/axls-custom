@@ -23,3 +23,7 @@ class ProductTemplate(models.Model):
         help="If enabled, this product will not be checked for price variance between "
         "the product's standard price and purchase receipt unit price.",
     )
+    price_variance_threshold = fields.Boolean(
+        related="company_id.price_variance_threshold",
+        readonly=True,
+    )
