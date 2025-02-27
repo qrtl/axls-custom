@@ -26,8 +26,8 @@ This module intends to enforce checking of relevant Jobcan workflow
 status in validating outgoing transfers that meet any of the following
 conditions:
 
-- Involves owner stock in any of the stock move line
-- Skip Jobcan Workflow is NOT selected
+-  Involves owner stock in any of the stock move line
+-  Skip Jobcan Workflow is NOT selected
 
 For the API configuration, follow the instructions provided by
 base_api_connection.
@@ -41,9 +41,9 @@ of any validation failures via Odoo chat messages.
 
 The cron job confirms stock pickings that meet the following conditions:
 
-- The state is assigned.
-- The Jobcan_wf_number is set.
-- The status of the JobCan WF is finished
+-  The state is assigned.
+-  The Jobcan_wf_number is set.
+-  The status of the JobCan WF is finished
 
 **Table of contents**
 

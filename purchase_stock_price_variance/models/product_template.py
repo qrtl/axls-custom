@@ -33,10 +33,9 @@ class ProductTemplate(models.Model):
     def _compute_enable_price_variance_error(self):
         company = self.env.company
         for rec in self:
-            company_id = rec.company_id or company
             rec.enable_price_variance_error = (
-                company_id.enable_price_variance_error if company_id else False
-            )
+                rec.company_id or company
+            ).enable_price_variance_error
 
     @api.constrains(
         "price_variance_threshold_percent", "price_variance_threshold_amount"

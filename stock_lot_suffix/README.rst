@@ -28,8 +28,8 @@ name of lots/serials.
 Suffixes are added to lots/serials created from purchase receipts with
 following conditions:
 
-- Purchase order has the channel_category set.
-- Purchase order line has an analytic account with lot suffix.
+-  Purchase order has the channel_category set.
+-  Purchase order line has an analytic account with lot suffix.
 
 **Table of contents**
 

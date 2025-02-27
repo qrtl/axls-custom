@@ -51,8 +51,11 @@ class Stockpick(models.Model):
         global_price_variance_threshold_amount = (
             self.env.company.price_variance_threshold_amount
         )
-        error_messages = []
         for pick in self:
+            if not pick.enable_price_variance_error:
+                continue
+            error_messages = []
+            messages = []
             for move in pick.move_ids:
                 if not (move._is_in() or move._is_dropshipped()):
                     continue
@@ -71,29 +74,30 @@ class Stockpick(models.Model):
                 percentage_difference = (
                     (amount_difference / standard_price) * 100 if standard_price else 0
                 )
-                if product.bypass_price_variance_check and (
-                    (threshold_percent and percentage_difference > threshold_percent)
-                    or (threshold_amount and amount_difference > threshold_amount)
-                ):
-                    error_messages.append(
+                if (
+                    threshold_percent and percentage_difference > threshold_percent
+                ) or (threshold_amount and amount_difference > threshold_amount):
+                    message = (
                         f"{product.name}: Received Price = {received_price}, "
                         f"Product Price = {standard_price}."
                     )
+                    if (
+                        not product.bypass_price_variance_check
+                        and not pick.bypass_price_variance_check
+                    ):
+                        error_messages.append(message)
+                    messages.append(message)
 
             if error_messages:
-                if (
-                    pick.company_id.enable_price_variance_error
-                    and not pick.bypass_price_variance_check
-                ):
-                    raise UserError(
-                        _(
-                            "Price variance exceeding a threshold detected for the following products:\n"
-                            + "\n".join(error_messages)
-                        )
+                raise UserError(
+                    _(
+                        "Price variance exceeding a threshold detected for "
+                        "the following products:\n" + "\n".join(error_messages)
                     )
-                else:
-                    pick.message_post(
-                        body="Price variance exceeding a threshold detected for the following products:\n"
-                        + "\n".join(error_messages)
-                    )
+                )
+            if messages:
+                pick.message_post(
+                    body="Price variance exceeding a threshold detected for "
+                    "the following products:<br/>" + "<br/>".join(messages)
+                )
         return super()._action_done()
