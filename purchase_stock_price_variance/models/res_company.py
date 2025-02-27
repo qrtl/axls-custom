@@ -8,9 +8,8 @@ from odoo.exceptions import ValidationError
 class ResCompany(models.Model):
     _inherit = "res.company"
 
-    price_variance_threshold = fields.Boolean(
-        string="Enable the triggers an error when receiving a product"
-        "if the price difference exceeds the threshold",
+    enable_price_variance_error = fields.Boolean(
+        string="Enable price variance error",
     )
     price_variance_threshold_percent = fields.Float(
         help="Maximum variance (in percent) allowable between the product's standard price"

@@ -7,11 +7,10 @@ from odoo import fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
-    price_variance_threshold = fields.Boolean(
-        related="company_id.price_variance_threshold",
+    enable_price_variance_error = fields.Boolean(
+        related="company_id.enable_price_variance_error",
         readonly=False,
-        string="Enable the triggers an error when receiving a product"
-        "if the price difference exceeds the threshold",
+        string="Enable price variance error",
     )
     price_variance_threshold_percent = fields.Float(
         related="company_id.price_variance_threshold_percent",

@@ -15,16 +15,16 @@ class Stockpick(models.Model):
         "the product's standard price and purchase receipt unit price.",
     )
 
-    price_variance_threshold = fields.Boolean(
-        compute="_compute_price_variance_threshold",
+    enable_price_variance_error = fields.Boolean(
+        compute="_compute_enable_price_variance_error",
         store=True,
     )
 
-    @api.depends("company_id", "company_id.price_variance_threshold")
-    def _compute_price_variance_threshold(self):
+    @api.depends("company_id", "company_id.enable_price_variance_error")
+    def _compute_enable_price_variance_error(self):
         for picking in self:
-            picking.price_variance_threshold = (
-                picking.company_id.price_variance_threshold
+            picking.enable_price_variance_error = (
+                picking.company_id.enable_price_variance_error
                 if picking.company_id
                 else False
             )
@@ -79,7 +79,7 @@ class Stockpick(models.Model):
                         f"Proudct Price = {standard_price}."
                     )
                     if (
-                        self.env.company.price_variance_threshold
+                        self.env.company.enable_price_variance_error
                         and not pick.bypass_price_variance_check
                         and not product.bypass_price_variance_check
                     ):

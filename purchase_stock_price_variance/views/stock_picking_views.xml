@@ -6,11 +6,11 @@
         <field name="inherit_id" ref="stock.view_picking_form" />
         <field name="arch" type="xml">
             <xpath expr="//group[@name='other_infos']" position="before">
-                <field name="price_variance_threshold" invisible="1" />
+                <field name="enable_price_variance_error" invisible="1" />
                 <group
                     string="Price Discrepancy Settings"
                     name="price_discrepancy"
-                    attrs="{'invisible': [('price_variance_threshold', '=', False)]}"
+                    attrs="{'invisible': [('enable_price_variance_error', '=', False)]}"
                 >
                     <field
                         name="bypass_price_variance_check"

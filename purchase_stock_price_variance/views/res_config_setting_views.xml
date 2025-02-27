@@ -8,18 +8,20 @@
             <xpath expr="//div[@id='warning_info']" position="after">
                 <div class="col-12 col-lg-6 o_setting_box">
                     <div class="o_setting_left_pane">
-                        <field name="price_variance_threshold" />
+                        <field name="enable_price_variance_error" />
                     </div>
                     <div class="o_setting_right_pane">
-                        <label for="price_variance_threshold" />
+                        <label for="enable_price_variance_error" />
                         <div class="text-muted">
-                            Enable the feature that triggers an error when receiving a product if the price difference exceeds the threshold.
+                            Enable the feature that triggers an error when receiving a product if
+                            the price difference exceeds the threshold.
                         </div>
                     </div>
                     <div class="o_setting_right_pane">
                         <label for="price_variance_threshold_percent" />
                         <div class="text-muted">
-                            Maximum variance (in percent) allowable between the product's standard price and purchase receipt unit price.
+                            Maximum variance (in percent) allowable between the product's standard
+                            price and purchase receipt unit price.
                             Keeping it at zero means that this threshold will not be checked.
                         </div>
                         <div class="content-group">
@@ -36,7 +38,9 @@
                     <div class="o_setting_right_pane">
                         <label for="price_variance_threshold_amount" />
                         <div class="text-muted">
-                            Maximum allowable variance (in monetary amount, based on company currency) between the product's standard price and the purchase receipt unit price.
+                            Maximum allowable variance (in monetary amount, based on company
+                            currency) between the product's standard price and the purchase receipt
+                            unit price.
                             Keeping it at zero means that this threshold will not be checked.
                         </div>
                         <div class="content-group">

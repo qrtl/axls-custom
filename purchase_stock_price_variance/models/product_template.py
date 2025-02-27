@@ -1,7 +1,8 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class ProductTemplate(models.Model):
@@ -23,15 +24,26 @@ class ProductTemplate(models.Model):
         help="If enabled, this product will not be checked for price variance between "
         "the product's standard price and purchase receipt unit price.",
     )
-    price_variance_threshold = fields.Boolean(
-        compute="_compute_price_variance_threshold",
+    enable_price_variance_error = fields.Boolean(
+        compute="_compute_enable_price_variance_error",
     )
 
     @api.depends("company_id")
     @api.depends_context("company")
-    def _compute_price_variance_threshold(self):
-        company = self.company_id or self.env.company
+    def _compute_enable_price_variance_error(self):
         for rec in self:
-            rec.price_variance_threshold = (
-                company.price_variance_threshold if company else False
+            company = rec.company_id or rec.env.company
+            rec.enable_price_variance_error = (
+                company.enable_price_variance_error if company else False
             )
+
+    @api.constrains(
+        "price_variance_threshold_percent", "price_variance_threshold_amount"
+    )
+    def _check_price_variance_threshold(self):
+        for rec in self:
+            if (
+                rec.price_variance_threshold_percent < 0
+                or rec.price_variance_threshold_amount < 0
+            ):
+                raise ValidationError(_("The threshold values cannot be negative."))

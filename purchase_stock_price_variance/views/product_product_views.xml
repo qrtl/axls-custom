@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='traceability']" position="after">
                 <group string="Price Discrepancy Settings" name="price_discrepancy">
-                    <field name="price_variance_threshold" invisible="1" />
+                    <field name="enable_price_variance_error" invisible="1" />
                     <field
                         name="bypass_price_variance_check"
-                        attrs="{'invisible': [('price_variance_threshold', '=', False)]}"
+                        attrs="{'invisible': [('enable_price_variance_error', '=', False)]}"
                     />
                     <field
                         name="price_variance_threshold_percent"
