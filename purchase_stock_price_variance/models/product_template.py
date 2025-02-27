@@ -25,8 +25,6 @@ class ProductTemplate(models.Model):
     )
     price_variance_threshold = fields.Boolean(
         compute="_compute_price_variance_threshold",
-        # Set sotre=false to recalculate when page loads.
-        store=False,
     )
 
     @api.depends("company_id")
