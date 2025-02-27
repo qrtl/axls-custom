@@ -31,10 +31,11 @@ class ProductTemplate(models.Model):
     @api.depends("company_id")
     @api.depends_context("company")
     def _compute_enable_price_variance_error(self):
+        company = self.env.company
         for rec in self:
-            company = rec.company_id or rec.env.company
+            company_id = rec.company_id or company
             rec.enable_price_variance_error = (
-                company.enable_price_variance_error if company else False
+                company_id.enable_price_variance_error if company_id else False
             )
 
     @api.constrains(
