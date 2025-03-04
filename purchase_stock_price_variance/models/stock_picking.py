@@ -52,8 +52,6 @@ class Stockpick(models.Model):
             self.env.company.price_variance_threshold_amount
         )
         for pick in self:
-            if not pick.enable_price_variance_error:
-                continue
             error_messages = []
             messages = []
             for move in pick.move_ids:
@@ -88,7 +86,7 @@ class Stockpick(models.Model):
                         error_messages.append(message)
                     messages.append(message)
 
-            if error_messages:
+            if error_messages and pick.enable_price_variance_error:
                 raise UserError(
                     _(
                         "Price variance exceeding a threshold detected for "
