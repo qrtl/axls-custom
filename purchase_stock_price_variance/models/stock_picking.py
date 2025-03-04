@@ -80,7 +80,8 @@ class Stockpick(models.Model):
                         f"Product Price = {standard_price}."
                     )
                     if (
-                        not product.bypass_price_variance_check
+                        not product.categ_id.bypass_price_variance_check
+                        and not product.bypass_price_variance_check
                         and not pick.bypass_price_variance_check
                     ):
                         error_messages.append(message)

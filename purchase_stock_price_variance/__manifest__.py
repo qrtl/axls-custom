@@ -10,6 +10,7 @@
     "license": "AGPL-3",
     "data": [
         "security/inventory_price_check_security.xml",
+        "views/product_category_views.xml",
         "views/product_template_views.xml",
         "views/product_product_views.xml",
         "views/res_config_setting_views.xml",
