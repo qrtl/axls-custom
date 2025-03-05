@@ -49,8 +49,11 @@ Configuration
    -  **Price Variance Threshold Amount**: Default maximum variance for
       all products.
 
-4. Go to Inventory > Products and open the product.
-5. Click on the Inventory tab and configure the following fields. If the
+4. Go to Inventory > Configuration > Product Categories.
+5. Enable **Bypass Price Variance Check** to skip the error check for
+   the products under this category.
+6. Go to Inventory > Products and open the product.
+7. Click on the Inventory tab and configure the following fields. If the
    threshold value is set to 0, the threshold will refer to the global
    value.
 
@@ -61,7 +64,7 @@ Configuration
    -  **Price Variance Threshold Amount**: Define the maximum allowable
       price variance.
 
-6. Assign the internal user to the "Bypass Price Variance Check" group.
+8. Assign the internal user to the "Bypass Price Variance Check" group.
    This will make the "Bypass Price Variance Check" checkbox updatable
    in the receipt form.
 
