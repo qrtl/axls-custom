@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="purchase_order_delivery" model="ir.actions.report">
+    <record id="purchase_order_receipt_note" model="ir.actions.report">
         <field name="name">Purchase Order Receipt Report</field>
         <field name="model">purchase.order</field>
         <field name="report_type">qweb-pdf</field>
         <field
             name="report_name"
-        >purchase_order_receipt_report.report_purchase_order_receipt</field>
+        >purchase_order_receipt_note.report_purchase_order_receipt</field>
         <field
             name="report_file"
-        >purchase_order_receipt_report.report_purchase_order_receipt</field>
+        >purchase_order_receipt_note.report_purchase_order_receipt</field>
         <field
             name="print_report_name"
         >'Purchase Receipt Report - %s - %s' % (object.partner_id.name or '', object.name)</field>
