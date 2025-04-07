@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <template id="report_purchase_order_receipt_document">
+    <template id="report_purchase_order_delivery_document">
         <t t-call="web.external_layout">
             <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)" />
-            <div
-                style="display: flex; justify-content: flex-end; gap: 20px; margin-top: 10px;"
-            >
+            <div style="position: absolute; top: 0px; right: 30px;">
                 <strong>Year</strong>
-                <strong>Month</strong>
-                <strong>Day</strong>
+                <strong style="margin-left: 10px;">Month</strong>
+                <strong style="margin-left: 10px;">Day</strong>
             </div>
             <t t-set="address">
                 <div
@@ -43,7 +41,7 @@
             <div class="page">
                 <div class="oe_structure" />
                 <div class="mt-4">
-                    <h2>Receipt Note #<span t-field="o.name" /></h2>
+                    <h2>Delivery Note #<span t-field="o.name" /></h2>
                 </div>
                 <div id="informations" class="row mt-4 mb32">
                     <div t-if="o.user_id" class="col-3 bm-2">
@@ -69,17 +67,24 @@
                 <table class="table table-sm o_main_table table-borderless mt-4">
                     <thead style="display: table-row-group">
                         <tr>
-                            <th name="th_description"><strong>Description</strong></th>
-                            <th name="th_internal_reference"><strong
-                                >Buyer Part No.</strong></th>
-                            <th name="th_date_req" class="text-center"><strong
-                                >Date Req.</strong></th>
-                            <th name="th_quantity" class="text-end"><strong
-                                >Qty</strong></th>
-                            <th name="th_price_unit" class="text-end"><strong
-                                >Unit Price</strong></th>
-                            <th name="th_amount" class="text-end"><strong
-                                >Amount</strong></th>
+                            <th name="th_description">
+                                <strong>Description</strong>
+                            </th>
+                            <th name="th_internal_reference">
+                                <strong>Buyer Part No.</strong>
+                            </th>
+                            <th name="th_date_req" class="text-center">
+                                <strong>Date Req.</strong>
+                            </th>
+                            <th name="th_quantity" class="text-end">
+                                <strong>Qty</strong>
+                            </th>
+                            <th name="th_price_unit" class="text-end">
+                                <strong>Unit Price</strong>
+                            </th>
+                            <th name="th_amount" class="text-end">
+                                <strong>Amount</strong>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -167,11 +172,11 @@
             </div>
         </t>
     </template>
-    <template id="report_purchase_order_receipt">
+    <template id="report_purchase_order_delivery">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t
-                    t-call="purchase_order_receipt_note.report_purchase_order_receipt_document"
+                    t-call="purchase_order_delivery_note.report_purchase_order_delivery_document"
                     t-lang="o.partner_id.lang"
                 />
             </t>
