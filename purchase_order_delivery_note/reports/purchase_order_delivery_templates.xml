@@ -52,11 +52,17 @@
                 <table class="table table-sm o_main_table mt-4">
                     <thead style="display: table-row-group">
                         <tr>
+                            <th name="th_number" class="text-center">
+                                <strong>No.</strong>
+                            </th>
                             <th name="th_description">
                                 <strong>Description</strong>
                             </th>
                             <th name="th_internal_reference">
                                 <strong>Buyer Part No.</strong>
+                            </th>
+                            <th name="th_date_req" class="text-center">
+                                <strong>Date Req.</strong>
                             </th>
                             <th name="th_quantity" class="text-end">
                                 <strong>Qty</strong>
@@ -86,11 +92,20 @@
                                 t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic o_line_note' if line.display_type == 'line_note' else ''"
                             >
                                 <t t-if="not line.display_type">
+                                    <td>
+                                        <span t-field="line.sequence" />
+                                    </td>
                                     <td id="product">
                                         <span t-field="line.name" />
                                     </td>
                                     <td class="text-center">
                                         <span t-field="line.product_id.default_code" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span
+                                            t-field="line.date_planned"
+                                            t-options='{"widget": "date"}'
+                                        />
                                     </td>
                                     <td class="text-end">
                                         <span t-field="line.product_qty" />
