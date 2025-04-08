@@ -3,10 +3,10 @@
     <template id="report_purchase_order_delivery_document">
         <t t-call="web.external_layout">
             <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)" />
-            <div style="position: absolute; top: 0px; right: 30px;">
+            <div style="position: absolute; top: 0px; right: 10px; font-size: 20px;">
                 <strong>Year</strong>
-                <strong style="margin-left: 10px;">Month</strong>
-                <strong style="margin-left: 10px;">Day</strong>
+                <strong style="margin-left: 40px;">Month</strong>
+                <strong style="margin-left: 40px;">Day</strong>
             </div>
             <t t-set="address">
                 <div
@@ -49,7 +49,7 @@
                         <p t-field="o.partner_ref" class="m-0" />
                     </div>
                 </div>
-                <table class="table table-sm o_main_table table-borderless mt-4">
+                <table class="table table-sm o_main_table mt-4">
                     <thead style="display: table-row-group">
                         <tr>
                             <th name="th_description">
