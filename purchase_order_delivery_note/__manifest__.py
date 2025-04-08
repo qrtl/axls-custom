@@ -7,7 +7,7 @@
     "author": "Quartile",
     "website": "https://www.quartile.co",
     "license": "AGPL-3",
-    "depends": ["purchase_stock", "stock_picking_line_sequence"],
+    "depends": ["purchase_stock", "purchase_order_line_sequence"],
     "data": [
         "reports/purchase_order_delivery_note.xml",
         "reports/purchase_order_delivery_templates.xml",
