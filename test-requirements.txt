@@ -14,3 +14,4 @@ git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/stock_valuation_lay
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/web_ir_actions_act_multi
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/base_api_connection
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_order_line_sequence
+git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/stock_picking_line_sequence
