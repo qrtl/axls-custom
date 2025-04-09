@@ -39,9 +39,7 @@ class TestStockLotAnalytic(TransactionCase):
 
     def test_stock_lot_analytic_with_incoming_picking(self):
         self.po.button_confirm()
-        picking = self.po.picking_ids.filtered(
-            lambda p: p.picking_type_id.code == "incoming"
-        )
+        picking = self.po.picking_ids
         self.assertTrue(picking, "No incoming picking was created.")
         picking.action_assign()
         for ml in picking.move_line_ids:
