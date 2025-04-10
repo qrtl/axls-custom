@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_product_revaluation,stock.product.revaluation,model_stock_product_revaluationstock.group_stock_user,1,1,1,1
+access_stock_product_revaluation_line,stock.product.revaluation.line,model_stock_product_revaluation_linestock.group_stock_user,1,1,1,1
+access_stock_product_revaluation_valuation,stock.product.revaluation.valuation,model_stock_product_revaluation_valuationstock.group_stock_user,1,1,1,1
