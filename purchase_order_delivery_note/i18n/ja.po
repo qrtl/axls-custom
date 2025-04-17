@@ -1,0 +1,94 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_order_delivery_note
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-08 07:54+0000\n"
+"PO-Revision-Date: 2025-04-08 07:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_order_delivery_note
+#: model:ir.actions.report,print_report_name:purchase_order_delivery_note.purchase_order_delivery_note
+msgid ""
+"'Purchase Delivery Note - %s - %s' % (object.partner_id.name or '', "
+"object.name)"
+msgstr "'納品書 - %s - %s' % (object.partner_id.name or '', object.name)"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong class=\"mr16\">Subtotal</strong>"
+msgstr "<strong class=\"mr16\">小計</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>Amount</strong>"
+msgstr "<strong>金額</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>Buyer Part No.</strong>"
+msgstr "<strong>発注者品番</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>Date Req.</strong>"
+msgstr "<strong>納入期日</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>Description</strong>"
+msgstr "<strong>説明</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>No.</strong>"
+msgstr "<strong>No.</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>Qty</strong>"
+msgstr "<strong>数量</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>Shipping address:</strong>"
+msgstr "<strong>納入場所:</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>Unit Price</strong>"
+msgstr "<strong>単価</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "<strong>Vendor Ref:</strong>"
+msgstr "<strong>貴社見積書番号:</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid ""
+"<strong>Year</strong>\n"
+"                <strong style=\"margin-left: 40px;\">Month</strong>\n"
+"                <strong style=\"margin-left: 40px;\">Day</strong>"
+msgstr ""
+"<strong>年</strong>\n"
+"                <strong style=\"margin-left: 40px;\">月</strong>\n"
+"                <strong style=\"margin-left: 40px;\">日</strong>"
+
+#. module: purchase_order_delivery_note
+#: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
+msgid "Delivery Note #"
+msgstr "納品書 #"
+
+#. module: purchase_order_delivery_note
+#: model:ir.actions.report,name:purchase_order_delivery_note.purchase_order_delivery_note
+msgid "Purchase Order Delivery Note"
+msgstr "購買納品書"
