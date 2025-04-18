@@ -34,10 +34,13 @@ class StockLot(models.Model):
                     record.message_post(
                         body=_(
                             "Analytic Distribution updated<br/><br/>"
-                            "Before:<br/> %s<br/><br/>"
-                            "After:<br/> %s"
+                            "Before:<br/> %(before)s<br/><br/>"
+                            "After:<br/> %(after)s"
                         )
-                        % (old_formatted, new_formatted)
+                        % {
+                            "before": old_formatted,
+                            "after": new_formatted,
+                        }
                     )
 
         return super(StockLot, self).write(vals)
