@@ -5,6 +5,8 @@ This module does the following:
 - Assigns analytic distribution to created lots/serials (and quants)
   upon purchase receipt (analytic distribution is taken from the
   purchase order line).
+- Updates to the analytic distribution on stock.lot are recorded in 
+  the chatter for traceability.
 
 Note that analytic distribution should be maintained in stock.lot,
 although you could directly update it in stock.quant (and have it
