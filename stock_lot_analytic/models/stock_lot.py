@@ -14,33 +14,25 @@ class StockLot(models.Model):
                 old_dist = record.analytic_distribution or {}
                 new_dist = vals.get("analytic_distribution") or {}
 
-                def _format_distribution(dist):
-                    result = []
-                    for account_id, percent in dist.items():
-                        account = self.env["account.analytic.account"].browse(
-                            int(account_id)
-                        )
-                        if account.exists():
-                            plan_name = account.plan_id.name or ""
-                            result.append(
-                                f"{plan_name}:{account.name}:{float(percent)}%"
-                            )
-                    return ",<br/>".join(result)
+                if old_dist == new_dist:
+                    continue
 
-                old_formatted = _format_distribution(old_dist)
-                new_formatted = _format_distribution(new_dist)
+                old_lines = record._format_distribution(old_dist)
+                new_lines = record._format_distribution(new_dist)
 
-                if old_formatted != new_formatted:
-                    record.message_post(
-                        body=_(
-                            "Analytic Distribution updated<br/><br/>"
-                            "Before:<br/> %(before)s<br/><br/>"
-                            "After:<br/> %(after)s"
-                        )
-                        % {
-                            "before": old_formatted,
-                            "after": new_formatted,
-                        }
+                old_formatted = "<br/>".join(old_lines)
+                new_formatted = "<br/>".join(new_lines)
+
+                record.message_post(
+                    body=_(
+                        "Analytic Distribution updated<br/><br/>"
+                        "From:<br/> %(from)s<br/><br/>"
+                        "To:<br/> %(to)s"
                     )
+                    % {
+                        "from": old_formatted,
+                        "to": new_formatted,
+                    }
+                )
 
         return super(StockLot, self).write(vals)
