@@ -22,3 +22,14 @@ class StockLot(models.Model):
                 new_name += "-" + rec.channel_category
             new_name_list.append((name[0], new_name))
         return new_name_list
+
+    def write(self, vals):
+        res = super().write(vals)
+        if "analytic_distribution" not in vals:
+            return res
+        for rec in self:
+            rec.lot_suffix = False
+            analytic_account = rec.analytic_account_ids.filtered(lambda x: x.lot_suffix)
+            if analytic_account:
+                rec.lot_suffix = analytic_account[0].lot_suffix
+        return res
