@@ -17,14 +17,8 @@ class StockMoveLine(models.Model):
         for ml in self:
             if not ml.lot_id:
                 continue
-            vals = {}
             purchase_line = ml.move_id.purchase_line_id
-            vals["channel_category"] = purchase_line.order_id.channel_category
-            # We assume that there is only one analytic account with lot_suffix if any.
-            analytic_account = purchase_line.analytic_account_ids.filtered(
-                lambda x: x.lot_suffix
+            ml.lot_id.write(
+                {"channel_category": purchase_line.order_id.channel_category}
             )
-            if analytic_account:
-                vals["lot_suffix"] = analytic_account[0].lot_suffix
-            ml.lot_id.write(vals)
         return res
