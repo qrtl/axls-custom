@@ -26,8 +26,6 @@ class StockLot(models.Model):
     @api.depends("analytic_account_ids")
     def _compute_lot_suffix(self):
         for rec in self:
-            rec.lot_suffix = False
             # We assume that there is only one analytic account with lot_suffix if any.
-            analytic_account = rec.analytic_account_ids.filtered(lambda x: x.lot_suffix)
-            if analytic_account:
-                rec.lot_suffix = analytic_account[0].lot_suffix
+            aa = rec.analytic_account_ids.filtered(lambda x: x.lot_suffix)[:1]
+            rec.lot_suffix = aa.lot_suffix if aa else False
