@@ -13,5 +13,5 @@ class AnalyticMixin(models.AbstractModel):
         for account_id, percent in dist.items():
             account = self.env["account.analytic.account"].browse(int(account_id))
             plan_name = account.plan_id.name
-            result.append(f"{plan_name}:{account.name}:{percent}%")
+            result.append(f"{plan_name} : {account.name} {percent}%")
         return result
