@@ -12,23 +12,23 @@ class StockLot(models.Model):
         if "analytic_distribution" not in vals:
             return super().write(vals)
         for record in self:
-            old_dist = record.analytic_distribution or {}
             new_dist = vals.get("analytic_distribution") or {}
+            old_dist = record.analytic_distribution or {}
             if old_dist == new_dist:
                 continue
-            old_lines = record._format_distribution(old_dist)
             new_lines = record._format_distribution(new_dist)
-            old_formatted = "<br/>".join(old_lines)
+            old_lines = record._format_distribution(old_dist)
             new_formatted = "<br/>".join(new_lines)
+            old_formatted = "<br/>".join(old_lines)
             record.message_post(
                 body=_(
                     "Analytic Distribution updated<br/><br/>"
-                    "From:<br/> %(from)s<br/><br/>"
-                    "To:<br/> %(to)s"
+                    "To:<br/> %(to)s<br/><br/>"
+                    "From:<br/> %(from)s"
                 )
                 % {
-                    "from": old_formatted,
                     "to": new_formatted,
+                    "from": old_formatted,
                 }
             )
         return super(StockLot, self).write(vals)
