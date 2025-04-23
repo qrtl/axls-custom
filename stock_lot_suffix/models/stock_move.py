@@ -10,7 +10,7 @@ class StockMove(models.Model):
     def _action_done(self, cancel_backorder=False):
         res = super()._action_done(cancel_backorder=cancel_backorder)
         for move in self:
-            if move.purchase_line_id or not move.lot_ids:
+            if not move.purchase_line_id or not move.lot_ids:
                 continue
             move.lot_ids.write(
                 {"channel_category": move.purchase_line_id.order_id.channel_category}
