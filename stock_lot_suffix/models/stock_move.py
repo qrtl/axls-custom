@@ -1,5 +1,5 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import models
 
@@ -12,8 +12,7 @@ class StockMove(models.Model):
         for move in self:
             if not move.lot_ids:
                 continue
-            purchase_line = move.purchase_line_id
             move.lot_ids.write(
-                {"channel_category": purchase_line.order_id.channel_category}
+                {"channel_category": move.purchase_line_id.order_id.channel_category}
             )
         return res
