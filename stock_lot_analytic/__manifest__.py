@@ -8,7 +8,7 @@
     "website": "https://www.quartile.co",
     "category": "Warehouse Management",
     "license": "AGPL-3",
-    "depends": ["purchase_stock_analytic"],
+    "depends": ["stock_analytic"],
     "data": [
         "views/stock_lot_views.xml",
         "views/stock_quant_views.xml",
