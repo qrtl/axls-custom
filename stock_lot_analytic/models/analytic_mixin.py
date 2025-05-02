@@ -10,12 +10,10 @@ class AnalyticMixin(models.AbstractModel):
     @api.model
     def _format_distribution(self, dist):
         result = []
-        # Normally, when all analytic lines are removed, the value of
-        # analytic_distribution becomes an empty dictionary ({}).
-        # However, on the inventory adjustment page, if the analytic
-        # field is cleared, the analytic_distribution in the vals passed
-        # to write() becomes False.
-        # Therefore, this conditional check is added to handle that case.
+        # Normally, when all analytic lines are removed, the value of analytic_distribution
+        # becomes an empty dictionary ({}). However, on the inventory adjustment page, if the
+        # analytic field is cleared, the analytic_distribution in the vals passed to write()
+        # becomes False.
         if not dist:
             return result
         for account_id, percent in dist.items():
