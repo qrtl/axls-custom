@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0\n"
+"Project-Id-Version: Odoo Server 16.0-20230701\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-12 09:38+0000\n"
-"PO-Revision-Date: 2023-10-12 09:38+0000\n"
+"POT-Creation-Date: 2025-05-12 06:07+0000\n"
+"PO-Revision-Date: 2025-05-12 06:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -173,6 +173,11 @@ msgid "Error Message"
 msgstr "エラーメッセージ"
 
 #. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__existing_product_id
+msgid "Existing Product"
+msgstr "既存プロダクト"
+
+#. module: product_plm_import
 #: model:ir.model.fields.selection,name:product_plm_import.selection__plm_import_log__plm_product_state__failed
 #: model:ir.model.fields.selection,name:product_plm_import.selection__product_plm__state__failed
 msgid "Failed"
@@ -184,6 +189,13 @@ msgstr "失敗"
 #, python-format
 msgid "Failed to create product."
 msgstr "プロダクト作成に失敗しました。"
+
+#. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/models/product_plm.py:0
+#, python-format
+msgid "Failed to update product."
+msgstr "更新失敗したプロダクト"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__input_file
@@ -250,8 +262,9 @@ msgstr ""
 
 #. module: product_plm_import
 #: model:ir.model.fields,help:product_plm_import.field_plm_import_log__message_has_error
+#: model:ir.model.fields,help:product_plm_import.field_plm_import_log__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "チェックが付いている場合、いくつかのメッセージで送信エラーが発生。"
 
 #. module: product_plm_import
 #: model_terms:ir.ui.view,arch_db:product_plm_import.view_product_plm_import
@@ -402,11 +415,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm__name
 msgid "Name"
 msgstr "名称"
-
-#. module: product_plm_import
-#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_calendar_event_id
-msgid "Next Activity Calendar Event"
-msgstr ""
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_date_deadline
@@ -635,6 +643,11 @@ msgid "Product Type"
 msgstr "プロダクトタイプ"
 
 #. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_product_plm__revision
+msgid "Product revision number"
+msgstr "プロダクトのリビジョン番号"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__purchase_description_rule
 msgid "Purchase Description Rule"
 msgstr "仕入説明規則"
@@ -646,9 +659,21 @@ msgid "Quality Check Category"
 msgstr "受入検査カテゴリ"
 
 #. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/wizards/product_plm_import.py:0
+#, python-format
+msgid "Quality Check Category (%s) does not exist."
+msgstr "受入検査カテゴリ (%s) が存在していません。"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__activity_user_id
 msgid "Responsible User"
 msgstr "担当者"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_product_plm__revision
+msgid "Revision"
+msgstr "リビジョン"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_product_mapping__route_ids
@@ -659,6 +684,11 @@ msgstr "ルート"
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm__row_no
 msgid "Row No."
 msgstr "行番号"
+
+#. module: product_plm_import
+#: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "SMS 送信エラー"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm__solved
@@ -693,13 +723,6 @@ msgid ""
 msgstr ""
 
 #. module: product_plm_import
-#. odoo-python
-#: code:addons/product_plm_import/wizards/product_plm_import.py:0
-#, python-format
-msgid "There is already a product for %s."
-msgstr "%s に対応するプロダクトが既に存在します。"
-
-#. module: product_plm_import
 #: model:ir.model.fields,help:product_plm_import.field_res_company__plm_last_import_date
 msgid ""
 "This date is updated every time PLM files for import are searched in PLM "
@@ -722,6 +745,11 @@ msgid "Unit of Material"
 msgstr "単位"
 
 #. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_product_plm__existing_product_id
+msgid "Used for updating existing products"
+msgstr "既存プロダクトの更新に使用"
+
+#. module: product_plm_import
 #: model_terms:ir.ui.view,arch_db:product_plm_import.product_template_search_view
 msgid "Via PLM"
 msgstr "PLM経由"
@@ -734,16 +762,16 @@ msgstr "仕掛中プロダクト"
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "ウェブサイトメッセージ"
 
 #. module: product_plm_import
 #: model:ir.model.fields,help:product_plm_import.field_plm_import_log__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "ウェブサイトのコミュニケーション履歴"
 
 #. module: product_plm_import
 #. odoo-python
 #: code:addons/product_plm_import/models/product_plm.py:0
 #, python-format
 msgid "You cannot set a record as solved and done at the same time."
-msgstr "レコードを解決済かつ完了とすることはできません。"
+msgstr "レコードを同時に「解決済み」と「完了」に設定することはできません。"

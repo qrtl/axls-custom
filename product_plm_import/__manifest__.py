@@ -14,6 +14,7 @@
         "base_data_import",
         "product_alternative_code",
         "stock_quality_check_category",  # quality_check_categ_id
+        "product_revision",  # product revision functionality
     ],
     "data": [
         "security/ir.model.access.csv",

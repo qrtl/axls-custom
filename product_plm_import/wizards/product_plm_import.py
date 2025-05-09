@@ -27,6 +27,7 @@ FIELD_VALS = [
     ["spec", "Spec", "char", False],
     ["drawing", "Drawing No", "char", False],
     ["generic_name", "Generic Name", "char", False],
+    ["revision", "Rev", "char", False],
 ]
 
 FIELD_TO_UNESCAPE = [
@@ -72,9 +73,10 @@ class ProductPlmImport(models.TransientModel):
         if field == "part_number":
             part_number = row_dict.get(field)
             product_domain = self._get_product_domain(part_number)
-            product = self.env["product.product"].search(product_domain)
+            product = self.env["product.product"].search(product_domain, limit=1)
             if product:
-                error_list.append(_("There is already a product for %s.", part_number))
+                # Instead of marking as error, store the existing product for update
+                row_dict["existing_product_id"] = product.id
         elif field == "acceptance_test_categ":
             test_categ = row_dict.get(field)
             if test_categ:

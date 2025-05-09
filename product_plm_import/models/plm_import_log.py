@@ -91,6 +91,7 @@ class PlmDataImportLog(models.Model):
             <table style="border-collapse: collapse;">
                 <tr>
                     <th style="{style}">PLM P/N</th>
+                    <th style="{style}">Rev</th>
                     <th style="{style}">State</th>
                     <th style="{style}">Message</th>
                 </tr>
@@ -102,6 +103,7 @@ class PlmDataImportLog(models.Model):
                 row = f"""
                 <tr>
                     <td style="{style}">{plm_prod.part_number}</td>
+                    <td style="{style}">{plm_prod.revision or ""}</td>
                     <td style="{style}">{row_state_desc}</td>
                     <td style="{style}">{plm_prod.error_message or ""}</td>
                 </tr>

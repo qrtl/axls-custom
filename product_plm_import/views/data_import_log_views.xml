@@ -43,6 +43,7 @@
                             <field name="spec" optional="show" />
                             <field name="drawing" optional="show" />
                             <field name="generic_name" optional="show" />
+                            <field name="revision" optional="show" />
                             <field
                                 name="company_id"
                                 groups="base.group_multi_company"

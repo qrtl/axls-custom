@@ -13,5 +13,9 @@ applied to the product in Odoo. The values of item_type_id,
 category_ids, and procure_flag_ids serve as keys to identify which
 policy will be applied.
 
+The mapping configuration includes a "Default Active" field that controls whether
+newly created products are active or archived (inactive). If set to True, products
+will be created as active; if set to False, products will be created as archived.
+
 To configure the policy, go to *Data Import \> Data Import Settings \>
 PLM-Product Mapping*.
