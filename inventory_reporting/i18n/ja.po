@@ -27,8 +27,8 @@ msgstr ""
 #: code:addons/inventory_reporting/reports/inventory_report.py:0
 #: code:addons/inventory_reporting/reports/inventory_report.py:0
 #, python-format
-msgid "Accounting Date"
-msgstr "会計日"
+msgid "Actual Date"
+msgstr "実績日"
 
 #. module: inventory_reporting
 #. odoo-python

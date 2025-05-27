@@ -25,8 +25,8 @@ class InventoryReportXlsx(models.AbstractModel):
 
     def get_base_domain(self, wizard):
         return [
-            ("accounting_date", ">=", wizard.date_start),
-            ("accounting_date", "<=", wizard.date_end),
+            ("actual_date", ">=", wizard.date_start),
+            ("actual_date", "<=", wizard.date_end),
             ("product_id.active", "=", True),
         ]
 
@@ -59,7 +59,7 @@ class InventoryReportXlsx(models.AbstractModel):
             domain = [
                 ("product_id.active", "=", True),
                 ("product_id.categ_id.name", "=", category),
-                ("accounting_date", "<=", wizard.date_end),
+                ("actual_date", "<=", wizard.date_end),
             ]
 
             # Fields to aggregate
@@ -196,7 +196,7 @@ class InventoryReportXlsx(models.AbstractModel):
             headers = [
                 _("Reference"),
                 _("Origin"),
-                _("Accounting Date"),
+                _("Actual Date"),
                 _("Note"),
                 _("User"),
                 _("Partner"),
@@ -222,10 +222,10 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Write the data to the worksheet
             for row, valuation in enumerate(valuations, start=1):
-                accounting_date = fields.Date.from_string(valuation.accounting_date)
+                actual_date = fields.Date.from_string(valuation.actual_date)
                 ws.write(row, 0, valuation.reference)
                 ws.write(row, 1, valuation.stock_move_id.origin)
-                ws.write(row, 2, accounting_date.strftime("%Y-%m-%d"))
+                ws.write(row, 2, actual_date.strftime("%Y-%m-%d"))
                 ws.write(
                     row,
                     3,
@@ -281,7 +281,7 @@ class InventoryReportXlsx(models.AbstractModel):
             headers = [
                 _("Reference"),
                 _("Origin"),
-                _("Accounting Date"),
+                _("Actual Date"),
                 _("Note"),
                 _("User"),
                 _("Partner"),
@@ -307,12 +307,12 @@ class InventoryReportXlsx(models.AbstractModel):
 
             # Write the data to the worksheet
             for row, valuation in enumerate(valuations, start=1):
-                accounting_date = fields.Date.from_string(
+                actual_date = fields.Date.from_string(
                     valuation.stock_move_id.actual_date
                 )
                 ws.write(row, 0, valuation.reference)
                 ws.write(row, 1, valuation.stock_move_id.origin)
-                ws.write(row, 2, accounting_date.strftime("%Y-%m-%d"))
+                ws.write(row, 2, actual_date.strftime("%Y-%m-%d"))
                 ws.write(
                     row,
                     3,
