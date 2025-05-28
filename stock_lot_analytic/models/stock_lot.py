@@ -26,4 +26,4 @@ class StockLot(models.Model):
                 )
                 % {"to": new_formatted, "from": old_formatted}
             )
-        return super(StockLot, self).write(vals)
+        return super().write(vals)
