@@ -119,7 +119,8 @@ class StockPicking(models.Model):
         for pick in self.with_context(skip_immediate=True):
             try:
                 pick.move_ids._set_quantities_to_reservation()
-                pick.button_validate()
+                with self.env.cr.savepoint():
+                    pick.button_validate()
             except Exception as e:
                 # Avoid sending out the same message repeatedly.
                 if str(e) in pick.message_ids[:1].body:
