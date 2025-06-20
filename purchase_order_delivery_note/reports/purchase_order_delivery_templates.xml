@@ -3,7 +3,9 @@
     <template id="report_purchase_order_delivery_document">
         <t t-call="web.external_layout">
             <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)" />
-            <div style="position: absolute; top: 0px; right: 10px; font-size: 20px;">
+            <div
+                style="position: absolute; top: 0px; right: 10px; font-size: 20px; background-color: #fff176; padding-left: 70px;"
+            >
                 <strong>Year</strong>
                 <strong style="margin-left: 40px;">Month</strong>
                 <strong style="margin-left: 40px;">Day</strong>
@@ -11,7 +13,11 @@
             <t t-set="address">
                 <div
                     t-field="o.partner_id"
-                    t-options='{"widget": "contact", "fields": ["address", "name", "phone", "vat"], "no_marker": True, "phone_icons": True}'
+                    t-options='{"widget": "contact", "fields": ["name"]}'
+                />
+                <div
+                    t-field="o.partner_id"
+                    t-options='{"widget": "contact", "fields": ["address", "phone", "vat"], "no_marker": True, "phone_icons": True}'
                 />
             </t>
             <t t-if="o.dest_address_id">
@@ -43,7 +49,7 @@
                 <div class="mt-4">
                     <h2>Delivery Note #<span t-field="o.name" /></h2>
                 </div>
-                <div id="informations" class="row mt-4 mb32">
+                <div id="information" class="row mt-4 mb32">
                     <div t-if="o.partner_ref" class="col-3 bm-2">
                         <strong>Vendor Ref:</strong>
                         <p t-field="o.partner_ref" class="m-0" />
@@ -63,6 +69,13 @@
                             </th>
                             <th name="th_date_req" class="text-center">
                                 <strong>Date Req.</strong>
+                            </th>
+                            <th
+                                name="th_delivered_qty"
+                                class="text-center"
+                                style="background-color: #fff176;"
+                            >
+                                <strong>Delivered Qty</strong>
                             </th>
                             <th name="th_quantity" class="text-end">
                                 <strong>Qty</strong>
@@ -108,11 +121,9 @@
                                         />
                                     </td>
                                     <td class="text-end">
+                                    </td>
+                                    <td class="text-end">
                                         <span t-field="line.product_qty" />
-                                        <span
-                                            t-field="line.product_uom.name"
-                                            groups="uom.group_uom"
-                                        />
                                     </td>
                                     <td class="text-end">
                                         <span t-field="line.price_unit" />
@@ -162,6 +173,10 @@
                     </div>
                 </div>
                 <p t-field="o.notes" class="mt-4" />
+                <span>
+                Please add the date (year, month, and day) in the top right corner,
+                along with the delivered quantity for each item.
+                </span>
                 <div class="oe_structure" />
             </div>
         </t>
