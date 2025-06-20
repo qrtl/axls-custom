@@ -173,8 +173,10 @@
                     </div>
                 </div>
                 <p t-field="o.notes" class="mt-4" />
-                <span
-                >Please add the date (year, month, and day) in the top right corner, along with the delivered quantity.</span>
+                <span>
+                Please add the date (year, month, and day) in the top right corner,
+                along with the delivered quantity for each item.
+                </span>
                 <div class="oe_structure" />
             </div>
         </t>

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-10 08:21+0000\n"
-"PO-Revision-Date: 2025-06-10 08:21+0000\n"
+"POT-Creation-Date: 2025-06-20 02:07+0000\n"
+"PO-Revision-Date: 2025-06-20 02:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -25,9 +25,11 @@ msgstr "'納品書 - %s - %s' % (object.partner_id.name or '', object.name)"
 #. module: purchase_order_delivery_note
 #: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
 msgid ""
-"<span>Please add the date (year, month, and day) in the top right corner, "
-"along with the delivered quantity.</span>"
-msgstr "<span>右上の年月日と出荷数の追記お願い致します。</span>"
+"<span>\n"
+"                Please add the date (year, month, and day) in the top right corner, \n"
+"                along with the delivered quantity for each item.\n"
+"                </span>"
+msgstr "<span>右上の年月日および各アイテムの出荷数の追記をお願い致します。</span>"
 
 #. module: purchase_order_delivery_note
 #: model_terms:ir.ui.view,arch_db:purchase_order_delivery_note.report_purchase_order_delivery_document
