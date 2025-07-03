@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="product_category_form_view" model="ir.ui.view">
+        <field name="name">product.category.form</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_cost_method']" position="after">
+                <field
+                    name="enable_specific_identification_method"
+                    attrs="{'invisible': [('property_cost_method', '!=', 'fifo')]}"
+                />
+                <field name="axls_property_cost_method" />
+            </xpath>
+        </field>
+    </record>
+</odoo>
