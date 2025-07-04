@@ -8,7 +8,11 @@ from odoo.exceptions import ValidationError
 class ProductCategory(models.Model):
     _inherit = "product.category"
 
-    enable_specific_identification_method = fields.Boolean(compute="_compute_enable_specific_identification_method", readonly=False, store=True)
+    enable_specific_identification_method = fields.Boolean(
+        compute="_compute_enable_specific_identification_method",
+        readonly=False,
+        store=True,
+    )
     category_cost_method = fields.Selection(
         [
             ("standard", "Standard Price"),
