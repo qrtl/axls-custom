@@ -24,13 +24,13 @@ Stock Lot Analytic
 
 This module does the following:
 
-- Adds analytic distribution field to stock.lot and stock.quant models
-  (by inheriting analytic.mixin).
-- Assigns analytic distribution to created lots/serials (and quants)
-  upon purchase receipt (analytic distribution is taken from the
-  purchase order line).
-- Updates to the analytic distribution on stock.lot are recorded in the
-  chatter for traceability.
+-  Adds analytic distribution field to stock.lot and stock.quant models
+   (by inheriting analytic.mixin).
+-  Assigns analytic distribution to created lots/serials (and quants)
+   upon purchase receipt (analytic distribution is taken from the
+   purchase order line).
+-  Updates to the analytic distribution on stock.lot are recorded in the
+   chatter for traceability.
 
 Note that analytic distribution should be maintained in stock.lot,
 although you could directly update it in stock.quant (and have it
@@ -74,10 +74,10 @@ Authors
 Contributors
 ------------
 
-- `Quartile <https://www.quartile.co>`__:
+-  `Quartile <https://www.quartile.co>`__:
 
-  - Aung Ko Ko Lin
-  - Toshikimi Shigenobu
+   -  Aung Ko Ko Lin
+   -  Toshikimi Shigenobu
 
 Maintainers
 -----------
