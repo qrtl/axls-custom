@@ -10,7 +10,7 @@
                     name="enable_specific_identification_method"
                     attrs="{'invisible': [('property_cost_method', '!=', 'fifo')]}"
                 />
-                <field name="axls_property_cost_method" />
+                <field name="category_cost_method" />
             </xpath>
         </field>
     </record>
