@@ -23,7 +23,7 @@ msgstr "移動平均原価(AVCO)"
 #. module: product_category_specific_identification
 #: model:ir.model.fields,field_description:product_category_specific_identification.field_product_category__category_cost_method
 msgid "Category Costing Method"
-msgstr "原価計算法(カスタマイズ後)"
+msgstr "カテゴリ原価計算法"
 
 #. module: product_category_specific_identification
 #: model:ir.model.fields,field_description:product_category_specific_identification.field_product_category__enable_specific_identification_method
@@ -61,7 +61,7 @@ msgstr "標準原価"
 #, python-format
 msgid ""
 "The selected category requires this product to use serial or lot tracking."
-msgstr "選択したプロダクトカテゴリに所属させるにはロットかシリアル番号を設定する必要があります。"
+msgstr "選択されたプロダクトカテゴリを使う場合、この製品でシリアルまたはロットの追跡を設定する必要があります。"
 
 #. module: product_category_specific_identification
 #. odoo-python
@@ -71,5 +71,5 @@ msgid ""
 "You cannot enable Specific Identification Method for this category because the following products do not have serial or lot tracking:\n"
 " - %s"
 msgstr ""
-"ロットかシリアル番号で管理されていない下記プロダクトが所属しているため、このプロダクトカテゴリの個別原価計算を有効化できません。:\n"
+"以下の製品にシリアルまたはロットの追跡が設定されていないため、このカテゴリで個別原価計算を有効にすることはできません。:\n"
 " - %s"
