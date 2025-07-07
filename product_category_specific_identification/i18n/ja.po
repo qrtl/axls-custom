@@ -1,0 +1,75 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* product_category_specific_identification
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-07 09:30+0000\n"
+"PO-Revision-Date: 2025-07-07 09:30+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: product_category_specific_identification
+#: model:ir.model.fields.selection,name:product_category_specific_identification.selection__product_category__category_cost_method__average
+msgid "Average Cost (AVCO)"
+msgstr "移動平均原価(AVCO)"
+
+#. module: product_category_specific_identification
+#: model:ir.model.fields,field_description:product_category_specific_identification.field_product_category__category_cost_method
+msgid "Category Costing Method"
+msgstr "原価計算法(カスタマイズ後)"
+
+#. module: product_category_specific_identification
+#: model:ir.model.fields,field_description:product_category_specific_identification.field_product_category__enable_specific_identification_method
+msgid "Enable Specific Identification Method"
+msgstr "個別原価計算を有効化"
+
+#. module: product_category_specific_identification
+#: model:ir.model.fields.selection,name:product_category_specific_identification.selection__product_category__category_cost_method__fifo
+msgid "First In First Out (FIFO)"
+msgstr "先入先出(FIFO)"
+
+#. module: product_category_specific_identification
+#: model:ir.model,name:product_category_specific_identification.model_product_template
+msgid "Product"
+msgstr "プロダクト"
+
+#. module: product_category_specific_identification
+#: model:ir.model,name:product_category_specific_identification.model_product_category
+msgid "Product Category"
+msgstr "プロダクトカテゴリ"
+
+#. module: product_category_specific_identification
+#: model:ir.model.fields.selection,name:product_category_specific_identification.selection__product_category__category_cost_method__specific_identification
+msgid "Specific Identification"
+msgstr "個別原価"
+
+#. module: product_category_specific_identification
+#: model:ir.model.fields.selection,name:product_category_specific_identification.selection__product_category__category_cost_method__standard
+msgid "Standard Price"
+msgstr "標準原価"
+
+#. module: product_category_specific_identification
+#. odoo-python
+#: code:addons/product_category_specific_identification/models/product_template.py:0
+#, python-format
+msgid ""
+"The selected category requires this product to use serial or lot tracking."
+msgstr "選択したプロダクトカテゴリに所属させるにはロットかシリアル番号を設定する必要があります。"
+
+#. module: product_category_specific_identification
+#. odoo-python
+#: code:addons/product_category_specific_identification/models/product_category.py:0
+#, python-format
+msgid ""
+"You cannot enable Specific Identification Method for this category because the following products do not have serial or lot tracking:\n"
+" - %s"
+msgstr ""
+"ロットかシリアル番号で管理されていない下記プロダクトが所属しているため、このプロダクトカテゴリの個別原価計算を有効化できません。:\n"
+" - %s"
