@@ -12,16 +12,6 @@ patch(AnalyticDistribution.prototype, "custom.analytic_distribution.patch", {
 
     async onSelect(option, params, tag) {
         await this._super(option, params, tag);
-        const res = await this.orm.call(
-            "ir.model",
-            "search_read",
-            [[["model", "=", this.props.record.resModel]]],
-            {fields: ["apply_analytic_distribution_filter"], limit: 1}
-        );
-        this._applyFilter = Boolean(
-            res.length && res[0].apply_analytic_distribution_filter
-        );
-        if (!this._applyFilter) return;
         const selectedIds = this.existingAnalyticAccountIDs;
         if (selectedIds.length) {
             const relatedRecords = await this.orm.call(

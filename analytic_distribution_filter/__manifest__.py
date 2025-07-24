@@ -11,7 +11,6 @@
     "data": [
         "security/ir.model.access.csv",
         "views/analytic_account_views.xml",
-        "views/ir_model_views.xml",
     ],
     "assets": {
         "web.assets_backend": [

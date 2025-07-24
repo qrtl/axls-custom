@@ -1,7 +1,7 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 
 
 class AccountAnalyticAccount(models.Model):
@@ -17,4 +17,15 @@ class AccountAnalyticAccount(models.Model):
     @api.depends("account_line_ids.account_ids")
     def _compute_related_accounts(self):
         for rec in self:
-            rec.related_account_ids = rec.account_line_ids.mapped("account_ids")
+            related_plans = rec.account_line_ids.mapped("plan_id")
+            plans = self.env["account.analytic.plan"].search(
+                [("id", "not in", related_plans.ids)]
+            )
+            rec.related_account_ids = [
+                Command.set(
+                    (
+                        rec.account_line_ids.mapped("account_ids")
+                        | plans.mapped("account_ids")
+                    ).ids
+                )
+            ]

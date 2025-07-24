@@ -1,7 +1,7 @@
 # Copyright 2025 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import Command, api, fields, models
 
 
 class AnalyticAccountLine(models.Model):
@@ -38,13 +38,13 @@ class AnalyticAccountLine(models.Model):
                 )
                 if reciprocal:
                     if line.account_id.id not in reciprocal.account_ids.ids:
-                        reciprocal.account_ids = [(4, line.account_id.id)]
+                        reciprocal.account_ids = [Command.add(line.account_id.id)]
                 else:
                     self.create(
                         {
                             "account_id": account_id,
                             "plan_id": line.account_id.plan_id.id,
-                            "account_ids": [(6, 0, [line.account_id.id])],
+                            "account_ids": [Command.set([line.account_id.id])],
                         }
                     )
             for account_id in removed_ids:
@@ -52,7 +52,7 @@ class AnalyticAccountLine(models.Model):
                     account_id, line.account_id.plan_id.id
                 )
                 if reciprocal and line.account_id.id in reciprocal.account_ids.ids:
-                    reciprocal.account_ids = [(3, line.account_id.id)]
+                    reciprocal.account_ids = [Command.unlink(line.account_id.id)]
                     if not reciprocal.account_ids:
                         reciprocal.unlink()
 
@@ -77,7 +77,7 @@ class AnalyticAccountLine(models.Model):
                     acc.id, record.account_id.plan_id.id
                 )
                 if reciprocal and record.account_id.id in reciprocal.account_ids.ids:
-                    reciprocal.account_ids = [(3, record.account_id.id)]
+                    reciprocal.account_ids = [Command.unlink(record.account_id.id)]
                     if not reciprocal.account_ids:
                         reciprocal.unlink()
         return super().unlink()

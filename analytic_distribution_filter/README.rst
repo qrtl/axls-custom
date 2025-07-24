@@ -22,9 +22,7 @@ Analytic Distribution Filter
 
 |badge1| |badge2| |badge3|
 
-This module introduces a filter for the analytic distribution,
-configurable per model via an “Apply Analytic Distribution Filter”
-option.
+This module introduces a filter for the analytic distribution.
 
 **Table of contents**
 
