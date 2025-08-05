@@ -14,8 +14,10 @@ class InventoryReportXlsx(models.AbstractModel):
             self.generate_valuation_report(workbook, wizard)
         elif data["report_type"] == "storable":
             self.generate_storable_report(workbook, wizard)
-        else:
+        elif data["report_type"] == "consumable":
             self.generate_consumable_report(workbook, wizard)
+        else:
+            self.generate_summary_report(workbook, wizard)
 
     def parse_html(self, html_content):
         if html_content:
@@ -30,12 +32,21 @@ class InventoryReportXlsx(models.AbstractModel):
             ("product_id.active", "=", True),
         ]
 
-    def generate_valuation_report(self, workbook, wizard):
+    def get_product_categories(self):
         category_objs = self.env["product.category"].search(
             [("is_report_category", "=", True)]
         )
-        categories = category_objs.mapped("name")
+        return category_objs.mapped("name")
 
+    def get_valuation_domain(self, category_name, wizard):
+        return [
+            ("product_id.active", "=", True),
+            ("product_id.categ_id.name", "=", category_name),
+            ("actual_date", "<=", wizard.date_end),
+        ]
+
+    def generate_valuation_report(self, workbook, wizard):
+        categories = self.get_product_categories()
         for _i, category in enumerate(categories):
             ws = workbook.add_worksheet(category)
 
@@ -56,11 +67,7 @@ class InventoryReportXlsx(models.AbstractModel):
             valuation_obj = self.env["stock.valuation.layer"]
 
             # Define search domain
-            domain = [
-                ("product_id.active", "=", True),
-                ("product_id.categ_id.name", "=", category),
-                ("actual_date", "<=", wizard.date_end),
-            ]
+            domain = self.get_valuation_domain(category, wizard)
 
             # Fields to aggregate
             fields_to_aggregate = ["quantity", "value"]
@@ -96,12 +103,11 @@ class InventoryReportXlsx(models.AbstractModel):
                     ws.write(row, 6, last_purchase_date.strftime("%Y-%m-%d"))
                 row += 1
 
-    def generate_storable_report(self, workbook, wizard):
+    def get_storable_categories(self, wizard):
         base_domain = self.get_base_domain(wizard)
         base_storable_domain = expression.AND(
             [base_domain, [("product_id.detailed_type", "=", "product")]]
         )
-
         categories = [
             {
                 "name": _("Receipt"),
@@ -188,7 +194,10 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
         ]
+        return base_storable_domain, categories
 
+    def generate_storable_report(self, workbook, wizard):
+        base_storable_domain, categories = self.get_storable_categories(wizard)
         for category in categories:
             ws = workbook.add_worksheet(category["name"])
 
@@ -337,3 +346,52 @@ class InventoryReportXlsx(models.AbstractModel):
                     16,
                     valuation.stock_move_id.analytic_account_names or "",
                 )
+
+    def generate_summary_report(self, workbook, wizard):
+        ws = workbook.add_worksheet(_("Inventory Summary"))
+        valuation_obj = self.env["stock.valuation.layer"]
+        product_categories = self.get_product_categories()
+        base_storable_domain, storable_categories = self.get_storable_categories(wizard)
+        headers = [
+            _("Product Category"),
+            _("Inventory Total Value"),
+            _("Report Category"),
+            _("Report Total Value"),
+        ]
+        for col, header in enumerate(headers):
+            ws.write(0, col, header)
+        row = 1
+        max_rows = max(len(product_categories), len(storable_categories))
+        product_categ_total = 0.0
+        report_categ_total = 0.0
+        for i in range(max_rows):
+            if i < len(product_categories):
+                category_name = product_categories[i]
+                total_value = valuation_obj.read_group(
+                    self.get_valuation_domain(category_name, wizard), ["value"], []
+                )
+                prod_categ_value = (
+                    total_value[0]["value"] or 0.0 if total_value else 0.0
+                )
+                ws.write(row, 0, category_name)
+                ws.write(row, 1, prod_categ_value)
+                product_categ_total += prod_categ_value
+            if i < len(storable_categories):
+                cat = storable_categories[i]
+                storable_domain = expression.AND([base_storable_domain, cat["filter"]])
+                storable_vals = valuation_obj.read_group(storable_domain, ["value"], [])
+                report_categ_value = (
+                    storable_vals[0]["value"] or 0.0 if storable_vals else 0.0
+                )
+                ws.write(row, 2, cat["name"])
+                ws.write(row, 3, report_categ_value)
+                report_categ_total += report_categ_value
+            row += 1
+        row += 1
+        ws.write(row, 0, _("Product Category Total"))
+        ws.write(row, 1, product_categ_total)
+        ws.write(row, 2, _("Report Category Total"))
+        ws.write(row, 3, report_categ_total)
+        row += 2
+        ws.write(row, 2, _("Difference"))
+        ws.write(row, 3, product_categ_total - report_categ_total)
