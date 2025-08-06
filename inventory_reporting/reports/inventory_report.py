@@ -355,8 +355,8 @@ class InventoryReportXlsx(models.AbstractModel):
         headers = [
             _("Product Category"),
             _("Inventory Total Value"),
-            _("Report Category"),
-            _("Report Total Value"),
+            _("Inventory Operation Type"),
+            _("Operation Total Value"),
         ]
         for col, header in enumerate(headers):
             ws.write(0, col, header)
@@ -390,7 +390,7 @@ class InventoryReportXlsx(models.AbstractModel):
         row += 1
         ws.write(row, 0, _("Product Category Total"))
         ws.write(row, 1, product_categ_total)
-        ws.write(row, 2, _("Report Category Total"))
+        ws.write(row, 2, _("Inventory Operation Total"))
         ws.write(row, 3, report_categ_total)
         row += 2
         ws.write(row, 2, _("Difference"))
