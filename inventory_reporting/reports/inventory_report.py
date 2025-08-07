@@ -361,9 +361,9 @@ class InventoryReportXlsx(models.AbstractModel):
             _("Product Category"),
             _("Inventory Total Value"),
             _("Inventory Operation Type"),
-            _("Operation Total Value"),
+            _("Operation Type Total Value"),
         ]
-        column_widths = [30, 20, 30, 20]
+        column_widths = [30, 20, 30, 30]
         for col, width in enumerate(column_widths):
             ws.set_column(col, col, width)
         for col, header in enumerate(headers):
@@ -371,7 +371,7 @@ class InventoryReportXlsx(models.AbstractModel):
         row = 1
         max_rows = max(len(product_categories), len(storable_categories))
         product_categ_total = 0.0
-        report_categ_total = 0.0
+        inventory_categ_total = 0.0
         for i in range(max_rows):
             if i < len(product_categories):
                 category_name = product_categories[i]
@@ -388,18 +388,18 @@ class InventoryReportXlsx(models.AbstractModel):
                 cat = storable_categories[i]
                 storable_domain = expression.AND([base_storable_domain, cat["filter"]])
                 storable_vals = valuation_obj.read_group(storable_domain, ["value"], [])
-                report_categ_value = (
+                inventory_categ_value = (
                     storable_vals[0]["value"] or 0.0 if storable_vals else 0.0
                 )
                 ws.write(row, 2, cat["name"])
-                ws.write(row, 3, report_categ_value)
-                report_categ_total += report_categ_value
+                ws.write(row, 3, inventory_categ_value)
+                inventory_categ_total += inventory_categ_value
             row += 1
         row += 1
         ws.write(row, 0, _("Product Category Total"))
         ws.write(row, 1, product_categ_total)
         ws.write(row, 2, _("Inventory Operation Total"))
-        ws.write(row, 3, report_categ_total)
+        ws.write(row, 3, inventory_categ_total)
         row += 2
         ws.write(row, 2, _("Difference"))
-        ws.write(row, 3, product_categ_total - report_categ_total)
+        ws.write(row, 3, product_categ_total - inventory_categ_total)
