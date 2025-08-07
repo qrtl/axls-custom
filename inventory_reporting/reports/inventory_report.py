@@ -60,6 +60,9 @@ class InventoryReportXlsx(models.AbstractModel):
                 _("Total Value"),
                 _("Last Purchase Accounting Date"),
             ]
+            column_widths = [25, 20, 10, 20, 12, 15, 30]
+            for col, width in enumerate(column_widths):
+                ws.set_column(col, col, width)
             for col, header in enumerate(headers):
                 ws.write(0, col, header)
 
@@ -196,33 +199,57 @@ class InventoryReportXlsx(models.AbstractModel):
         ]
         return base_storable_domain, categories
 
+    def setup_storable_worksheet_headers(self, ws):
+        headers = [
+            _("Reference"),
+            _("Origin"),
+            _("Actual Date"),
+            _("Note"),
+            _("User"),
+            _("Partner"),
+            _("Total Amount of Purchase Order"),
+            _("Product"),
+            _("Product Type"),
+            _("Product Category"),
+            _("Source Location"),
+            _("Destination Location"),
+            _("Quantity"),
+            _("Unit of Measurement"),
+            _("Product Cost Method"),
+            _("SVL's Total Inventory Value"),
+            _("Analytic Distribution"),
+        ]
+        column_widths = [
+            15,  # Reference
+            15,  # Origin
+            15,  # Actual Date
+            20,  # Note
+            15,  # User
+            20,  # Partner
+            30,  # Total Amount of Purchase Order
+            20,  # Product
+            15,  # Product Type
+            20,  # Product Category
+            25,  # Source Location
+            25,  # Destination Location
+            10,  # Quantity
+            20,  # Unit of Measurement
+            25,  # Product Cost Method
+            30,  # SVL's Total Inventory Value
+            30,  # Analytic Distribution
+        ]
+        for col, width in enumerate(column_widths):
+            ws.set_column(col, col, width)
+        for col, header in enumerate(headers):
+            ws.write(0, col, header)
+
     def generate_storable_report(self, workbook, wizard):
         base_storable_domain, categories = self.get_storable_categories(wizard)
         for category in categories:
             ws = workbook.add_worksheet(category["name"])
 
             # Write the header
-            headers = [
-                _("Reference"),
-                _("Origin"),
-                _("Actual Date"),
-                _("Note"),
-                _("User"),
-                _("Partner"),
-                _("Total Amount of Purchase Order"),
-                _("Product"),
-                _("Product Type"),
-                _("Product Category"),
-                _("Source Location"),
-                _("Destination Location"),
-                _("Quantity"),
-                _("Unit of Measurement"),
-                _("Product Cost Method"),
-                _("SVL's Total Inventory Value"),
-                _("Analytic Distribution"),
-            ]
-            for col, header in enumerate(headers):
-                ws.write(0, col, header)
+            self.setup_storable_worksheet_headers(ws)
 
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
@@ -285,29 +312,7 @@ class InventoryReportXlsx(models.AbstractModel):
 
         for category in categories:
             ws = workbook.add_worksheet(category["name"])
-
-            # Write the header
-            headers = [
-                _("Reference"),
-                _("Origin"),
-                _("Actual Date"),
-                _("Note"),
-                _("User"),
-                _("Partner"),
-                _("Total Amount of Purchase Order"),
-                _("Product"),
-                _("Product Type"),
-                _("Product Category"),
-                _("Source Location"),
-                _("Destination Location"),
-                _("Quantity"),
-                _("Unit of Measurement"),
-                _("Product Cost Method"),
-                _("SVL's Total Inventory Value"),
-                _("Analytic Distribution"),
-            ]
-            for col, header in enumerate(headers):
-                ws.write(0, col, header)
+            self.setup_storable_worksheet_headers(ws)
 
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
@@ -358,6 +363,9 @@ class InventoryReportXlsx(models.AbstractModel):
             _("Inventory Operation Type"),
             _("Operation Total Value"),
         ]
+        column_widths = [30, 20, 30, 20]
+        for col, width in enumerate(column_widths):
+            ws.set_column(col, col, width)
         for col, header in enumerate(headers):
             ws.write(0, col, header)
         row = 1
