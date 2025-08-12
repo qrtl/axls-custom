@@ -353,15 +353,15 @@ class InventoryReportXlsx(models.AbstractModel):
                 )
 
     def generate_summary_report(self, workbook, wizard):
-        ws = workbook.add_worksheet(_("Inventory Summary"))
+        ws = workbook.add_worksheet(_("Inventory Report Summary"))
         valuation_obj = self.env["stock.valuation.layer"]
         product_categories = self.get_product_categories()
         base_storable_domain, storable_categories = self.get_storable_categories(wizard)
         headers = [
             _("Product Category"),
-            _("Inventory Total Value"),
+            _("SVL's Total Inventory Value"),
             _("Inventory Operation Type"),
-            _("Operation Type Total Value"),
+            _("SVL's Total Inventory Value"),
         ]
         column_widths = [30, 20, 30, 30]
         for col, width in enumerate(column_widths):
