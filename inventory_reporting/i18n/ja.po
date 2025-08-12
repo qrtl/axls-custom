@@ -363,7 +363,7 @@ msgstr "在庫運送タイプ"
 #: code:addons/inventory_reporting/reports/inventory_report.py:0
 #, python-format
 msgid "Inventory Report Summary"
-msgstr "在庫レポートの要約"
+msgstr "在庫レポートサマリ"
 
 #. module: inventory_reporting
 #. odoo-python
