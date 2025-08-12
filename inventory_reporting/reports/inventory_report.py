@@ -363,7 +363,7 @@ class InventoryReportXlsx(models.AbstractModel):
             _("Inventory Operation Type"),
             _("SVL's Total Inventory Value"),
         ]
-        column_widths = [30, 20, 30, 30]
+        column_widths = [30, 20, 30, 20]
         for col, width in enumerate(column_widths):
             ws.set_column(col, col, width)
         for col, header in enumerate(headers):
