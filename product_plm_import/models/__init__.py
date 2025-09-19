@@ -4,5 +4,6 @@ from . import plm_item_type
 from . import plm_procure_flag
 from . import plm_product_mapping
 from . import product_plm
+from . import product_product
 from . import product_template
 from . import res_company
