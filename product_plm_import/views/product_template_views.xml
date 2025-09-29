@@ -12,6 +12,7 @@
                 >
                     <group>
                         <field name="is_via_plm" />
+                        <field name="is_draft" />
                     </group>
                 </page>
             </xpath>
@@ -29,6 +30,12 @@
                     domain="[('is_via_plm','=',True)]"
                 />
                 <separator />
+                <filter
+                    string="Draft"
+                    name="is_draft"
+                    domain="[('is_draft','=',True)]"
+                />
+                <separator />
             </xpath>
         </field>
     </record>
@@ -38,7 +45,7 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
         <field name="context">
-            {"search_default_is_via_plm": 1, "search_default_inactive": 1}
+            {"search_default_is_via_plm": 1, "search_default_is_draft": 1, "search_default_inactive": 1}
         </field>
     </record>
     <menuitem

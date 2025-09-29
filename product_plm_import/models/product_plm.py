@@ -110,6 +110,7 @@ class ProductPlm(models.Model):
             "tracking": mapping.tracking,
             "auto_create_lot": mapping.auto_create_lot,
             "is_via_plm": True,
+            "is_draft": True,
         }
         try:
             product = self.env["product.product"].create(vals)
