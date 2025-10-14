@@ -20,7 +20,7 @@ class InventoryReportWizard(models.TransientModel):
         zip_buffer = io.BytesIO()
 
         with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED) as zip_file:
-            for report_type in ["valuation", "storable", "consumable"]:
+            for report_type in ["valuation", "storable", "consumable", "summary"]:
                 data = {
                     "report_type": report_type,
                     "date_start": self.date_start,

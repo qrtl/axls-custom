@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-26 12:45+0000\n"
-"PO-Revision-Date: 2024-08-26 12:45+0000\n"
+"POT-Creation-Date: 2025-08-12 01:46+0000\n"
+"PO-Revision-Date: 2025-08-12 01:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -336,3 +336,38 @@ msgstr "運送/担当者"
 #: model:ir.model,name:inventory_reporting.model_report_inventory_reporting_inventory_report_xlsx
 msgid "report.inventory_reporting.inventory_report_xlsx"
 msgstr ""
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Difference"
+msgstr "差異"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Inventory Operation Total"
+msgstr "在庫運送合計"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Inventory Operation Type"
+msgstr "在庫運送タイプ"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Inventory Report Summary"
+msgstr "在庫レポートサマリ"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Product Category Total"
+msgstr "プロダクトカテゴリ合計"
