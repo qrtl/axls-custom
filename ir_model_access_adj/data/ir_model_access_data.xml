@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- 5799: Allow purchase_manager to update lots' sequences in products' form views-->
+    <record id="access_ir_sequence_purchase_manager" model="ir.model.access">
+        <field name="name">ir.sequence</field>
+        <field name="model_id" ref="base.model_ir_sequence" />
+        <field name="group_id" ref="purchase.group_purchase_manager" />
+        <field name="perm_read" eval="1" />
+        <field name="perm_write" eval="1" />
+        <field name="perm_create" eval="0" />
+        <field name="perm_unlink" eval="0" />
+    </record>
+</odoo>
