@@ -73,6 +73,7 @@
                                 name="budget_code_id"
                                 domain="[('child_ids','=',False)]"
                             />
+                            <field name="budget_ref" />
                             <field name="quantity" />
                             <field name="uom_id" string="UoM" groups="uom.group_uom" />
                             <field name="purchase_price_unit" />
