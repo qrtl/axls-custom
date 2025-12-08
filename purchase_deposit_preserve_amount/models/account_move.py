@@ -18,6 +18,11 @@ class AccountMove(models.Model):
             )
 
     def _adjust_journal_item_balances_for_deposit(self):
+        """Reconcile deposit and stock received balances when the move currency
+        differs from the company currency by resetting deposit lines to the
+        original deposit bill amount and redistributing the difference over
+        non-deposit product lines.
+        """
         for rec in self:
             deposit_lines = rec.line_ids.filtered(
                 lambda line: line.display_type == "product"
@@ -41,18 +46,17 @@ class AccountMove(models.Model):
             )
             if not product_lines:
                 continue
-            currency = rec.currency_id
             line_count = len(product_lines)
             total_balance = sum(product_lines.mapped("balance"))
             remaining = amount_diff
             for idx, line in enumerate(product_lines):
                 if idx < line_count - 1:
                     raw_share = amount_diff * (line.balance / total_balance)
-                    share = currency.round(raw_share)
+                    share = rec.currency_id.round(raw_share)
                     remaining -= share
                 else:
                     # last line gets whatever remains, to keep sums exact
-                    share = currency.round(remaining)
+                    share = rec.currency_id.round(remaining)
                 line.with_context(skip_deposit_adjustment=True).balance = (
                     line.balance + share
                 )
@@ -76,8 +80,8 @@ class AccountMove(models.Model):
         return moves
 
     def write(self, vals):
-        if self.env.context.get("skip_deposit_adjustment"):
-            return super().write(vals)
         res = super().write(vals)
+        if self.env.context.get("skip_deposit_adjustment"):
+            return res
         self._moves_needing_deposit_adjustment()._adjust_journal_item_balances_for_deposit()
         return res
