@@ -85,13 +85,47 @@ class AccountMoveObcCsv(models.AbstractModel):
         production = stock_move.production_id or stock_move.raw_material_production_id
         return production.subcontractor_id
 
+    def _is_purchase_receipt_valuation_move(self, move):
+        """
+        Identify account moves for purchase receipts (incoming pickings) that should
+        NOT be exported to OBC.
+        """
+        stock_move = move.stock_move_id
+        if not stock_move or not stock_move.picking_id:
+            return False
+        picking_type = stock_move.picking_id.picking_type_id
+        if not picking_type or picking_type.code != "incoming":
+            return False
+        if not stock_move.purchase_line_id:
+            return False
+        return True
+
     def _update_vals(self, vals, line, move_analytic_accounts, drcr):
-        account_code = line.account_id.code
+        account = line.account_id
+        account_code = account.code
         subaccount_code = ""
         if "." in account_code:
             # maxsplit=1 - we assume that an account code should contain only one
             # period (".") at most.
             account_code, subaccount_code = account_code.split(".", 1)
+        # Vendor bill journal export:
+        # - If the line uses the purchase accrual (Goods Received Not Invoiced) account,
+        #   output it as "material purchase" by mapping it to the product category's
+        #   stock valuation account.
+        move = line.move_id
+        categ = line.product_id.categ_id if line.product_id else False
+        if (
+            move.move_type in ("in_invoice", "in_refund")
+            and categ
+            and categ.property_stock_account_input_categ_id
+            and account == categ.property_stock_account_input_categ_id
+            and categ.property_stock_valuation_account_id
+        ):
+            account_code = categ.property_stock_valuation_account_id.code
+            if "." in account_code:
+                account_code, subaccount_code = account_code.split(".", 1)
+            else:
+                subaccount_code = ""
         # We assume that there should be only one project/department per journal
         # item if any.
         project = line.analytic_line_ids.filtered(
@@ -119,15 +153,8 @@ class AccountMoveObcCsv(models.AbstractModel):
             department = move_analytic_accounts.filtered(
                 lambda x: x.plan_id.plan_type == "department"
             )[:1]
-        # Records of purchase interim account should not be passed to OBC as taxable,
-        # due to conceptual discrepancies between real-time inventory accounting and
-        # 3-part method.
         tax = self.env["account.tax"]
-        if (
-            line.account_id
-            != line.product_id.categ_id.property_stock_account_input_categ_id
-        ):
-            tax = line.tax_ids[:1]
+        tax = line.tax_ids[:1]
         partner = self._get_partner(line)
         fields = self._get_field_map()
         vals[fields["account"][drcr]] = account_code
@@ -188,6 +215,10 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def generate_csv_report(self, writer, data, records):
         self._check_records(records)
+        # Exclude journal entries related to purchase receipts from export.
+        records = records.filtered(
+            lambda m: not self._is_purchase_receipt_valuation_move(m)
+        )
         # Sort records by date, production id and picking id
         sorted_records = sorted(
             records,
