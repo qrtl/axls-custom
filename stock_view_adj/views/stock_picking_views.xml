@@ -8,6 +8,16 @@
             <xpath expr="//field[@name='picking_type_id']" position="attributes">
                 <attribute name="widget">selection</attribute>
             </xpath>
+            <xpath
+                expr="//field[@name='move_ids_without_package']/tree//field[@name='lot_ids']"
+                position="attributes"
+            >
+                <attribute name="string">Lots/Serials</attribute>
+                <!-- Show lot_ids for both 'lot' and 'serial' tracking (hide only for 'none') -->
+                <attribute name="attrs">
+                    {'invisible': ['|', ('show_details_visible', '=', False), ('has_tracking', '=', 'none')]}
+                </attribute>
+            </xpath>
         </field>
     </record>
 </odoo>
