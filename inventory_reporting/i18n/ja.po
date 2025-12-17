@@ -376,5 +376,5 @@ msgstr "入庫返品"
 #. odoo-python
 #: code:addons/inventory_reporting/reports/inventory_report.py:0
 #, python-format
-msgid "Customer Return"
+msgid "Component Return"
 msgstr "出庫返品"
