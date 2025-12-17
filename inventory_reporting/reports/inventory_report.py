@@ -121,7 +121,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": _("Return"),  # supplier returns
+                "name": _("Vendor Return"),
                 "filter": [
                     ("stock_move_id.picking_code", "=", "outgoing"),
                     ("stock_move_id.origin_returned_move_id", "!=", False),
@@ -148,6 +148,13 @@ class InventoryReportXlsx(models.AbstractModel):
                     ("stock_move_id.picking_code", "in", ("internal", "outgoing")),
                     ("stock_move_id.unbuild_id", "=", False),
                     ("stock_move_id.origin_returned_move_id", "=", False),
+                ],
+            },
+            {
+                "name": _("Customer Return"),
+                "filter": [
+                    ("stock_move_id.picking_code", "=", "incoming"),
+                    ("stock_move_id.origin_returned_move_id", "!=", False),
                 ],
             },
             {
@@ -302,7 +309,7 @@ class InventoryReportXlsx(models.AbstractModel):
                 ],
             },
             {
-                "name": _("Return"),
+                "name": _("Vendor Return"),
                 "filter": [
                     ("stock_move_id.picking_type_id.code", "=", "outgoing"),
                     ("stock_move_id.origin_returned_move_id", "!=", False),

@@ -243,13 +243,6 @@ msgstr "入庫"
 msgid "Reference"
 msgstr "参照"
 
-#. module: inventory_reporting
-#. odoo-python
-#: code:addons/inventory_reporting/reports/inventory_report.py:0
-#: code:addons/inventory_reporting/reports/inventory_report.py:0
-#, python-format
-msgid "Return"
-msgstr "戻り"
 
 #. module: inventory_reporting
 #. odoo-python
@@ -371,3 +364,17 @@ msgstr "在庫レポートサマリ"
 #, python-format
 msgid "Product Category Total"
 msgstr "プロダクトカテゴリ合計"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Vendor Return"
+msgstr "入庫返品"
+
+#. module: inventory_reporting
+#. odoo-python
+#: code:addons/inventory_reporting/reports/inventory_report.py:0
+#, python-format
+msgid "Customer Return"
+msgstr "出庫返品"
