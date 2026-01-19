@@ -21,6 +21,8 @@
         "wizards/inventory_report_wizard_views.xml",
         "reports/inventory_report.xml",
         "views/product_category_views.xml",
+        "views/stock_valuation_layer_views.xml",
     ],
     "installable": True,
+    "pre_init_hook": "pre_init_hook",
 }
