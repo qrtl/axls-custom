@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_inventory_report_wizard" model="ir.ui.view">
+        <field name="name">inventory.report.wizard.form</field>
+        <field name="model">inventory.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Inventory Report">
+                <group>
+                    <group>
+                        <label for="date_start" string="Date Period" />
+                        <div name="dates" class="o_row">
+                            <field
+                                name="date_start"
+                                widget="daterange"
+                                options="{'related_end_date':'date_end'}"
+                            />
+                            <i
+                                class="fa fa-long-arrow-right mx-2 oe_edit_only"
+                                aria-label="Arrow icon"
+                                title="Arrow"
+                            />
+                            <field
+                                name="date_end"
+                                widget="daterange"
+                                options="{'related_start_date':'date_start'}"
+                            />
+                        </div>
+                    </group>
+                </group>
+                <footer>
+                    <button
+                        name="export_xlsx"
+                        string="Generate"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="inventory_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">Inventory Report Wizard</field>
+        <field name="res_model">inventory.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_inventory_report_wizard" />
+        <field name="target">new</field>
+    </record>
+    <menuitem
+        id="inventory_report_menu"
+        name="Inventory Report"
+        parent="stock.menu_warehouse_report"
+        action="inventory_report_wizard_action"
+        sequence="30"
+        groups="account.group_account_manager,stock.group_stock_manager"
+    />
+</odoo>
