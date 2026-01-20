@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="svl_report_category_wizard_form" model="ir.ui.view">
+        <field name="name">svl.report.category.wizard.form</field>
+        <field name="model">svl.report.category.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Set SVL Report Category">
+                <group>
+                    <field name="report_category_id" />
+                </group>
+                <footer>
+                    <button
+                        name="action_apply"
+                        string="Apply"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_svl_report_category_wizard" model="ir.actions.act_window">
+        <field name="name">Set SVL Report Category</field>
+        <field name="res_model">svl.report.category.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="svl_report_category_wizard_form" />
+        <field name="target">new</field>
+        <field
+            name="binding_model_id"
+            ref="stock_account.model_stock_valuation_layer"
+        />
+        <field name="binding_type">action</field>
+    </record>
+
+</odoo>

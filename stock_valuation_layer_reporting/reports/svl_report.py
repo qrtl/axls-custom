@@ -5,8 +5,8 @@ from odoo.osv import expression
 from odoo.tools import float_round
 
 
-class InventoryReportXlsx(models.AbstractModel):
-    _name = "report.inventory_reporting.inventory_report_xlsx"
+class SVLReportXlsx(models.AbstractModel):
+    _name = "report.stock_valuation_layer_reporting.svl_report_xlsx"
     _inherit = "report.report_xlsx.abstract"
 
     def generate_xlsx_report(self, workbook, data, wizard):
@@ -38,6 +38,27 @@ class InventoryReportXlsx(models.AbstractModel):
         )
         return category_objs.mapped("name")
 
+    def get_inventory_operation_categories(self, include_other=True):
+        categories = self._get_report_categories().filtered(
+            lambda c: c.display_type in ("storable", "both")
+        )
+        if not include_other:
+            categories = categories.filtered(lambda c: not c.is_other)
+        return [(category.id, category.name) for category in categories]
+
+    def get_consumable_operation_categories(self, include_other=True):
+        categories = self._get_report_categories().filtered(
+            lambda c: c.display_type == "both"
+        )
+        if not include_other:
+            categories = categories.filtered(lambda c: not c.is_other)
+        return [(category.id, category.name) for category in categories]
+
+    def _get_report_categories(self):
+        return self.env["svl.report.category"].search(
+            [("active", "=", True)], order="sequence,id"
+        )
+
     def get_valuation_domain(self, category_name, wizard):
         return [
             ("product_id.active", "=", True),
@@ -45,8 +66,35 @@ class InventoryReportXlsx(models.AbstractModel):
             ("actual_date", "<=", wizard.date_end),
         ]
 
+    def _setup_summary_sheet(self, workbook, categories, is_valuation_report=False):
+        ws = workbook.add_worksheet(_("Report Summary"))
+        ws.set_column(0, 0, 30)
+        ws.set_column(1, 1, 25)
+        header_left = (
+            _("Product Category")
+            if is_valuation_report
+            else _("Inventory Operation Type")
+        )
+        ws.write(0, 0, header_left)
+        ws.write(0, 1, _("SVL's Total Inventory Value"))
+        formula_column = "F" if is_valuation_report else "P"
+        labels = (
+            categories if is_valuation_report else [label for _key, label in categories]
+        )
+        row = 1
+        for label in labels:
+            ws.write(row, 0, label)
+            ws.write_formula(
+                row,
+                1,
+                "=SUM('%s'!%s:%s)" % (label, formula_column, formula_column),
+            )
+            row += 1
+        return ws
+
     def generate_valuation_report(self, workbook, wizard):
         categories = self.get_product_categories()
+        self._setup_summary_sheet(workbook, categories, is_valuation_report=True)
         for _i, category in enumerate(categories):
             ws = workbook.add_worksheet(category)
 
@@ -106,99 +154,6 @@ class InventoryReportXlsx(models.AbstractModel):
                     ws.write(row, 6, last_purchase_date.strftime("%Y-%m-%d"))
                 row += 1
 
-    def get_storable_categories(self, wizard):
-        base_domain = self.get_base_domain(wizard)
-        base_storable_domain = expression.AND(
-            [base_domain, [("product_id.detailed_type", "=", "product")]]
-        )
-        categories = [
-            {
-                "name": _("Receipt"),
-                "filter": [
-                    ("stock_move_id.picking_code", "=", "incoming"),
-                    ("stock_move_id.origin_returned_move_id", "=", False),
-                    ("stock_move_id.unbuild_id", "=", False),
-                ],
-            },
-            {
-                "name": _("Return"),  # supplier returns
-                "filter": [
-                    ("stock_move_id.picking_code", "=", "outgoing"),
-                    ("stock_move_id.origin_returned_move_id", "!=", False),
-                ],
-            },
-            {
-                "name": _("Component Flush"),
-                "filter": [
-                    "|",
-                    "&",
-                    ("stock_move_id.location_dest_id.usage", "=", "production"),
-                    (
-                        "stock_move_id.location_id.is_subcontracting_location",
-                        "=",
-                        False,
-                    ),
-                    "&",
-                    ("stock_move_id.location_id.usage", "=", "production"),
-                    (
-                        "stock_move_id.location_dest_id.is_subcontracting_location",
-                        "=",
-                        False,
-                    ),
-                    ("stock_move_id.picking_code", "in", ("internal", "outgoing")),
-                    ("stock_move_id.unbuild_id", "=", False),
-                    ("stock_move_id.origin_returned_move_id", "=", False),
-                ],
-            },
-            {
-                "name": _("Inventory Adjustment"),
-                "filter": [
-                    "|",
-                    ("stock_move_id.location_id.usage", "=", "inventory"),
-                    ("stock_move_id.location_dest_id.usage", "=", "inventory"),
-                    ("stock_move_id.scrapped", "=", False),
-                    ("stock_move_id.unbuild_id", "=", False),
-                ],
-            },
-            {
-                "name": _("Scrap"),
-                "filter": [
-                    ("stock_move_id.scrapped", "=", True),
-                ],
-            },
-            {
-                "name": _("Subcontracting"),
-                "filter": [
-                    "|",
-                    "&",
-                    (
-                        "stock_move_id.location_dest_id.is_subcontracting_location",
-                        "=",
-                        True,
-                    ),
-                    ("stock_move_id.location_id.usage", "!=", "inventory"),
-                    "&",
-                    ("stock_move_id.location_id.is_subcontracting_location", "=", True),
-                    ("stock_move_id.location_dest_id.usage", "!=", "inventory"),
-                    ("stock_move_id.scrapped", "=", False),
-                    ("stock_move_id.unbuild_id", "=", False),
-                ],
-            },
-            {
-                "name": _("Price Update"),
-                "filter": [
-                    ("stock_move_id", "=", False),
-                ],
-            },
-            {
-                "name": _("Unbuild"),
-                "filter": [
-                    ("stock_move_id.unbuild_id", "!=", False),
-                ],
-            },
-        ]
-        return base_storable_domain, categories
-
     def setup_storable_worksheet_headers(self, ws):
         headers = [
             _("Reference"),
@@ -244,16 +199,25 @@ class InventoryReportXlsx(models.AbstractModel):
             ws.write(0, col, header)
 
     def generate_storable_report(self, workbook, wizard):
-        base_storable_domain, categories = self.get_storable_categories(wizard)
-        for category in categories:
-            ws = workbook.add_worksheet(category["name"])
+        base_storable_domain = expression.AND(
+            [
+                self.get_base_domain(wizard),
+                [("product_id.detailed_type", "=", "product")],
+            ]
+        )
+        categories = self.get_inventory_operation_categories(include_other=True)
+        self._setup_summary_sheet(workbook, categories)
+        for category_id, category_label in categories:
+            ws = workbook.add_worksheet(category_label)
 
             # Write the header
             self.setup_storable_worksheet_headers(ws)
 
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
-            domain = expression.AND([base_storable_domain, category["filter"]])
+            domain = expression.AND(
+                [base_storable_domain, [("report_category", "=", category_id)]]
+            )
             valuations = valuation_obj.search(domain)
 
             # Write the data to the worksheet
@@ -288,35 +252,23 @@ class InventoryReportXlsx(models.AbstractModel):
                 )
 
     def generate_consumable_report(self, workbook, wizard):
-        base_domain = self.get_base_domain(wizard)
-        base_consu_domain = expression.AND(
-            [base_domain, [("product_id.detailed_type", "!=", "product")]]
+        base_consumable_domain = expression.AND(
+            [
+                self.get_base_domain(wizard),
+                [("product_id.detailed_type", "!=", "product")],
+            ]
         )
-
-        categories = [
-            {
-                "name": _("Receipt"),
-                "filter": [
-                    ("stock_move_id.picking_type_id.code", "=", "incoming"),
-                    ("stock_move_id.origin_returned_move_id", "=", False),
-                ],
-            },
-            {
-                "name": _("Return"),
-                "filter": [
-                    ("stock_move_id.picking_type_id.code", "=", "outgoing"),
-                    ("stock_move_id.origin_returned_move_id", "!=", False),
-                ],
-            },
-        ]
-
-        for category in categories:
-            ws = workbook.add_worksheet(category["name"])
+        categories = self.get_consumable_operation_categories(include_other=True)
+        self._setup_summary_sheet(workbook, categories)
+        for category_id, category_label in categories:
+            ws = workbook.add_worksheet(category_label)
             self.setup_storable_worksheet_headers(ws)
 
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
-            domain = expression.AND([base_consu_domain, category["filter"]])
+            domain = expression.AND(
+                [base_consumable_domain, [("report_category", "=", category_id)]]
+            )
             valuations = valuation_obj.search(domain)
 
             # Write the data to the worksheet
@@ -353,10 +305,18 @@ class InventoryReportXlsx(models.AbstractModel):
                 )
 
     def generate_summary_report(self, workbook, wizard):
-        ws = workbook.add_worksheet(_("Inventory Report Summary"))
+        ws = workbook.add_worksheet(_("SVL Report Summary"))
         valuation_obj = self.env["stock.valuation.layer"]
         product_categories = self.get_product_categories()
-        base_storable_domain, storable_categories = self.get_storable_categories(wizard)
+        base_storable_domain = expression.AND(
+            [
+                self.get_base_domain(wizard),
+                [("product_id.detailed_type", "=", "product")],
+            ]
+        )
+        storable_categories = self.get_inventory_operation_categories(
+            include_other=False
+        )
         headers = [
             _("Product Category"),
             _("SVL's Total Inventory Value"),
@@ -385,13 +345,15 @@ class InventoryReportXlsx(models.AbstractModel):
                 ws.write(row, 1, prod_categ_value)
                 product_categ_total += prod_categ_value
             if i < len(storable_categories):
-                cat = storable_categories[i]
-                storable_domain = expression.AND([base_storable_domain, cat["filter"]])
+                category_key, category_label = storable_categories[i]
+                storable_domain = expression.AND(
+                    [base_storable_domain, [("report_category", "=", category_key)]]
+                )
                 storable_vals = valuation_obj.read_group(storable_domain, ["value"], [])
                 inventory_categ_value = (
                     storable_vals[0]["value"] or 0.0 if storable_vals else 0.0
                 )
-                ws.write(row, 2, cat["name"])
+                ws.write(row, 2, category_label)
                 ws.write(row, 3, inventory_categ_value)
                 inventory_categ_total += inventory_categ_value
             row += 1

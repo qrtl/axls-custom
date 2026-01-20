@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record
+        id="stock_valuation_layer_tree_inherit_stock_valuation_layer_reporting"
+        model="ir.ui.view"
+    >
+        <field name="name">stock.valuation.layer.tree.svl.reporting</field>
+        <field name="model">stock.valuation.layer</field>
+        <field name="inherit_id" ref="stock_account.stock_valuation_layer_tree" />
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="report_category" groups="base.group_system" readonly="0" />
+            </field>
+        </field>
+    </record>
+
+    <record
+        id="stock_valuation_layer_form_inherit_stock_valuation_layer_reporting"
+        model="ir.ui.view"
+    >
+        <field name="name">stock.valuation.layer.form.svl.reporting</field>
+        <field name="model">stock.valuation.layer</field>
+        <field name="inherit_id" ref="stock_account.stock_valuation_layer_form" />
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field
+                    name="report_category"
+                    groups="base.group_system"
+                    readonly="0"
+                    force_save="1"
+                />
+            </field>
+        </field>
+    </record>
+</odoo>

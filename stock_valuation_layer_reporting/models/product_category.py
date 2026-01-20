@@ -7,4 +7,4 @@ from odoo import fields, models
 class ProductCategory(models.Model):
     _inherit = "product.category"
 
-    is_report_category = fields.Boolean(string="Include in Inventory Report")
+    is_report_category = fields.Boolean(string="Include in SVL Report")

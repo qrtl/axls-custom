@@ -8,9 +8,9 @@ import zipfile
 from odoo import fields, models
 
 
-class InventoryReportWizard(models.TransientModel):
-    _name = "inventory.report.wizard"
-    _description = "Inventory Report Wizard"
+class SVLReportWizard(models.TransientModel):
+    _name = "svl.report.wizard"
+    _description = "SVL Report Wizard"
 
     date_start = fields.Date("Start Date", required=True)
     date_end = fields.Date("End Date", required=True)
@@ -27,7 +27,7 @@ class InventoryReportWizard(models.TransientModel):
                     "date_end": self.date_end,
                 }
                 # Obtain Excel data in bytes for the given report type
-                report = self.env.ref("inventory_reporting.inventory_report_xlsx")
+                report = self.env.ref("stock_valuation_layer_reporting.svl_report_xlsx")
                 excel_content, _ = report._render(
                     report.report_name, [self.id], data=data
                 )

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="svl_report_category_form" model="ir.ui.view">
+        <field name="name">svl.report.category.form</field>
+        <field name="model">svl.report.category</field>
+        <field name="arch" type="xml">
+            <form string="SVL Report Category">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="active" />
+                        <field name="sequence" />
+                        <field name="is_other" />
+                        <field name="display_type" />
+                        <field
+                            name="domain"
+                            widget="domain"
+                            options="{'model': 'stock.valuation.layer'}"
+                            attrs="{'readonly': [('is_other', '=', True)]}"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="svl_report_category_tree" model="ir.ui.view">
+        <field name="name">svl.report.category.tree</field>
+        <field name="model">svl.report.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" />
+                <field name="name" />
+                <field name="active" />
+                <field name="is_other" />
+                <field name="display_type" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_svl_report_category" model="ir.actions.act_window">
+        <field name="name">SVL Report Categories</field>
+        <field name="res_model">svl.report.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_svl_report_category"
+        name="SVL Report Categories"
+        parent="stock.menu_stock_config_settings"
+        action="action_svl_report_category"
+        sequence="20"
+        groups="stock.group_stock_manager"
+    />
+</odoo>
