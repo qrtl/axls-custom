@@ -1,0 +1,31 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_picking_consumable_accounting_date
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-19 04:03+0000\n"
+"PO-Revision-Date: 2023-10-19 04:03+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_picking_consumable_accounting_date
+#: model_terms:ir.ui.view,arch_db:stock_picking_consumable_accounting_date.view_picking_form
+msgid "Consumable Accounting Date"
+msgstr "消耗品用会計日"
+
+#. module: stock_picking_consumable_accounting_date
+#: model:ir.model.fields,field_description:stock_picking_consumable_accounting_date.field_stock_picking__show_consumable_accounting_date
+msgid "Show Consumable Accounting Date"
+msgstr "消耗品用会計日を表示"
+
+#. module: stock_picking_consumable_accounting_date
+#: model:ir.model,name:stock_picking_consumable_accounting_date.model_stock_picking
+msgid "Transfer"
+msgstr "運送"
