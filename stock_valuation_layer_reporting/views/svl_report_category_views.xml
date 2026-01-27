@@ -16,7 +16,7 @@
                             name="domain"
                             widget="domain"
                             options="{'model': 'stock.valuation.layer'}"
-                            attrs="{'readonly': [('is_other', '=', True)]}"
+                            attrs="{'invisible': [('is_other', '=', True)]}"
                         />
                     </group>
                 </sheet>

@@ -27,6 +27,8 @@ class StockValuationLayer(models.Model):
         other_category = categories.filtered("is_other")[:1]
         matches = []
         for category in categories:
+            if category.is_other:
+                continue
             domain = category._get_domain()
             if self.filtered_domain(domain):
                 matches.append(category)

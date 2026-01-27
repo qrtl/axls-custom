@@ -1,7 +1,8 @@
 # Copyright 2025 Quartile Limited (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -31,7 +32,15 @@ class SVLReportCategory(models.Model):
             return []
         return safe_eval(self.domain)
 
-    @api.onchange("is_other")
-    def _onchange_is_other(self):
-        if self.is_other:
-            self.domain = ""
+    @api.constrains("domain")
+    def _check_domain(self):
+        for record in self:
+            if not record.domain:
+                continue
+            try:
+                safe_eval(record.domain)
+            except Exception as exc:
+                raise UserError(
+                    _("Invalid domain for category '%s': %s")
+                    % (record.display_name, exc)
+                ) from exc

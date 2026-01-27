@@ -66,21 +66,38 @@ class SVLReportXlsx(models.AbstractModel):
             ("actual_date", "<=", wizard.date_end),
         ]
 
-    def _setup_summary_sheet(self, workbook, categories, is_valuation_report=False):
+    def _get_summary_config(self, report_type):
+        configs = {
+            "valuation": {
+                "header_left": _("Product Category"),
+                "formula_column": "F",
+                "labels_from_categories": True,
+            },
+            "storable": {
+                "header_left": _("Inventory Operation Type"),
+                "formula_column": "P",
+                "labels_from_categories": False,
+            },
+            "consumable": {
+                "header_left": _("Inventory Operation Type"),
+                "formula_column": "G",
+                "labels_from_categories": False,
+            },
+        }
+        return configs.get(report_type, configs["storable"])
+
+    def _setup_summary_sheet(self, workbook, categories, report_type):
         ws = workbook.add_worksheet(_("Report Summary"))
         ws.set_column(0, 0, 30)
         ws.set_column(1, 1, 25)
-        header_left = (
-            _("Product Category")
-            if is_valuation_report
-            else _("Inventory Operation Type")
-        )
-        ws.write(0, 0, header_left)
+        config = self._get_summary_config(report_type)
+        ws.write(0, 0, config["header_left"])
         ws.write(0, 1, _("SVL's Total Inventory Value"))
-        formula_column = "F" if is_valuation_report else "P"
-        labels = (
-            categories if is_valuation_report else [label for _key, label in categories]
-        )
+        formula_column = config["formula_column"]
+        if config["labels_from_categories"]:
+            labels = categories
+        else:
+            labels = [label for _key, label in categories]
         row = 1
         for label in labels:
             ws.write(row, 0, label)
@@ -94,7 +111,7 @@ class SVLReportXlsx(models.AbstractModel):
 
     def generate_valuation_report(self, workbook, wizard):
         categories = self.get_product_categories()
-        self._setup_summary_sheet(workbook, categories, is_valuation_report=True)
+        self._setup_summary_sheet(workbook, categories, "valuation")
         for _i, category in enumerate(categories):
             ws = workbook.add_worksheet(category)
 
@@ -206,7 +223,7 @@ class SVLReportXlsx(models.AbstractModel):
             ]
         )
         categories = self.get_inventory_operation_categories(include_other=True)
-        self._setup_summary_sheet(workbook, categories)
+        self._setup_summary_sheet(workbook, categories, "storable")
         for category_id, category_label in categories:
             ws = workbook.add_worksheet(category_label)
 
@@ -259,7 +276,7 @@ class SVLReportXlsx(models.AbstractModel):
             ]
         )
         categories = self.get_consumable_operation_categories(include_other=True)
-        self._setup_summary_sheet(workbook, categories)
+        self._setup_summary_sheet(workbook, categories, "consumable")
         for category_id, category_label in categories:
             ws = workbook.add_worksheet(category_label)
             self.setup_storable_worksheet_headers(ws)
