@@ -11,14 +11,6 @@ class StockValuationLayer(models.Model):
         "svl.report.category",
     )
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        records = super().create(vals_list)
-        for vals, record in zip(vals_list, records):
-            if not vals.get("report_category"):
-                record.report_category = record._get_default_report_category()
-        return records
-
     def _get_default_report_category(self):
         self.ensure_one()
         categories = self.env["svl.report.category"].search(
@@ -35,3 +27,11 @@ class StockValuationLayer(models.Model):
         if len(matches) == 1:
             return matches[0]
         return other_category
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for vals, record in zip(vals_list, records):
+            if not vals.get("report_category"):
+                record.report_category = record._get_default_report_category()
+        return records

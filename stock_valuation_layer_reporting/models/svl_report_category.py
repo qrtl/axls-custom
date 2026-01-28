@@ -19,6 +19,7 @@ class SVLReportCategory(models.Model):
     display_type = fields.Selection(
         [
             ("storable", "Storable"),
+            ("consumable", "Consumable"),
             ("both", "Both"),
             ("invisible", "Invisible"),
         ],
@@ -41,6 +42,9 @@ class SVLReportCategory(models.Model):
                 safe_eval(record.domain)
             except Exception as exc:
                 raise UserError(
-                    _("Invalid domain for category '%s': %s")
-                    % (record.display_name, exc)
+                    _("Invalid domain for category '%(category)s': %(error)s")
+                    % {
+                        "category": record.display_name,
+                        "error": exc,
+                    }
                 ) from exc

@@ -12,10 +12,10 @@ class SVLReportXlsx(models.AbstractModel):
     def generate_xlsx_report(self, workbook, data, wizard):
         if data["report_type"] == "valuation":
             self.generate_valuation_report(workbook, wizard)
-        elif data["report_type"] == "storable":
-            self.generate_storable_report(workbook, wizard)
-        elif data["report_type"] == "consumable":
-            self.generate_consumable_report(workbook, wizard)
+        elif data["report_type"] in ("storable", "consumable"):
+            self.generate_inventory_operation_report(
+                workbook, wizard, data["report_type"]
+            )
         else:
             self.generate_summary_report(workbook, wizard)
 
@@ -38,17 +38,11 @@ class SVLReportXlsx(models.AbstractModel):
         )
         return category_objs.mapped("name")
 
-    def get_inventory_operation_categories(self, include_other=True):
+    def get_inventory_operation_categories(
+        self, display_type="storable", include_other=True
+    ):
         categories = self._get_report_categories().filtered(
-            lambda c: c.display_type in ("storable", "both")
-        )
-        if not include_other:
-            categories = categories.filtered(lambda c: not c.is_other)
-        return [(category.id, category.name) for category in categories]
-
-    def get_consumable_operation_categories(self, include_other=True):
-        categories = self._get_report_categories().filtered(
-            lambda c: c.display_type == "both"
+            lambda c: c.display_type in (display_type, "both")
         )
         if not include_other:
             categories = categories.filtered(lambda c: not c.is_other)
@@ -215,15 +209,20 @@ class SVLReportXlsx(models.AbstractModel):
         for col, header in enumerate(headers):
             ws.write(0, col, header)
 
-    def generate_storable_report(self, workbook, wizard):
-        base_storable_domain = expression.AND(
-            [
-                self.get_base_domain(wizard),
-                [("product_id.detailed_type", "=", "product")],
-            ]
+    def generate_inventory_operation_report(self, workbook, wizard, report_type):
+        base_domain = self.get_base_domain(wizard)
+        if report_type == "storable":
+            base_domain = expression.AND(
+                [base_domain, [("product_id.detailed_type", "=", "product")]]
+            )
+        else:
+            base_domain = expression.AND(
+                [base_domain, [("product_id.detailed_type", "!=", "product")]]
+            )
+        categories = self.get_inventory_operation_categories(
+            display_type=report_type, include_other=True
         )
-        categories = self.get_inventory_operation_categories(include_other=True)
-        self._setup_summary_sheet(workbook, categories, "storable")
+        self._setup_summary_sheet(workbook, categories, report_type)
         for category_id, category_label in categories:
             ws = workbook.add_worksheet(category_label)
 
@@ -233,65 +232,16 @@ class SVLReportXlsx(models.AbstractModel):
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
             domain = expression.AND(
-                [base_storable_domain, [("report_category", "=", category_id)]]
+                [base_domain, [("report_category", "=", category_id)]]
             )
             valuations = valuation_obj.search(domain)
 
             # Write the data to the worksheet
             for row, valuation in enumerate(valuations, start=1):
-                actual_date = fields.Date.from_string(valuation.actual_date)
-                ws.write(row, 0, valuation.reference)
-                ws.write(row, 1, valuation.stock_move_id.origin)
-                ws.write(row, 2, actual_date.strftime("%Y-%m-%d"))
-                ws.write(
-                    row,
-                    3,
-                    self.parse_html(valuation.stock_move_id.picking_id.note) or "",
-                )
-                ws.write(row, 4, valuation.create_uid.name)
-                ws.write(row, 5, valuation.stock_move_id.picking_id.partner_id.name)
-                ws.write(
-                    row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal
-                )
-                ws.write(row, 7, valuation.product_id.name)
-                ws.write(row, 8, valuation.product_id.type)
-                ws.write(row, 9, valuation.product_id.categ_id.name)
-                ws.write(row, 10, valuation.stock_move_id.location_id.name)
-                ws.write(row, 11, valuation.stock_move_id.location_dest_id.name)
-                ws.write(row, 12, valuation.quantity)
-                ws.write(row, 13, valuation.uom_id.name)
-                ws.write(row, 14, valuation.product_id.categ_id.property_cost_method)
-                ws.write(row, 15, valuation.value),
-                ws.write(
-                    row,
-                    16,
-                    valuation.stock_move_id.analytic_account_names or "",
-                )
-
-    def generate_consumable_report(self, workbook, wizard):
-        base_consumable_domain = expression.AND(
-            [
-                self.get_base_domain(wizard),
-                [("product_id.detailed_type", "!=", "product")],
-            ]
-        )
-        categories = self.get_consumable_operation_categories(include_other=True)
-        self._setup_summary_sheet(workbook, categories, "consumable")
-        for category_id, category_label in categories:
-            ws = workbook.add_worksheet(category_label)
-            self.setup_storable_worksheet_headers(ws)
-
-            # Fetch the data for the report based on the category and date range
-            valuation_obj = self.env["stock.valuation.layer"]
-            domain = expression.AND(
-                [base_consumable_domain, [("report_category", "=", category_id)]]
-            )
-            valuations = valuation_obj.search(domain)
-
-            # Write the data to the worksheet
-            for row, valuation in enumerate(valuations, start=1):
-                actual_date = fields.Date.from_string(
-                    valuation.stock_move_id.actual_date
+                actual_date = (
+                    valuation.actual_date
+                    if report_type == "storable"
+                    else valuation.stock_move_id.actual_date
                 )
                 ws.write(row, 0, valuation.reference)
                 ws.write(row, 1, valuation.stock_move_id.origin)
