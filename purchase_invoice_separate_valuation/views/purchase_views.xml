@@ -12,6 +12,14 @@
                         class="btn-secondary"
                         attrs="{'invisible': [('state', 'not in', ['purchase', 'done'])]}"/>
             </xpath>
+            <xpath expr="//field[@name='tax_totals']" position="after">
+                <field name="amount_invoiced" readonly="1"/>
+                <field name="amount_to_invoice" readonly="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree//field[@name='price_subtotal']" position="after">
+                <field name="amount_invoiced" readonly="1"/>
+                <field name="amount_to_invoice" readonly="1"/>
+            </xpath>
         </field>
     </record>
 

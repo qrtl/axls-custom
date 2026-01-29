@@ -116,13 +116,15 @@ class AccountMove(models.Model):
             receipt_balances.setdefault(line.account_id.id, 0.0)
             receipt_balances[line.account_id.id] += line.balance
 
-        # Invoice side (GRNI from vendor bills) - only invoice lines tied to this PO
-        po_invoice_lines = purchase.order_line.mapped('invoice_lines').filtered(
-            lambda l: l.move_id.state == 'posted'
-            and l.move_id.move_type in ('in_invoice', 'in_refund', 'in_receipt')
+        # Invoice side (GRNI from vendor bills) - use GRNI lines from PO-related vendor bills
+        po_invoice_moves = purchase.order_line.mapped('invoice_lines').mapped('move_id').filtered(
+            lambda m: m.state == 'posted' and m.move_type in ('in_invoice', 'in_refund', 'in_receipt')
         )
-        if stock_input_account_ids:
-            invoice_lines = po_invoice_lines.filtered(lambda l: l.account_id.id in stock_input_account_ids)
+        if stock_input_account_ids and po_invoice_moves:
+            invoice_lines = self.env['account.move.line'].search([
+                ('move_id', 'in', po_invoice_moves.ids),
+                ('account_id', 'in', list(stock_input_account_ids)),
+            ])
         else:
             invoice_lines = self.env['account.move.line']
 

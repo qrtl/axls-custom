@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools.float_utils import float_is_zero
 
 
 class PurchaseMakeInvoiceAdvance(models.TransientModel):
@@ -57,11 +58,17 @@ class PurchaseMakeInvoiceAdvance(models.TransientModel):
                 if self.is_final_invoice:
                     qty_to_invoice = line.qty_to_invoice
                 else:
-                    # Allow invoicing any quantity for non-final invoices
-                    if line.product_id.purchase_method == 'purchase':
-                        qty_to_invoice = line.product_qty - (line.qty_invoiced if self.is_final_invoice else 0)
-                    else:
-                        qty_to_invoice = line.qty_received - (line.qty_invoiced if self.is_final_invoice else 0)
+                    # Determine quantity from remaining amount to invoice
+                    remaining_amount = line.amount_to_invoice
+                    if float_is_zero(remaining_amount, precision_rounding=line.currency_id.rounding) or remaining_amount <= 0:
+                        continue
+
+                    discount = getattr(line, 'discount', 0.0) or 0.0
+                    effective_unit_price = line.price_unit * (1.0 - (discount / 100.0))
+                    if float_is_zero(effective_unit_price, precision_rounding=line.currency_id.rounding):
+                        continue
+
+                    qty_to_invoice = remaining_amount / effective_unit_price
 
                 if qty_to_invoice > 0:
                     line_vals = line._prepare_account_move_line(
