@@ -1,5 +1,5 @@
 # Copyright 2023 Quartile Limited
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import csv
 from collections import defaultdict
@@ -86,46 +86,30 @@ class AccountMoveObcCsv(models.AbstractModel):
         return production.subcontractor_id
 
     def _is_purchase_receipt_valuation_move(self, move):
-        """
-        Identify account moves for purchase receipts (incoming pickings) that should
-        NOT be exported to OBC.
-        """
-        stock_move = move.stock_move_id
-        if not stock_move or not stock_move.picking_id:
-            return False
-        picking_type = stock_move.picking_id.picking_type_id
-        if not picking_type or picking_type.code != "incoming":
-            return False
-        if not stock_move.purchase_line_id:
-            return False
-        return True
+        """Identify account moves for purchase receipts (incoming pickings) that should
+        NOT be exported to OBC."""
+        return True if move.stock_move_id.purchase_line_id else False
 
     def _update_vals(self, vals, line, move_analytic_accounts, drcr):
         account = line.account_id
         account_code = account.code
         subaccount_code = ""
-        if "." in account_code:
-            # maxsplit=1 - we assume that an account code should contain only one
-            # period (".") at most.
-            account_code, subaccount_code = account_code.split(".", 1)
         # Vendor bill journal export:
         # - If the line uses the purchase accrual (Goods Received Not Invoiced) account,
         #   output it as "material purchase" by mapping it to the product category's
         #   stock valuation account.
-        move = line.move_id
-        categ = line.product_id.categ_id if line.product_id else False
-        if (
-            move.move_type in ("in_invoice", "in_refund")
-            and categ
-            and categ.property_stock_account_input_categ_id
-            and account == categ.property_stock_account_input_categ_id
-            and categ.property_stock_valuation_account_id
+        categ = line.product_id.categ_id
+        if not line.is_landed_costs_line and line.move_id.is_purchase_document(
+            include_receipts=True
         ):
-            account_code = categ.property_stock_valuation_account_id.code
-            if "." in account_code:
-                account_code, subaccount_code = account_code.split(".", 1)
-            else:
-                subaccount_code = ""
+            account_input = categ.property_stock_account_input_categ_id
+            account_valuation = categ.property_stock_valuation_account_id
+            if account_valuation and line.account_id == account_input:
+                account_code = account_valuation.code
+        if "." in account_code:
+            # maxsplit=1 - we assume that an account code should contain only one
+            # period (".") at most.
+            account_code, subaccount_code = account_code.split(".", 1)
         # We assume that there should be only one project/department per journal
         # item if any.
         project = line.analytic_line_ids.filtered(
@@ -153,7 +137,6 @@ class AccountMoveObcCsv(models.AbstractModel):
             department = move_analytic_accounts.filtered(
                 lambda x: x.plan_id.plan_type == "department"
             )[:1]
-        tax = self.env["account.tax"]
         tax = line.tax_ids[:1]
         partner = self._get_partner(line)
         fields = self._get_field_map()

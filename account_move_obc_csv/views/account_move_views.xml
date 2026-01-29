@@ -38,11 +38,6 @@
                     domain="[('is_exported','=',False)]"
                 />
                 <separator />
-                <filter
-                    name="vendor_bills_only"
-                    string="Vendor Bills/Refunds"
-                    domain="[('move_type','in',('in_invoice','in_refund'))]"
-                />
             </xpath>
         </field>
     </record>
