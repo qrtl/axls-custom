@@ -15,6 +15,18 @@ class StockValuationLayer(models.Model):
         "svl.report.category",
     )
 
+    report_category_changed = fields.Boolean(
+        compute="_compute_report_category_changed",
+        store=True,
+    )
+
+    @api.depends("default_report_category", "report_category")
+    def _compute_report_category_changed(self):
+        for record in self:
+            record.report_category_changed = (
+                record.default_report_category != record.report_category
+            )
+
     def _get_report_category_for_record(self, categories, other_category):
         self.ensure_one()
         matches = []
@@ -26,16 +38,6 @@ class StockValuationLayer(models.Model):
         return matches[0] if len(matches) == 1 else other_category
 
     def apply_report_category_defaults(self):
-        """
-        レコードにレポートカテゴリのデフォルト値を適用する。
-
-        有効なすべてのレポートカテゴリを取得し、各レコードに対して
-        適切なカテゴリを決定して割り当てる。デフォルトカテゴリが
-        未設定の場合は同時に設定する。
-
-        Returns:
-            None
-        """
         categories = self.env["svl.report.category"].search(
             [("active", "=", True)], order="sequence,id"
         )

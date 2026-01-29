@@ -58,4 +58,22 @@
             </field>
         </field>
     </record>
+
+    <record
+        id="stock_valuation_layer_search_inherit_stock_valuation_layer_reporting"
+        model="ir.ui.view"
+    >
+        <field name="name">stock.valuation.layer.search.svl.reporting</field>
+        <field name="model">stock.valuation.layer</field>
+        <field name="inherit_id" ref="stock_account.view_inventory_valuation_search" />
+        <field name="arch" type="xml">
+            <filter name="has_remaining_qty" position="after">
+                <filter
+                    string="Report Category Changed"
+                    name="report_category_changed"
+                    domain="[('report_category_changed', '=', True)]"
+                />
+            </filter>
+        </field>
+    </record>
 </odoo>
