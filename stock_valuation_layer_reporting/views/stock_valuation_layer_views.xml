@@ -10,8 +10,29 @@
         <field name="arch" type="xml">
             <field name="product_id" position="after">
                 <field name="report_category" groups="base.group_system" readonly="0" />
+                <field
+                    name="default_report_category"
+                    groups="base.group_system"
+                    optional="hide"
+                    readonly="0"
+                />
             </field>
         </field>
+    </record>
+
+    <record
+        id="stock_valuation_layer_recompute_report_category_action"
+        model="ir.actions.server"
+    >
+        <field name="name">Recompute Report Categories</field>
+        <field name="model_id" ref="stock_account.model_stock_valuation_layer" />
+        <field
+            name="binding_model_id"
+            ref="stock_account.model_stock_valuation_layer"
+        />
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">records.apply_report_category_defaults()</field>
     </record>
 
     <record
@@ -28,6 +49,11 @@
                     groups="base.group_system"
                     readonly="0"
                     force_save="1"
+                />
+                <field
+                    name="default_report_category"
+                    groups="base.group_system"
+                    readonly="0"
                 />
             </field>
         </field>
