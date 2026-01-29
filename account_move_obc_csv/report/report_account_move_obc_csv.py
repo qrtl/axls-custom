@@ -215,6 +215,10 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def generate_csv_report(self, writer, data, records):
         self._check_records(records)
+        # NOTE: Some records may be intentionally excluded from the CSV output
+        # but they should still be flagged as exported
+        # to prevent duplicate processing later.
+        records.is_exported = True
         # Exclude journal entries related to purchase receipts from export.
         records = records.filtered(
             lambda m: not self._is_purchase_receipt_valuation_move(m)
@@ -254,7 +258,6 @@ class AccountMoveObcCsv(models.AbstractModel):
                 vals_dict[1]["GL0010000"] = "*"
             for _k, v in sorted(vals_dict.items()):
                 writer.writerow(v)
-            rec.is_exported = True
 
     def csv_report_options(self):
         res = super().csv_report_options()
