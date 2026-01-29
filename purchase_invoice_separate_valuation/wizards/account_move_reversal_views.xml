@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Wizard Form View -->
+    <record id="purchase_make_invoice_advance_form" model="ir.ui.view">
+        <field name="name">purchase.make_invoice_advance.form</field>
+        <field name="model">purchase.make_invoice_advance</field>
+        <field name="arch" type="xml">
+            <form string="Create Invoice">
+                <group>
+                    <field name="purchase_order_ids" widget="many2many_tags"/>
+                    <field name="is_final_invoice"/>
+                    <div colspan="2" class="alert alert-info" role="alert" attrs="{'invisible': [('is_final_invoice', '=', False)]}">
+                        <strong>Final Invoice:</strong> This will update purchase order quantities and may close the purchase order.
+                    </div>
+                    <div colspan="2" class="alert alert-warning" role="alert" attrs="{'invisible': [('is_final_invoice', '=', True)]}">
+                        <strong>Partial Invoice:</strong> Purchase order quantities will not be updated. You can create multiple invoices.
+                    </div>
+                </group>
+                <footer>
+                    <button name="create_invoice" type="object" string="Create Invoice" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Wizard Action -->
+    <record id="action_purchase_make_invoice_advance" model="ir.actions.act_window">
+        <field name="name">Create Invoice</field>
+        <field name="res_model">purchase.make_invoice_advance</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

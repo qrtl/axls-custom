@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_make_invoice_advance_user,purchase.make_invoice_advance.user,model_purchase_make_invoice_advance,purchase.group_purchase_user,1,1,1,1
+access_purchase_make_invoice_advance_manager,purchase.make_invoice_advance.manager,model_purchase_make_invoice_advance,purchase.group_purchase_manager,1,1,1,1
