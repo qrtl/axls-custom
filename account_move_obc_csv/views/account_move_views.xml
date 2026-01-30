@@ -37,6 +37,7 @@
                     string="Not exported"
                     domain="[('is_exported','=',False)]"
                 />
+                <separator />
             </xpath>
         </field>
     </record>

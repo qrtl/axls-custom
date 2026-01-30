@@ -1,5 +1,5 @@
 # Copyright 2023 Quartile Limited
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import csv
 from collections import defaultdict
@@ -85,8 +85,25 @@ class AccountMoveObcCsv(models.AbstractModel):
         production = stock_move.production_id or stock_move.raw_material_production_id
         return production.subcontractor_id
 
-    def _update_vals(self, vals, line, move_analytic_accounts, drcr):
+    def _get_account_for_export(self, line):
+        """Get the account code to use for OBC export.
+        For vendor bill lines using the purchase accrual (Goods Received Not Invoiced)
+        account, return the stock valuation account instead to represent it as
+        "material purchase" in the OBC system."""
         account_code = line.account_id.code
+        categ = line.product_id.categ_id
+        if (
+            categ
+            and not line.is_landed_costs_line
+            and line.move_id.is_purchase_document(include_receipts=True)
+        ):
+            account_input = categ.property_stock_account_input_categ_id
+            account_valuation = categ.property_stock_valuation_account_id
+            if account_valuation and line.account_id == account_input:
+                account_code = account_valuation.code
+        return account_code
+
+    def _update_vals(self, vals, line, move_analytic_accounts, drcr, account_code):
         subaccount_code = ""
         if "." in account_code:
             # maxsplit=1 - we assume that an account code should contain only one
@@ -119,15 +136,7 @@ class AccountMoveObcCsv(models.AbstractModel):
             department = move_analytic_accounts.filtered(
                 lambda x: x.plan_id.plan_type == "department"
             )[:1]
-        # Records of purchase interim account should not be passed to OBC as taxable,
-        # due to conceptual discrepancies between real-time inventory accounting and
-        # 3-part method.
-        tax = self.env["account.tax"]
-        if (
-            line.account_id
-            != line.product_id.categ_id.property_stock_account_input_categ_id
-        ):
-            tax = line.tax_ids[:1]
+        tax = line.tax_ids[:1]
         partner = self._get_partner(line)
         fields = self._get_field_map()
         vals[fields["account"][drcr]] = account_code
@@ -158,6 +167,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         line_count = 1
         purchase_line = record.stock_move_id.purchase_line_id
         for line in move_lines:
+            account_code = self._get_account_for_export(line)
             first_line = False
             if (line.debit and first_debit) or (line.credit and first_credit):
                 first_line = True
@@ -177,10 +187,14 @@ class AccountMoveObcCsv(models.AbstractModel):
                 )
             vals["GL0011001"] = remarks
             if line.debit:
-                vals = self._update_vals(vals, line, move_analytic_accounts, "dr")
+                vals = self._update_vals(
+                    vals, line, move_analytic_accounts, "dr", account_code
+                )
                 first_debit = False
             if line.credit:
-                vals = self._update_vals(vals, line, move_analytic_accounts, "cr")
+                vals = self._update_vals(
+                    vals, line, move_analytic_accounts, "cr", account_code
+                )
                 first_credit = False
             vals_dict[line_num] = vals
             line_count += 1
@@ -188,6 +202,12 @@ class AccountMoveObcCsv(models.AbstractModel):
 
     def generate_csv_report(self, writer, data, records):
         self._check_records(records)
+        # NOTE: Some records may be intentionally excluded from the CSV output
+        # but they should still be flagged as exported
+        # to prevent duplicate processing later.
+        records.is_exported = True
+        # Exclude journal entries related to purchase receipts from export.
+        records = records.filtered(lambda m: not m.stock_move_id.purchase_line_id)
         # Sort records by date, production id and picking id
         sorted_records = sorted(
             records,
@@ -223,7 +243,6 @@ class AccountMoveObcCsv(models.AbstractModel):
                 vals_dict[1]["GL0010000"] = "*"
             for _k, v in sorted(vals_dict.items()):
                 writer.writerow(v)
-            rec.is_exported = True
 
     def csv_report_options(self):
         res = super().csv_report_options()
