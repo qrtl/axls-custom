@@ -85,11 +85,6 @@ class AccountMoveObcCsv(models.AbstractModel):
         production = stock_move.production_id or stock_move.raw_material_production_id
         return production.subcontractor_id
 
-    def _is_purchase_receipt_valuation_move(self, move):
-        """Identify account moves for purchase receipts (incoming pickings) that should
-        NOT be exported to OBC."""
-        return True if move.stock_move_id.purchase_line_id else False
-
     def _get_account_for_export(self, line):
         """Get the account code to use for OBC export.
         For vendor bill lines using the purchase accrual (Goods Received Not Invoiced)
@@ -212,9 +207,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         # to prevent duplicate processing later.
         records.is_exported = True
         # Exclude journal entries related to purchase receipts from export.
-        records = records.filtered(
-            lambda m: not self._is_purchase_receipt_valuation_move(m)
-        )
+        records = records.filtered(lambda m: not m.stock_move_id.purchase_line_id)
         # Sort records by date, production id and picking id
         sorted_records = sorted(
             records,
