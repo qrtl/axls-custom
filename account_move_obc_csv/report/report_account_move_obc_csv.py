@@ -90,22 +90,26 @@ class AccountMoveObcCsv(models.AbstractModel):
         NOT be exported to OBC."""
         return True if move.stock_move_id.purchase_line_id else False
 
-    def _update_vals(self, vals, line, move_analytic_accounts, drcr):
-        account = line.account_id
-        account_code = account.code
-        subaccount_code = ""
-        # Vendor bill journal export:
-        # - If the line uses the purchase accrual (Goods Received Not Invoiced) account,
-        #   output it as "material purchase" by mapping it to the product category's
-        #   stock valuation account.
+    def _get_account_for_export(self, line):
+        """Get the account code to use for OBC export.
+        For vendor bill lines using the purchase accrual (Goods Received Not Invoiced)
+        account, return the stock valuation account instead to represent it as
+        "material purchase" in the OBC system."""
+        account_code = line.account_id.code
         categ = line.product_id.categ_id
-        if not line.is_landed_costs_line and line.move_id.is_purchase_document(
-            include_receipts=True
+        if (
+            categ
+            and not line.is_landed_costs_line
+            and line.move_id.is_purchase_document(include_receipts=True)
         ):
             account_input = categ.property_stock_account_input_categ_id
             account_valuation = categ.property_stock_valuation_account_id
             if account_valuation and line.account_id == account_input:
                 account_code = account_valuation.code
+        return account_code
+
+    def _update_vals(self, vals, line, move_analytic_accounts, drcr, account_code):
+        subaccount_code = ""
         if "." in account_code:
             # maxsplit=1 - we assume that an account code should contain only one
             # period (".") at most.
@@ -168,6 +172,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         line_count = 1
         purchase_line = record.stock_move_id.purchase_line_id
         for line in move_lines:
+            account_code = self._get_account_for_export(line)
             first_line = False
             if (line.debit and first_debit) or (line.credit and first_credit):
                 first_line = True
@@ -187,10 +192,14 @@ class AccountMoveObcCsv(models.AbstractModel):
                 )
             vals["GL0011001"] = remarks
             if line.debit:
-                vals = self._update_vals(vals, line, move_analytic_accounts, "dr")
+                vals = self._update_vals(
+                    vals, line, move_analytic_accounts, "dr", account_code
+                )
                 first_debit = False
             if line.credit:
-                vals = self._update_vals(vals, line, move_analytic_accounts, "cr")
+                vals = self._update_vals(
+                    vals, line, move_analytic_accounts, "cr", account_code
+                )
                 first_credit = False
             vals_dict[line_num] = vals
             line_count += 1
