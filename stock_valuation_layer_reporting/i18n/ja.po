@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-19 08:57+0000\n"
-"PO-Revision-Date: 2026-01-19 08:57+0000\n"
+"POT-Creation-Date: 2026-02-03 02:34+0000\n"
+"PO-Revision-Date: 2026-02-03 02:34+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -56,6 +56,11 @@ msgstr "両方"
 #: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.view_svl_report_wizard
 msgid "Cancel"
 msgstr "取消"
+
+#. module: stock_valuation_layer_reporting
+#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__display_type__consumable
+msgid "Consumable"
+msgstr "消耗品"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_svl_report_category__create_uid
@@ -138,6 +143,13 @@ msgstr "内部参照"
 
 #. module: stock_valuation_layer_reporting
 #. odoo-python
+#: code:addons/stock_valuation_layer_reporting/models/svl_report_category.py:0
+#, python-format
+msgid "Invalid domain for category '%(category)s': %(error)s"
+msgstr "不適切なドメインがカテゴリに設定されました '%(category)s': %(error)s"
+
+#. module: stock_valuation_layer_reporting
+#. odoo-python
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #, python-format
 msgid "Inventory Operation Total"
@@ -146,9 +158,16 @@ msgstr "在庫運送合計"
 #. module: stock_valuation_layer_reporting
 #. odoo-python
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
+#: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
+#: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #, python-format
 msgid "Inventory Operation Type"
 msgstr "在庫運送タイプ"
+
+#. module: stock_valuation_layer_reporting
+#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__display_type__invisible
+msgid "Invisible"
+msgstr "非表示"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_svl_report_category____last_update
@@ -220,6 +239,7 @@ msgstr "プロダクト"
 #. odoo-python
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
+#: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #: model:ir.model,name:stock_valuation_layer_reporting.model_product_category
 #, python-format
 msgid "Product Category"
@@ -262,6 +282,11 @@ msgid "Quantity"
 msgstr "数量"
 
 #. module: stock_valuation_layer_reporting
+#: model:ir.actions.server,name:stock_valuation_layer_reporting.stock_valuation_layer_recompute_report_category_action
+msgid "Recompute Report Categories"
+msgstr "レポートカテゴリを再計算"
+
+#. module: stock_valuation_layer_reporting
 #. odoo-python
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #, python-format
@@ -275,11 +300,24 @@ msgid "Report Category"
 msgstr "レポートカテゴリ"
 
 #. module: stock_valuation_layer_reporting
+#: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_stock_valuation_layer__report_category_changed
+#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.stock_valuation_layer_search_inherit_stock_valuation_layer_reporting
+msgid "Report Category Changed"
+msgstr "レポートカテゴリが変更された"
+
+#. module: stock_valuation_layer_reporting
+#. odoo-python
+#: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
+#, python-format
+msgid "Report Summary"
+msgstr "レポート要約"
+
+#. module: stock_valuation_layer_reporting
 #: model:ir.actions.report,name:stock_valuation_layer_reporting.svl_report_xlsx
 #: model:ir.ui.menu,name:stock_valuation_layer_reporting.svl_report_menu
 #: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.view_svl_report_wizard
 msgid "SVL Report"
-msgstr "在庫レポート"
+msgstr "v2 在庫レポート"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.actions.act_window,name:stock_valuation_layer_reporting.action_svl_report_category
@@ -309,10 +347,11 @@ msgstr "在庫レポートサマリ"
 #: model:ir.actions.act_window,name:stock_valuation_layer_reporting.svl_report_wizard_action
 #: model:ir.model,name:stock_valuation_layer_reporting.model_svl_report_wizard
 msgid "SVL Report Wizard"
-msgstr "在庫レポートウィザード"
+msgstr "v2 在庫レポートウィザード"
 
 #. module: stock_valuation_layer_reporting
 #. odoo-python
+#: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
@@ -327,10 +366,9 @@ msgstr "順序"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.actions.act_window,name:stock_valuation_layer_reporting.action_svl_report_category_wizard
-#: model:ir.actions.server,name:stock_valuation_layer_reporting.action_svl_report_category_wizard_server
 #: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_wizard_form
-msgid "Set SVL Report Category"
-msgstr "在庫評価レポートカテゴリを設定"
+msgid "Update SVL Report Category"
+msgstr "在庫評価レポートカテゴリを更新"
 
 #. module: stock_valuation_layer_reporting
 #. odoo-python

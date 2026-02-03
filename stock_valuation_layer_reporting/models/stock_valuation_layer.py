@@ -7,28 +7,24 @@ from odoo import api, fields, models
 class StockValuationLayer(models.Model):
     _inherit = "stock.valuation.layer"
 
-    default_report_category = fields.Many2one(
-        "svl.report.category",
-    )
-
     report_category = fields.Many2one(
         "svl.report.category",
     )
-
     report_category_changed = fields.Boolean(
         compute="_compute_report_category_changed",
         store=True,
     )
 
-    @api.depends("default_report_category", "report_category")
+    @api.depends("report_category")
     def _compute_report_category_changed(self):
+        categories = self.env["svl.report.category"].search([], order="sequence,id")
         for record in self:
-            record.report_category_changed = (
-                record.default_report_category != record.report_category
-            )
+            category_value = record._get_report_category_for_record(categories)
+            record.report_category_changed = record.report_category != category_value
 
-    def _get_report_category_for_record(self, categories, other_category):
+    def _get_report_category_for_record(self, categories):
         self.ensure_one()
+        other_category = categories.filtered("is_other")[:1]
         matches = []
         for category in categories:
             if category.is_other:
@@ -38,20 +34,12 @@ class StockValuationLayer(models.Model):
         return matches[0] if len(matches) == 1 else other_category
 
     def apply_report_category_defaults(self):
-        categories = self.env["svl.report.category"].search(
-            [("active", "=", True)], order="sequence,id"
-        )
-        other_category = categories.filtered("is_other")[:1]
+        categories = self.env["svl.report.category"].search([], order="sequence,id")
         for record in self:
-            category_value = record._get_report_category_for_record(
-                categories, other_category
-            )
+            category_value = record._get_report_category_for_record(categories)
             if not category_value:
                 continue
-            vals = {"report_category": category_value.id}
-            if not record.default_report_category:
-                vals["default_report_category"] = category_value.id
-            record.write(vals)
+            record.write({"report_category": category_value.id})
 
     @api.model_create_multi
     def create(self, vals_list):

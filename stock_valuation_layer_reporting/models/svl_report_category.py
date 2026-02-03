@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -41,7 +41,7 @@ class SVLReportCategory(models.Model):
             try:
                 safe_eval(record.domain)
             except Exception as exc:
-                raise UserError(
+                raise ValidationError(
                     _("Invalid domain for category '%(category)s': %(error)s")
                     % {
                         "category": record.display_name,
