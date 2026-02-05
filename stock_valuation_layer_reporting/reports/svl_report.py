@@ -41,17 +41,14 @@ class SVLReportXlsx(models.AbstractModel):
     def get_inventory_operation_categories(
         self, display_type="storable", include_other=True
     ):
-        categories = self._get_report_categories().filtered(
-            lambda c: c.display_type in (display_type, "both")
+        categories = (
+            self.env["svl.report.category"]
+            .search([])
+            .filtered(lambda c: c.display_type in (display_type, "both"))
         )
         if not include_other:
             categories = categories.filtered(lambda c: not c.is_other)
-        return [(category.id, category.name) for category in categories]
-
-    def _get_report_categories(self):
-        return self.env["svl.report.category"].search(
-            [("active", "=", True)], order="sequence,id"
-        )
+        return categories
 
     def get_valuation_domain(self, category_name, wizard):
         return [
@@ -65,17 +62,14 @@ class SVLReportXlsx(models.AbstractModel):
             "valuation": {
                 "header_left": _("Product Category"),
                 "formula_column": "F",
-                "labels_from_categories": True,
             },
             "storable": {
                 "header_left": _("Inventory Operation Type"),
                 "formula_column": "P",
-                "labels_from_categories": False,
             },
             "consumable": {
                 "header_left": _("Inventory Operation Type"),
                 "formula_column": "G",
-                "labels_from_categories": False,
             },
         }
         return configs.get(report_type, configs["storable"])
@@ -88,17 +82,13 @@ class SVLReportXlsx(models.AbstractModel):
         ws.write(0, 0, config["header_left"])
         ws.write(0, 1, _("SVL's Total Inventory Value"))
         formula_column = config["formula_column"]
-        if config["labels_from_categories"]:
-            labels = categories
-        else:
-            labels = [label for _key, label in categories]
         row = 1
-        for label in labels:
-            ws.write(row, 0, label)
+        for category in categories:
+            ws.write(row, 0, category)
             ws.write_formula(
                 row,
                 1,
-                "=SUM('%s'!%s:%s)" % (label, formula_column, formula_column),
+                "=SUM('%s'!%s:%s)" % (category, formula_column, formula_column),
             )
             row += 1
         return ws
@@ -219,12 +209,10 @@ class SVLReportXlsx(models.AbstractModel):
             base_domain = expression.AND(
                 [base_domain, [("product_id.detailed_type", "!=", "product")]]
             )
-        categories = self.get_inventory_operation_categories(
-            display_type=report_type, include_other=True
-        )
-        self._setup_summary_sheet(workbook, categories, report_type)
-        for category_id, category_label in categories:
-            ws = workbook.add_worksheet(category_label)
+        categories = self.get_inventory_operation_categories(display_type=report_type)
+        self._setup_summary_sheet(workbook, categories.mapped("name"), report_type)
+        for category in categories:
+            ws = workbook.add_worksheet(category.name)
 
             # Write the header
             self.setup_storable_worksheet_headers(ws)
@@ -232,7 +220,7 @@ class SVLReportXlsx(models.AbstractModel):
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
             domain = expression.AND(
-                [base_domain, [("report_category", "=", category_id)]]
+                [base_domain, [("report_category", "=", category.id)]]
             )
             valuations = valuation_obj.search(domain)
 
@@ -312,15 +300,17 @@ class SVLReportXlsx(models.AbstractModel):
                 ws.write(row, 1, prod_categ_value)
                 product_categ_total += prod_categ_value
             if i < len(storable_categories):
-                category_key, category_label = storable_categories[i]
                 storable_domain = expression.AND(
-                    [base_storable_domain, [("report_category", "=", category_key)]]
+                    [
+                        base_storable_domain,
+                        [("report_category", "=", storable_categories[i].id)],
+                    ]
                 )
                 storable_vals = valuation_obj.read_group(storable_domain, ["value"], [])
                 inventory_categ_value = (
                     storable_vals[0]["value"] or 0.0 if storable_vals else 0.0
                 )
-                ws.write(row, 2, category_label)
+                ws.write(row, 2, storable_categories[i].name)
                 ws.write(row, 3, inventory_categ_value)
                 inventory_categ_total += inventory_categ_value
             row += 1

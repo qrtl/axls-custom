@@ -17,7 +17,7 @@ class StockValuationLayer(models.Model):
 
     @api.depends("report_category")
     def _compute_report_category_changed(self):
-        categories = self.env["svl.report.category"].search([], order="sequence,id")
+        categories = self.env["svl.report.category"].search([])
         for record in self:
             category_value = record._get_report_category_for_record(categories)
             record.report_category_changed = record.report_category != category_value
@@ -26,15 +26,13 @@ class StockValuationLayer(models.Model):
         self.ensure_one()
         other_category = categories.filtered("is_other")[:1]
         matches = []
-        for category in categories:
-            if category.is_other:
-                continue
+        for category in categories.filtered(lambda c: not c.is_other):
             if self.filtered_domain(category._get_domain()):
                 matches.append(category)
         return matches[0] if len(matches) == 1 else other_category
 
     def apply_report_category_defaults(self):
-        categories = self.env["svl.report.category"].search([], order="sequence,id")
+        categories = self.env["svl.report.category"].search([])
         for record in self:
             category_value = record._get_report_category_for_record(categories)
             if not category_value:
