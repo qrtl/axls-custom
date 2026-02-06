@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record
+        id="stock_valuation_layer_search_inherit_stock_valuation_layer_reporting"
+        model="ir.ui.view"
+    >
+        <field name="name">stock.valuation.layer.search.svl.reporting</field>
+        <field name="model">stock.valuation.layer</field>
+        <field name="inherit_id" ref="stock_account.view_inventory_valuation_search" />
+        <field name="arch" type="xml">
+            <filter name="has_remaining_qty" position="after">
+                <filter
+                    string="Report Category Changed"
+                    name="report_category_changed"
+                    domain="[('report_category_changed', '=', True)]"
+                />
+            </filter>
+        </field>
+    </record>
+    <record
         id="stock_valuation_layer_tree_inherit_stock_valuation_layer_reporting"
         model="ir.ui.view"
     >
@@ -13,23 +30,7 @@
             </field>
         </field>
     </record>
-
-    <record
-        id="stock_valuation_layer_recompute_report_category_action"
-        model="ir.actions.server"
-    >
-        <field name="name">Recompute Report Categories</field>
-        <field name="model_id" ref="stock_account.model_stock_valuation_layer" />
-        <field
-            name="binding_model_id"
-            ref="stock_account.model_stock_valuation_layer"
-        />
-        <field name="binding_type">action</field>
-        <field name="state">code</field>
-        <field name="code">records.apply_report_category_defaults()</field>
-    </record>
-
-    <record
+        <record
         id="stock_valuation_layer_form_inherit_stock_valuation_layer_reporting"
         model="ir.ui.view"
     >
@@ -47,22 +48,18 @@
             </field>
         </field>
     </record>
-
     <record
-        id="stock_valuation_layer_search_inherit_stock_valuation_layer_reporting"
-        model="ir.ui.view"
+        id="stock_valuation_layer_recompute_report_category_action"
+        model="ir.actions.server"
     >
-        <field name="name">stock.valuation.layer.search.svl.reporting</field>
-        <field name="model">stock.valuation.layer</field>
-        <field name="inherit_id" ref="stock_account.view_inventory_valuation_search" />
-        <field name="arch" type="xml">
-            <filter name="has_remaining_qty" position="after">
-                <filter
-                    string="Report Category Changed"
-                    name="report_category_changed"
-                    domain="[('report_category_changed', '=', True)]"
-                />
-            </filter>
-        </field>
+        <field name="name">Recompute Report Categories</field>
+        <field name="model_id" ref="stock_account.model_stock_valuation_layer" />
+        <field
+            name="binding_model_id"
+            ref="stock_account.model_stock_valuation_layer"
+        />
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">records.assign_report_category()</field>
     </record>
 </odoo>

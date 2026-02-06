@@ -23,7 +23,6 @@
             </form>
         </field>
     </record>
-
     <record id="svl_report_category_tree" model="ir.ui.view">
         <field name="name">svl.report.category.tree</field>
         <field name="model">svl.report.category</field>
@@ -37,13 +36,11 @@
             </tree>
         </field>
     </record>
-
     <record id="action_svl_report_category" model="ir.actions.act_window">
         <field name="name">SVL Report Categories</field>
         <field name="res_model">svl.report.category</field>
         <field name="view_mode">tree,form</field>
     </record>
-
     <menuitem
         id="menu_svl_report_category"
         name="SVL Report Categories"

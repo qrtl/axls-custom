@@ -33,22 +33,18 @@ class SVLReportXlsx(models.AbstractModel):
         ]
 
     def get_product_categories(self):
-        category_objs = self.env["product.category"].search(
+        categories = self.env["product.category"].search(
             [("is_report_category", "=", True)]
         )
-        return category_objs.mapped("name")
+        return categories.mapped("name")
 
     def get_inventory_operation_categories(
         self, display_type="storable", include_other=True
     ):
-        categories = (
-            self.env["svl.report.category"]
-            .search([])
-            .filtered(lambda c: c.display_type in (display_type, "both"))
-        )
+        domain = [("display_type", "in", [display_type, "both"])]
         if not include_other:
-            categories = categories.filtered(lambda c: not c.is_other)
-        return categories
+            domain.append(("is_other", "=", False))
+        return self.env["svl.report.category"].search(domain)
 
     def get_valuation_domain(self, category_name, wizard):
         return [
