@@ -21,7 +21,6 @@ class SVLReportCategory(models.Model):
             ("storable", "Storable"),
             ("consumable", "Consumable"),
             ("both", "Both"),
-            ("invisible", "Invisible"),
         ],
         default="both",
         required=True,

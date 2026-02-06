@@ -165,11 +165,6 @@ msgid "Inventory Operation Type"
 msgstr "在庫運送タイプ"
 
 #. module: stock_valuation_layer_reporting
-#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__display_type__invisible
-msgid "Invisible"
-msgstr "非表示"
-
-#. module: stock_valuation_layer_reporting
 #: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_svl_report_category____last_update
 #: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_svl_report_category_wizard____last_update
 #: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_svl_report_wizard____last_update
