@@ -10,7 +10,17 @@ class StockValuationLayer(models.Model):
     report_category = fields.Many2one(
         "svl.report.category",
     )
-    report_category_changed = fields.Boolean()
+    report_category_changed = fields.Boolean(
+        compute="_compute_report_category_changed",
+        store=True,
+    )
+
+    @api.depends("report_category")
+    def _compute_report_category_changed(self):
+        categories = self.env["svl.report.category"].search([])
+        for record in self:
+            category_value = record._get_report_category_for_record(categories)
+            record.report_category_changed = record.report_category != category_value
 
     def _get_report_category_for_record(self, categories):
         self.ensure_one()
@@ -19,9 +29,7 @@ class StockValuationLayer(models.Model):
         for cat in categories.filtered(lambda c: not c.is_other):
             if self.filtered_domain(cat._get_domain()):
                 matches.append(cat)
-        category = matches[0] if len(matches) == 1 else other_category
-        self.report_category_changed = self.report_category != category
-        return category
+        return matches[0] if len(matches) == 1 else other_category
 
     def assign_report_category(self):
         categories = self.env["svl.report.category"].search([])

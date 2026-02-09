@@ -68,7 +68,7 @@ class SVLReportXlsx(models.AbstractModel):
                 "formula_column": "G",
             },
         }
-        return configs.get(report_type, configs["storable"])
+        return configs.get(report_type)
 
     def _setup_summary_sheet(self, workbook, categories, report_type):
         ws = workbook.add_worksheet(_("Report Summary"))
