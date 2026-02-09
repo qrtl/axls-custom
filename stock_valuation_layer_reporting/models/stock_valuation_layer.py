@@ -19,8 +19,8 @@ class StockValuationLayer(models.Model):
     def _compute_report_category_changed(self):
         categories = self.env["svl.report.category"].search([])
         for record in self:
-            category_value = record._get_report_category_for_record(categories)
-            record.report_category_changed = record.report_category != category_value
+            category = record._get_report_category_for_record(categories)
+            record.report_category_changed = record.report_category != category
 
     def _get_report_category_for_record(self, categories):
         self.ensure_one()
@@ -34,10 +34,10 @@ class StockValuationLayer(models.Model):
     def assign_report_category(self):
         categories = self.env["svl.report.category"].search([])
         for record in self:
-            category_value = record._get_report_category_for_record(categories)
-            if not category_value:
+            category = record._get_report_category_for_record(categories)
+            if not category:
                 continue
-            record.write({"report_category": category_value.id})
+            record.write({"report_category": category.id})
 
     @api.model_create_multi
     def create(self, vals_list):
