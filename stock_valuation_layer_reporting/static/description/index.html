@@ -394,17 +394,23 @@ valuation, storable, consumable, and summary Excel reports.</p>
 <li>Create categories with:<ul>
 <li>Name</li>
 <li>Sequence</li>
-<li>Display Type (storable/both/invisible)</li>
+<li>Display Type (Storable/Consumable/Both)</li>
 <li>Domain (stock.valuation.layer domain)</li>
-<li>Other Category (set is_other for the fallback category)</li>
+<li>Other Category (set <tt class="docutils literal">is_other</tt> for the fallback category)</li>
 </ul>
 </li>
 </ol>
 <p>Other category behavior</p>
-<ul class="simple">
-<li>If multiple categories match a record, the Other category is assigned.</li>
+<ol class="arabic simple">
+<li>Please assign Other category to only one category.</li>
+<li>If exactly one category matches a record, that category is assigned.</li>
+<li>If multiple categories match a record, the Other category is
+assigned.</li>
 <li>If no categories match a record, the Other category is assigned.</li>
-</ul>
+<li>If the Other category is not set, the report category remains empty
+in the above conditions. Records with an empty report category will
+not be displayed in the SVL report.</li>
+</ol>
 </div>
 <div class="section" id="usage">
 <h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
