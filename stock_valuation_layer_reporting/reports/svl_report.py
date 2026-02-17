@@ -53,7 +53,7 @@ class SVLReportXlsx(models.AbstractModel):
             ("actual_date", "<=", wizard.date_end),
         ]
 
-    def _get_summary_config(self, report_type):
+    def get_summary_config(self, report_type):
         configs = {
             "valuation": {
                 "header_left": _("Product Category"),
@@ -70,11 +70,11 @@ class SVLReportXlsx(models.AbstractModel):
         }
         return configs.get(report_type)
 
-    def _setup_summary_sheet(self, workbook, categories, report_type):
+    def setup_summary_sheet(self, workbook, categories, report_type):
         ws = workbook.add_worksheet(_("Report Summary"))
         ws.set_column(0, 0, 30)
         ws.set_column(1, 1, 25)
-        config = self._get_summary_config(report_type)
+        config = self.get_summary_config(report_type)
         ws.write(0, 0, config["header_left"])
         ws.write(0, 1, _("SVL's Total Inventory Value"))
         formula_column = config["formula_column"]
@@ -91,7 +91,7 @@ class SVLReportXlsx(models.AbstractModel):
 
     def generate_valuation_report(self, workbook, wizard):
         categories = self.get_product_categories()
-        self._setup_summary_sheet(workbook, categories, "valuation")
+        self.setup_summary_sheet(workbook, categories, "valuation")
         for _i, category in enumerate(categories):
             ws = workbook.add_worksheet(category)
 
@@ -206,7 +206,7 @@ class SVLReportXlsx(models.AbstractModel):
                 [base_domain, [("product_id.detailed_type", "!=", "product")]]
             )
         categories = self.get_inventory_operation_categories(display_type=report_type)
-        self._setup_summary_sheet(workbook, categories.mapped("name"), report_type)
+        self.setup_summary_sheet(workbook, categories.mapped("name"), report_type)
         for category in categories:
             ws = workbook.add_worksheet(category.name)
 
@@ -216,7 +216,7 @@ class SVLReportXlsx(models.AbstractModel):
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
             domain = expression.AND(
-                [base_domain, [("report_category", "=", category.id)]]
+                [base_domain, [("report_category_id", "=", category.id)]]
             )
             valuations = valuation_obj.search(domain)
 
@@ -299,7 +299,7 @@ class SVLReportXlsx(models.AbstractModel):
                 storable_domain = expression.AND(
                     [
                         base_storable_domain,
-                        [("report_category", "=", storable_categories[i].id)],
+                        [("report_category_id", "=", storable_categories[i].id)],
                     ]
                 )
                 storable_vals = valuation_obj.read_group(storable_domain, ["value"], [])

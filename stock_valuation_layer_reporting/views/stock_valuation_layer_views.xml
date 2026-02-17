@@ -11,8 +11,8 @@
             <filter name="has_remaining_qty" position="after">
                 <filter
                     string="Report Category Changed"
-                    name="report_category_changed"
-                    domain="[('report_category_changed', '=', True)]"
+                    name="report_category_manually_modified"
+                    domain="[('report_category_manually_modified', '=', True)]"
                 />
             </filter>
         </field>
@@ -26,11 +26,15 @@
         <field name="inherit_id" ref="stock_account.stock_valuation_layer_tree" />
         <field name="arch" type="xml">
             <field name="product_id" position="after">
-                <field name="report_category" groups="base.group_system" readonly="0" />
+                <field
+                    name="report_category_id"
+                    groups="base.group_system"
+                    readonly="0"
+                />
             </field>
         </field>
     </record>
-        <record
+    <record
         id="stock_valuation_layer_form_inherit_stock_valuation_layer_reporting"
         model="ir.ui.view"
     >
@@ -40,7 +44,7 @@
         <field name="arch" type="xml">
             <field name="product_id" position="after">
                 <field
-                    name="report_category"
+                    name="report_category_id"
                     groups="base.group_system"
                     readonly="0"
                     force_save="1"

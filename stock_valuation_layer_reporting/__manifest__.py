@@ -8,12 +8,11 @@
     "category": "Reporting",
     "license": "AGPL-3",
     "depends": [
-        "mrp_subcontracting",
         "analytic_mixin_analytic_account",
         "product_last_purchase_date",
         "report_xlsx",
         "stock_analytic",
-        "stock_move_actual_date",  # actual_date
+        "stock_move_actual_date",
         "web_ir_actions_act_multi",
     ],
     "data": [

@@ -21,7 +21,7 @@
         </field>
     </record>
 
-    <record id="action_svl_report_category_wizard" model="ir.actions.act_window">
+    <record id="svl_report_category_wizard_action" model="ir.actions.act_window">
         <field name="name">Update SVL Report Category</field>
         <field name="res_model">svl.report.category.wizard</field>
         <field name="view_mode">form</field>

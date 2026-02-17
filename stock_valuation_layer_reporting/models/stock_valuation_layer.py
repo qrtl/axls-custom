@@ -7,20 +7,22 @@ from odoo import api, fields, models
 class StockValuationLayer(models.Model):
     _inherit = "stock.valuation.layer"
 
-    report_category = fields.Many2one(
+    report_category_id = fields.Many2one(
         "svl.report.category",
     )
-    report_category_changed = fields.Boolean(
-        compute="_compute_report_category_changed",
+    report_category_manually_modified = fields.Boolean(
+        compute="_compute_report_category_manually_modified",
         store=True,
     )
 
-    @api.depends("report_category")
-    def _compute_report_category_changed(self):
+    @api.depends("report_category_id")
+    def _compute_report_category_manually_modified(self):
         categories = self.env["svl.report.category"].search([])
         for record in self:
             category = record._get_report_category_for_record(categories)
-            record.report_category_changed = record.report_category != category
+            record.report_category_manually_modified = (
+                record.report_category_id != category
+            )
 
     def _get_report_category_for_record(self, categories):
         self.ensure_one()
@@ -37,7 +39,7 @@ class StockValuationLayer(models.Model):
             category = record._get_report_category_for_record(categories)
             if not category:
                 continue
-            record.write({"report_category": category.id})
+            record.write({"report_category_id": category.id})
 
     @api.model_create_multi
     def create(self, vals_list):
