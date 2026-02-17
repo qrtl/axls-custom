@@ -84,7 +84,9 @@ class SVLReportXlsx(models.AbstractModel):
         return ws
 
     def generate_valuation_report(self, workbook, wizard):
-        categories = self.env["product.category"].search([("is_report_category", "=", True)])
+        categories = self.env["product.category"].search(
+            [("is_report_category", "=", True)]
+        )
         self.setup_summary_sheet(workbook, categories.mapped("name"), "valuation")
         for category in categories:
             ws = workbook.add_worksheet(category.name)
@@ -252,7 +254,9 @@ class SVLReportXlsx(models.AbstractModel):
     def generate_summary_report(self, workbook, wizard):
         ws = workbook.add_worksheet(_("SVL Report Summary"))
         valuation_obj = self.env["stock.valuation.layer"]
-        product_categories = self.env["product.category"].search([("is_report_category", "=", True)])
+        product_categories = self.env["product.category"].search(
+            [("is_report_category", "=", True)]
+        )
         base_storable_domain = expression.AND(
             [
                 self.get_base_domain(wizard),
@@ -280,7 +284,9 @@ class SVLReportXlsx(models.AbstractModel):
         for i in range(max_rows):
             if i < len(product_categories):
                 total_value = valuation_obj.read_group(
-                    self.get_valuation_domain(product_categories[i], wizard), ["value"], []
+                    self.get_valuation_domain(product_categories[i], wizard),
+                    ["value"],
+                    [],
                 )
                 prod_categ_value = (
                     total_value[0]["value"] or 0.0 if total_value else 0.0

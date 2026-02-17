@@ -10,7 +10,7 @@
         <field name="arch" type="xml">
             <filter name="has_remaining_qty" position="after">
                 <filter
-                    string="Report Category Changed"
+                    string="Report Category Manually Modified"
                     name="report_category_manually_modified"
                     domain="[('report_category_manually_modified', '=', True)]"
                 />
