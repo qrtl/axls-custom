@@ -19,5 +19,5 @@ class SVLReportCategoryWizard(models.TransientModel):
             self.env.context.get("active_ids", [])
         )
         if svls:
-            svls.write({"report_category": self.report_category_id.id})
+            svls.write({"report_category_id": self.report_category_id.id})
         return {"type": "ir.actions.act_window_close"}

@@ -32,12 +32,6 @@ class SVLReportXlsx(models.AbstractModel):
             ("product_id.active", "=", True),
         ]
 
-    def get_product_categories(self):
-        categories = self.env["product.category"].search(
-            [("is_report_category", "=", True)]
-        )
-        return categories.mapped("name")
-
     def get_inventory_operation_categories(
         self, display_type="storable", include_other=True
     ):
@@ -46,10 +40,10 @@ class SVLReportXlsx(models.AbstractModel):
             domain.append(("is_other", "=", False))
         return self.env["svl.report.category"].search(domain)
 
-    def get_valuation_domain(self, category_name, wizard):
+    def get_valuation_domain(self, category, wizard):
         return [
             ("product_id.active", "=", True),
-            ("product_id.categ_id.name", "=", category_name),
+            ("product_id.categ_id", "=", category.id),
             ("actual_date", "<=", wizard.date_end),
         ]
 
@@ -90,10 +84,10 @@ class SVLReportXlsx(models.AbstractModel):
         return ws
 
     def generate_valuation_report(self, workbook, wizard):
-        categories = self.get_product_categories()
-        self.setup_summary_sheet(workbook, categories, "valuation")
-        for _i, category in enumerate(categories):
-            ws = workbook.add_worksheet(category)
+        categories = self.env["product.category"].search([("is_report_category", "=", True)])
+        self.setup_summary_sheet(workbook, categories.mapped("name"), "valuation")
+        for category in categories:
+            ws = workbook.add_worksheet(category.name)
 
             # Write the header
             headers = [
@@ -258,7 +252,7 @@ class SVLReportXlsx(models.AbstractModel):
     def generate_summary_report(self, workbook, wizard):
         ws = workbook.add_worksheet(_("SVL Report Summary"))
         valuation_obj = self.env["stock.valuation.layer"]
-        product_categories = self.get_product_categories()
+        product_categories = self.env["product.category"].search([("is_report_category", "=", True)])
         base_storable_domain = expression.AND(
             [
                 self.get_base_domain(wizard),
@@ -285,14 +279,13 @@ class SVLReportXlsx(models.AbstractModel):
         inventory_categ_total = 0.0
         for i in range(max_rows):
             if i < len(product_categories):
-                category_name = product_categories[i]
                 total_value = valuation_obj.read_group(
-                    self.get_valuation_domain(category_name, wizard), ["value"], []
+                    self.get_valuation_domain(product_categories[i], wizard), ["value"], []
                 )
                 prod_categ_value = (
                     total_value[0]["value"] or 0.0 if total_value else 0.0
                 )
-                ws.write(row, 0, category_name)
+                ws.write(row, 0, product_categories[i].name)
                 ws.write(row, 1, prod_categ_value)
                 product_categ_total += prod_categ_value
             if i < len(storable_categories):
