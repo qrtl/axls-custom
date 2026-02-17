@@ -312,7 +312,7 @@ msgstr "レポート要約"
 #: model:ir.ui.menu,name:stock_valuation_layer_reporting.svl_report_menu
 #: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.view_svl_report_wizard
 msgid "SVL Report"
-msgstr "在庫レポート"
+msgstr "v2 在庫レポート"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.actions.act_window,name:stock_valuation_layer_reporting.action_svl_report_category
@@ -336,13 +336,13 @@ msgstr "在庫評価レポートカテゴリウィザード"
 #: code:addons/stock_valuation_layer_reporting/reports/svl_report.py:0
 #, python-format
 msgid "SVL Report Summary"
-msgstr "在庫レポートサマリ"
+msgstr "v2 在庫レポートサマリ"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.actions.act_window,name:stock_valuation_layer_reporting.svl_report_wizard_action
 #: model:ir.model,name:stock_valuation_layer_reporting.model_svl_report_wizard
 msgid "SVL Report Wizard"
-msgstr "在庫レポートウィザード"
+msgstr "v2 在庫レポートウィザード"
 
 #. module: stock_valuation_layer_reporting
 #. odoo-python
