@@ -244,7 +244,7 @@ class SVLReportXlsx(models.AbstractModel):
                 ws.write(row, 12, valuation.quantity)
                 ws.write(row, 13, valuation.uom_id.name)
                 ws.write(row, 14, valuation.product_id.categ_id.property_cost_method)
-                ws.write(row, 15, valuation.value),
+                ws.write(row, 15, valuation.value)
                 ws.write(
                     row,
                     16,
