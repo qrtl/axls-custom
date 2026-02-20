@@ -34,8 +34,6 @@ valuation, storable, consumable, and summary Excel reports.
 Configuration
 =============
 
-Configuration
-
 1. Go to Inventory > Configuration > SVL Report Categories.
 2. Create categories with:
 
@@ -90,7 +88,7 @@ Credits
 Authors
 -------
 
-* Quartile Limited
+* Quartile
 
 Maintainers
 -----------

@@ -1,4 +1,4 @@
-# Copyright 2023 Quartile Limited (https://www.quartile.co)
+# Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 import base64
@@ -26,6 +26,7 @@ class SVLReportWizard(models.TransientModel):
                     "date_start": self.date_start,
                     "date_end": self.date_end,
                 }
+
                 # Obtain Excel data in bytes for the given report type
                 report = self.env.ref("stock_valuation_layer_reporting.svl_report_xlsx")
                 excel_content, _ = report._render(
@@ -71,7 +72,6 @@ class SVLReportWizard(models.TransientModel):
         )
 
         # Return an action to directly download the ZIP.
-
         return {
             "type": "ir.actions.act_multi",
             "actions": [

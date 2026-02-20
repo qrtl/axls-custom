@@ -26,10 +26,12 @@
         <field name="inherit_id" ref="stock_account.stock_valuation_layer_tree" />
         <field name="arch" type="xml">
             <field name="product_id" position="after">
+                <field name="report_category_manually_modified" invisible="1" />
                 <field
                     name="report_category_id"
-                    groups="base.group_system"
-                    readonly="0"
+                    groups="stock.group_stock_manager"
+                    optional="hide"
+                    decoration-info="report_category_manually_modified"
                 />
             </field>
         </field>
@@ -43,12 +45,7 @@
         <field name="inherit_id" ref="stock_account.stock_valuation_layer_form" />
         <field name="arch" type="xml">
             <field name="product_id" position="after">
-                <field
-                    name="report_category_id"
-                    groups="base.group_system"
-                    readonly="0"
-                    force_save="1"
-                />
+                <field name="report_category_id" groups="stock.group_stock_manager" />
             </field>
         </field>
     </record>

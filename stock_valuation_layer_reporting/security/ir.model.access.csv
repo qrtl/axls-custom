@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_svl_report_wizard_stock_manager,svl.report.wizard,model_svl_report_wizard,stock.group_stock_manager,1,1,1,1
-access_svl_report_category_stock_manager,svl.report.category,model_svl_report_category,stock.group_stock_manager,1,1,1,1
-access_svl_report_category_wizard_stock_manager,svl.report.category.wizard,model_svl_report_category_wizard,stock.group_stock_manager,1,1,1,1
+access_svl_report_category_stock_user,svl.report.category,model_svl_report_category,stock.group_stock_manager,1,0,0,0
+access_svl_report_category_stock_manager,svl.report.category,model_svl_report_category,base.group_system,1,1,1,1
+access_svl_report_category_wizard_manager,svl.report.category.wizard,model_svl_report_category_wizard,base.group_system,1,1,1,1
+access_svl_report_wizard_manager,svl.report.wizard,model_svl_report_wizard,base.group_system,1,1,1,1

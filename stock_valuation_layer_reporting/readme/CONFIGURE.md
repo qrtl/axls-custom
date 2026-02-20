@@ -1,5 +1,3 @@
-Configuration
-
 1. Go to Inventory > Configuration > SVL Report Categories.
 2. Create categories with:
    - Name

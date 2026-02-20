@@ -1,7 +1,11 @@
-# Copyright 2023 Quartile Limited (https://www.quartile.co)
+# Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
+import logging
+
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class StockValuationLayer(models.Model):
@@ -31,6 +35,13 @@ class StockValuationLayer(models.Model):
         for cat in categories.filtered(lambda c: not c.is_other):
             if self.filtered_domain(cat._get_domain()):
                 matches.append(cat)
+        if len(matches) > 1:
+            _logger.error(
+                "SVL(%s: %s) matched multiple report categories %s",
+                self.reference,
+                self.product_id.display_name or "",
+                matches.mapped("name"),
+            )
         return matches[0] if len(matches) == 1 else other_category
 
     def assign_report_category(self):

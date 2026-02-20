@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-17 06:06+0000\n"
-"PO-Revision-Date: 2026-02-17 06:06+0000\n"
+"POT-Creation-Date: 2026-02-20 09:39+0000\n"
+"PO-Revision-Date: 2026-02-20 09:39+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -47,7 +47,7 @@ msgid "Apply"
 msgstr "適用"
 
 #. module: stock_valuation_layer_reporting
-#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__display_type__both
+#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__report_type__both
 msgid "Both"
 msgstr "両方"
 
@@ -58,7 +58,7 @@ msgid "Cancel"
 msgstr "取消"
 
 #. module: stock_valuation_layer_reporting
-#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__display_type__consumable
+#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__report_type__consumable
 msgid "Consumable"
 msgstr "消耗品"
 
@@ -103,11 +103,6 @@ msgid "Display Name"
 msgstr "表示名"
 
 #. module: stock_valuation_layer_reporting
-#: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_svl_report_category__display_type
-msgid "Display Type"
-msgstr "表示タイプ"
-
-#. module: stock_valuation_layer_reporting
 #: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_svl_report_category__domain
 msgid "Domain"
 msgstr "ドメイン"
@@ -130,7 +125,7 @@ msgid "ID"
 msgstr ""
 
 #. module: stock_valuation_layer_reporting
-#: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_product_category__is_report_category
+#: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_product_category__is_svl_report_category
 msgid "Include in SVL Report"
 msgstr "在庫評価出力対象"
 
@@ -203,6 +198,17 @@ msgstr "名称"
 #, python-format
 msgid "Note"
 msgstr "ノート"
+
+#. module: stock_valuation_layer_reporting
+#. odoo-python
+#: code:addons/stock_valuation_layer_reporting/models/svl_report_category.py:0
+#, python-format
+msgid ""
+"Only one 'Other Category' is allowed per. Deactivate the existing one or "
+"unset 'Other Category'."
+msgstr ""
+"その他カテゴリは1つのみ設定できます。該当のレポートカテゴリをアーカイブするか、"
+"その他カテゴリのチェックを外してください。"
 
 #. module: stock_valuation_layer_reporting
 #. odoo-python
@@ -308,6 +314,11 @@ msgid "Report Summary"
 msgstr "レポート要約"
 
 #. module: stock_valuation_layer_reporting
+#: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_svl_report_category__report_type
+msgid "Report Type"
+msgstr "レポートタイプ"
+
+#. module: stock_valuation_layer_reporting
 #: model:ir.actions.report,name:stock_valuation_layer_reporting.svl_report_xlsx
 #: model:ir.ui.menu,name:stock_valuation_layer_reporting.svl_report_menu
 #: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.view_svl_report_wizard
@@ -377,7 +388,7 @@ msgid "Stock Valuation Layer"
 msgstr "在庫評価レイヤ"
 
 #. module: stock_valuation_layer_reporting
-#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__display_type__storable
+#: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__report_type__storable
 msgid "Storable"
 msgstr "在庫可能品"
 

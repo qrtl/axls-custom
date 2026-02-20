@@ -1,8 +1,8 @@
-# Copyright 2025 Quartile Limited (https://www.quartile.co)
+# Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
 
 
@@ -16,7 +16,7 @@ class SVLReportCategory(models.Model):
     sequence = fields.Integer(default=10)
     domain = fields.Char()
     is_other = fields.Boolean(string="Other Category")
-    display_type = fields.Selection(
+    report_type = fields.Selection(
         [
             ("storable", "Storable"),
             ("consumable", "Consumable"),
@@ -47,3 +47,23 @@ class SVLReportCategory(models.Model):
                         "error": exc,
                     }
                 ) from exc
+
+    @api.constrains("is_other", "active")
+    def _check_unique_other_category(self):
+        for record in self:
+            if not record.is_other or not record.active:
+                continue
+            existing = self.search(
+                [
+                    ("id", "!=", record.id),
+                    ("is_other", "=", True),
+                ],
+                limit=1,
+            )
+            if existing:
+                raise UserError(
+                    _(
+                        "Only one 'Other Category' is allowed per. "
+                        "Deactivate the existing one or unset 'Other Category'."
+                    )
+                )

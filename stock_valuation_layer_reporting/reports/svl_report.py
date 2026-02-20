@@ -1,8 +1,11 @@
+# Copyright 2026 Quartile (https://www.quartile.co)
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 from bs4 import BeautifulSoup
 
 from odoo import _, fields, models
 from odoo.osv import expression
 from odoo.tools import float_round
+from odoo.tools.float_utils import float_is_zero
 
 
 class SVLReportXlsx(models.AbstractModel):
@@ -29,20 +32,18 @@ class SVLReportXlsx(models.AbstractModel):
         return [
             ("actual_date", ">=", wizard.date_start),
             ("actual_date", "<=", wizard.date_end),
-            ("product_id.active", "=", True),
         ]
 
     def get_inventory_operation_categories(
-        self, display_type="storable", include_other=True
+        self, report_type="storable", include_other=True
     ):
-        domain = [("display_type", "in", [display_type, "both"])]
+        domain = [("report_type", "in", [report_type, "both"])]
         if not include_other:
             domain.append(("is_other", "=", False))
         return self.env["svl.report.category"].search(domain)
 
     def get_valuation_domain(self, category, wizard):
         return [
-            ("product_id.active", "=", True),
             ("product_id.categ_id", "=", category.id),
             ("actual_date", "<=", wizard.date_end),
         ]
@@ -85,13 +86,11 @@ class SVLReportXlsx(models.AbstractModel):
 
     def generate_valuation_report(self, workbook, wizard):
         categories = self.env["product.category"].search(
-            [("is_report_category", "=", True)]
+            [("is_svl_report_category", "=", True)]
         )
         self.setup_summary_sheet(workbook, categories.mapped("name"), "valuation")
         for category in categories:
             ws = workbook.add_worksheet(category.name)
-
-            # Write the header
             headers = [
                 _("Product Name"),
                 _("Internal Reference"),
@@ -107,18 +106,16 @@ class SVLReportXlsx(models.AbstractModel):
             for col, header in enumerate(headers):
                 ws.write(0, col, header)
 
-            # Fetch the valuation layers for the product category and date range
-            valuation_obj = self.env["stock.valuation.layer"]
-
             # Define search domain
             domain = self.get_valuation_domain(category, wizard)
 
             # Fields to aggregate
             fields_to_aggregate = ["quantity", "value"]
 
-            valuation_grouped_data = valuation_obj.read_group(
+            valuation_grouped_data = self.env["stock.valuation.layer"].read_group(
                 domain, fields_to_aggregate, ["product_id"]
             )
+            company_currency = self.env.company.currency_id
 
             # Write the aggregated data
             row = 1
@@ -126,16 +123,18 @@ class SVLReportXlsx(models.AbstractModel):
                 product = self.env["product.product"].browse(
                     valuation_data["product_id"][0]
                 )
-                company_currency = self.env.company.currency_id
+                qty = valuation_data["quantity"]
                 unit_cost = float_round(
-                    valuation_data["value"] / valuation_data["quantity"]
-                    if valuation_data["quantity"] > 0
+                    valuation_data["value"] / qty
+                    if not float_is_zero(
+                        qty, precision_rounding=product.uom_id.rounding
+                    )
                     else 0,
                     precision_rounding=company_currency.rounding,
                     rounding_method="UP",
                 )
                 ws.write(row, 0, product.name)
-                ws.write(row, 1, product.default_code)
+                ws.write(row, 1, product.default_code or "")
                 ws.write(row, 2, valuation_data["quantity"])
                 ws.write(row, 3, product.uom_id.name)
                 ws.write(row, 4, unit_cost)
@@ -147,7 +146,7 @@ class SVLReportXlsx(models.AbstractModel):
                     ws.write(row, 6, last_purchase_date.strftime("%Y-%m-%d"))
                 row += 1
 
-    def setup_storable_worksheet_headers(self, ws):
+    def setup_stock_operation_worksheet_headers(self, ws):
         headers = [
             _("Reference"),
             _("Origin"),
@@ -201,13 +200,13 @@ class SVLReportXlsx(models.AbstractModel):
             base_domain = expression.AND(
                 [base_domain, [("product_id.detailed_type", "!=", "product")]]
             )
-        categories = self.get_inventory_operation_categories(display_type=report_type)
+        categories = self.get_inventory_operation_categories(report_type=report_type)
         self.setup_summary_sheet(workbook, categories.mapped("name"), report_type)
         for category in categories:
             ws = workbook.add_worksheet(category.name)
 
             # Write the header
-            self.setup_storable_worksheet_headers(ws)
+            self.setup_stock_operation_worksheet_headers(ws)
 
             # Fetch the data for the report based on the category and date range
             valuation_obj = self.env["stock.valuation.layer"]
@@ -224,7 +223,7 @@ class SVLReportXlsx(models.AbstractModel):
                     else valuation.stock_move_id.actual_date
                 )
                 ws.write(row, 0, valuation.reference)
-                ws.write(row, 1, valuation.stock_move_id.origin)
+                ws.write(row, 1, valuation.stock_move_id.origin or "")
                 ws.write(row, 2, actual_date.strftime("%Y-%m-%d"))
                 ws.write(
                     row,
@@ -232,7 +231,9 @@ class SVLReportXlsx(models.AbstractModel):
                     self.parse_html(valuation.stock_move_id.picking_id.note) or "",
                 )
                 ws.write(row, 4, valuation.create_uid.name)
-                ws.write(row, 5, valuation.stock_move_id.picking_id.partner_id.name)
+                ws.write(
+                    row, 5, valuation.stock_move_id.picking_id.partner_id.name or ""
+                )
                 ws.write(
                     row, 6, valuation.stock_move_id.purchase_line_id.price_subtotal
                 )
@@ -255,7 +256,7 @@ class SVLReportXlsx(models.AbstractModel):
         ws = workbook.add_worksheet(_("SVL Report Summary"))
         valuation_obj = self.env["stock.valuation.layer"]
         product_categories = self.env["product.category"].search(
-            [("is_report_category", "=", True)]
+            [("is_svl_report_category", "=", True)]
         )
         base_storable_domain = expression.AND(
             [

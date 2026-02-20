@@ -11,7 +11,7 @@
                         <field name="active" />
                         <field name="sequence" />
                         <field name="is_other" />
-                        <field name="display_type" />
+                        <field name="report_type" />
                         <field
                             name="domain"
                             widget="domain"
@@ -32,7 +32,7 @@
                 <field name="name" />
                 <field name="active" />
                 <field name="is_other" />
-                <field name="display_type" />
+                <field name="report_type" />
             </tree>
         </field>
     </record>
