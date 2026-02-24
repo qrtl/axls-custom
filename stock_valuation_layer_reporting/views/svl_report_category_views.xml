@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="svl_report_category_form" model="ir.ui.view">
+    <record id="svl_report_category_view_form" model="ir.ui.view">
         <field name="name">svl.report.category.form</field>
         <field name="model">svl.report.category</field>
         <field name="arch" type="xml">
@@ -23,7 +23,7 @@
             </form>
         </field>
     </record>
-    <record id="svl_report_category_tree" model="ir.ui.view">
+    <record id="svl_report_category_view_tree" model="ir.ui.view">
         <field name="name">svl.report.category.tree</field>
         <field name="model">svl.report.category</field>
         <field name="arch" type="xml">

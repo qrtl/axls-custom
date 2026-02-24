@@ -1,11 +1,8 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-from bs4 import BeautifulSoup
-
 from odoo import _, fields, models
 from odoo.osv import expression
-from odoo.tools import float_round
-from odoo.tools.float_utils import float_is_zero
+from odoo.tools import float_round, html2plaintext
 
 
 class SVLReportXlsx(models.AbstractModel):
@@ -24,8 +21,7 @@ class SVLReportXlsx(models.AbstractModel):
 
     def parse_html(self, html_content):
         if html_content:
-            soup = BeautifulSoup(html_content, "html.parser")
-            return soup.get_text()
+            return html2plaintext(html_content)
         return False
 
     def get_base_domain(self, wizard):
@@ -110,19 +106,17 @@ class SVLReportXlsx(models.AbstractModel):
             valuation_grouped_data = self.env["stock.valuation.layer"].read_group(
                 domain, fields_to_aggregate, ["product_id"]
             )
+            product_ids = [d["product_id"][0] for d in valuation_grouped_data]
+            product_map = {
+                p.id: p for p in self.env["product.product"].browse(product_ids)
+            }
             company_currency = self.env.company.currency_id
             row = 1
             for valuation_data in valuation_grouped_data:
-                product = self.env["product.product"].browse(
-                    valuation_data["product_id"][0]
-                )
+                product = product_map[valuation_data["product_id"][0]]
                 qty = valuation_data["quantity"]
                 unit_cost = float_round(
-                    valuation_data["value"] / qty
-                    if not float_is_zero(
-                        qty, precision_rounding=product.uom_id.rounding
-                    )
-                    else 0,
+                    valuation_data["value"] / qty if qty else 0,
                     precision_rounding=company_currency.rounding,
                     rounding_method="UP",
                 )

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-20 09:39+0000\n"
-"PO-Revision-Date: 2026-02-20 09:39+0000\n"
+"POT-Creation-Date: 2026-02-24 09:53+0000\n"
+"PO-Revision-Date: 2026-02-24 09:53+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -42,9 +42,9 @@ msgid "Analytic Distribution"
 msgstr "分析"
 
 #. module: stock_valuation_layer_reporting
-#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_wizard_form
+#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_wizard_view_form
 msgid "Apply"
-msgstr "適用"
+msgstr ""
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__report_type__both
@@ -52,7 +52,7 @@ msgid "Both"
 msgstr "両方"
 
 #. module: stock_valuation_layer_reporting
-#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_wizard_form
+#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.view_svl_report_wizard
 msgid "Cancel"
 msgstr "取消"
@@ -127,7 +127,7 @@ msgstr ""
 #. module: stock_valuation_layer_reporting
 #: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_product_category__is_svl_report_category
 msgid "Include in SVL Report"
-msgstr "v2 在庫レポート出力対象"
+msgstr "在庫評価出力対象"
 
 #. module: stock_valuation_layer_reporting
 #. odoo-python
@@ -204,8 +204,8 @@ msgstr "ノート"
 #: code:addons/stock_valuation_layer_reporting/models/svl_report_category.py:0
 #, python-format
 msgid ""
-"Only one 'Other Category' is allowed per. Deactivate the existing one or "
-"unset 'Other Category'."
+"Only one 'Other Category' is allowed.Deactivate the existing one or unset "
+"'Other Category'."
 msgstr ""
 "その他カテゴリは1つのみ設定できます。該当のレポートカテゴリをアーカイブするか、"
 "その他カテゴリのチェックを外してください。"
@@ -333,7 +333,7 @@ msgstr "在庫評価レポートカテゴリ"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.model,name:stock_valuation_layer_reporting.model_svl_report_category
-#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_form
+#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_view_form
 msgid "SVL Report Category"
 msgstr "在庫評価レポートカテゴリ"
 
@@ -423,7 +423,7 @@ msgstr "単位"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.actions.act_window,name:stock_valuation_layer_reporting.svl_report_category_wizard_action
-#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_wizard_form
+#: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_wizard_view_form
 msgid "Update SVL Report Category"
 msgstr "在庫評価レポートカテゴリを更新"
 

@@ -46,7 +46,13 @@ class StockValuationLayer(models.Model):
                 )
         if len(matches) == 1:
             return matches[0]
-        if len(matches) > 1:
+        if len(matches) == 0:
+            _logger.warning(
+                "SVL(%s: %s) matched no report categories",
+                self.reference,
+                self.product_id.display_name or "",
+            )
+        else:
             _logger.error(
                 "SVL(%s: %s) matched multiple report categories %s",
                 self.reference,

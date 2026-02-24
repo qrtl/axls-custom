@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="svl_report_category_wizard_form" model="ir.ui.view">
+    <record id="svl_report_category_wizard_view_form" model="ir.ui.view">
         <field name="name">svl.report.category.wizard.form</field>
         <field name="model">svl.report.category.wizard</field>
         <field name="arch" type="xml">
@@ -24,7 +24,7 @@
         <field name="name">Update SVL Report Category</field>
         <field name="res_model">svl.report.category.wizard</field>
         <field name="view_mode">form</field>
-        <field name="view_id" ref="svl_report_category_wizard_form" />
+        <field name="view_id" ref="svl_report_category_wizard_view_form" />
         <field name="target">new</field>
         <field
             name="binding_model_id"
