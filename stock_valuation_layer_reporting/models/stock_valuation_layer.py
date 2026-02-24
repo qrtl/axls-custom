@@ -33,8 +33,17 @@ class StockValuationLayer(models.Model):
         other_category = categories.filtered("is_other")[:1]
         matches = []
         for cat in categories.filtered(lambda c: not c.is_other):
-            if self.filtered_domain(cat._get_domain()):
-                matches.append(cat)
+            try:
+                if self.filtered_domain(cat._get_domain()):
+                    matches.append(cat)
+            except Exception as e:
+                _logger.error(
+                    "SVL(%s: %s) failed to evaluate domain for report category %s: %s",
+                    self.reference,
+                    self.product_id.display_name or "",
+                    cat.name,
+                    e,
+                )
         if len(matches) > 1:
             _logger.error(
                 "SVL(%s: %s) matched multiple report categories %s",
