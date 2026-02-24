@@ -54,9 +54,10 @@ Other Category Behavior
 2. If exactly one category matches, assign that category.
 3. If multiple categories match, an error is logged and the first
    matching category (by sequence) is assigned.
-4. If none match, assign Other Category. If Other Category is not
-   defined, the report category will remain empty. Records with an empty
-   report category will not be displayed in the SVL report.
+4. If multiple categories match or none match, assign Other Category. If
+   Other Category is not defined, the report category will remain empty.
+   Records with an empty report category will not be displayed in the
+   SVL report.
 
 Product Category Configuration
 ------------------------------
