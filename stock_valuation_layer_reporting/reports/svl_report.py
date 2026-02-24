@@ -105,19 +105,12 @@ class SVLReportXlsx(models.AbstractModel):
                 ws.set_column(col, col, width)
             for col, header in enumerate(headers):
                 ws.write(0, col, header)
-
-            # Define search domain
             domain = self.get_valuation_domain(category, wizard)
-
-            # Fields to aggregate
             fields_to_aggregate = ["quantity", "value"]
-
             valuation_grouped_data = self.env["stock.valuation.layer"].read_group(
                 domain, fields_to_aggregate, ["product_id"]
             )
             company_currency = self.env.company.currency_id
-
-            # Write the aggregated data
             row = 1
             for valuation_data in valuation_grouped_data:
                 product = self.env["product.product"].browse(
@@ -204,18 +197,11 @@ class SVLReportXlsx(models.AbstractModel):
         self.setup_summary_sheet(workbook, categories.mapped("name"), report_type)
         for category in categories:
             ws = workbook.add_worksheet(category.name)
-
-            # Write the header
             self.setup_stock_operation_worksheet_headers(ws)
-
-            # Fetch the data for the report based on the category and date range
-            valuation_obj = self.env["stock.valuation.layer"]
             domain = expression.AND(
                 [base_domain, [("report_category_id", "=", category.id)]]
             )
-            valuations = valuation_obj.search(domain)
-
-            # Write the data to the worksheet
+            valuations = self.env["stock.valuation.layer"].search(domain)
             for row, valuation in enumerate(valuations, start=1):
                 actual_date = (
                     valuation.actual_date

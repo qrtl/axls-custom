@@ -30,7 +30,7 @@ class StockValuationLayer(models.Model):
 
     def _get_report_category_for_record(self, categories):
         self.ensure_one()
-        other_category = categories.filtered("is_other")[:1]
+        other_category = categories.filtered("is_other")
         matches = []
         for cat in categories.filtered(lambda c: not c.is_other):
             try:
@@ -44,6 +44,8 @@ class StockValuationLayer(models.Model):
                     cat.name,
                     e,
                 )
+        if len(matches) == 0:
+            return other_category
         if len(matches) > 1:
             _logger.error(
                 "SVL(%s: %s) matched multiple report categories %s",
@@ -51,7 +53,7 @@ class StockValuationLayer(models.Model):
                 self.product_id.display_name or "",
                 matches.mapped("name"),
             )
-        return matches[0] if len(matches) == 1 else other_category
+        return matches[0]
 
     def assign_report_category(self):
         categories = self.env["svl.report.category"].search([])

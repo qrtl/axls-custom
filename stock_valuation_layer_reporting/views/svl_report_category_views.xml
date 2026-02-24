@@ -47,6 +47,6 @@
         parent="stock.menu_stock_config_settings"
         action="action_svl_report_category"
         sequence="20"
-        groups="stock.group_stock_manager"
+        groups="base.group_system"
     />
 </odoo>

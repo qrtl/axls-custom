@@ -20,7 +20,6 @@
             </form>
         </field>
     </record>
-
     <record id="svl_report_category_wizard_action" model="ir.actions.act_window">
         <field name="name">Update SVL Report Category</field>
         <field name="res_model">svl.report.category.wizard</field>
@@ -32,6 +31,6 @@
             ref="stock_account.model_stock_valuation_layer"
         />
         <field name="binding_type">action</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]" />
     </record>
-
 </odoo>

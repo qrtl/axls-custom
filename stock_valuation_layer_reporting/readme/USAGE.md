@@ -11,6 +11,7 @@ To assign a report category to SVL records:
 
 1. Go to Inventory > Configuration > SVL Report Categories.
 2. Create or update categories with a domain.
-3. New SVL records are categorized automatically.
-4. For existing SVL records, select them in the list and use
-   Action > Set SVL Report Category.
+3. New SVL records are categorized automatically on creation.
+4. For existing SVL records, select them in the list and use:
+   - Action > Update SVL Report Category to manually set a specific category.
+   - Action > Recompute Report Categories to auto-assign based on current category domains.

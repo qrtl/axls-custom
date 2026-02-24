@@ -376,41 +376,63 @@ valuation, storable, consumable, and summary Excel reports.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a></li>
-<li><a class="reference internal" href="#usage" id="toc-entry-2">Usage</a></li>
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-3">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-4">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-5">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-6">Maintainers</a></li>
+<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a><ul>
+<li><a class="reference internal" href="#svl-report-categories" id="toc-entry-2">SVL Report Categories</a></li>
+<li><a class="reference internal" href="#other-category-behavior" id="toc-entry-3">Other Category Behavior</a></li>
+<li><a class="reference internal" href="#product-category-configuration" id="toc-entry-4">Product Category Configuration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage" id="toc-entry-5">Usage</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-6">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-7">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-8">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-9">Maintainers</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="configuration">
 <h1><a class="toc-backref" href="#toc-entry-1">Configuration</a></h1>
+<div class="section" id="svl-report-categories">
+<h2><a class="toc-backref" href="#toc-entry-2">SVL Report Categories</a></h2>
 <ol class="arabic simple">
 <li>Go to Inventory &gt; Configuration &gt; SVL Report Categories.</li>
 <li>Create categories with:<ul>
 <li>Name</li>
 <li>Sequence</li>
-<li>Display Type (Storable/Consumable/Both)</li>
+<li>Report Type (Storable/Consumable/Both)</li>
 <li>Domain (stock.valuation.layer domain)</li>
 <li>Other Category (set <tt class="docutils literal">is_other</tt> for the fallback category)</li>
 </ul>
 </li>
 </ol>
-<p>Other Category behavior</p>
+</div>
+<div class="section" id="other-category-behavior">
+<h2><a class="toc-backref" href="#toc-entry-3">Other Category Behavior</a></h2>
 <ol class="arabic simple">
-<li>Please assign Other Category to only one category.</li>
-<li>If exactly one report category matches, assign that category;
-otherwise (if multiple or none match), assign Other Category.</li>
-<li>If Other Category is not defined, the report category will remain
-empty in the above “otherwise” cases. Records with an empty report
-category will not be displayed in the SVL report.</li>
+<li>Please assign Other Category to only one category (enforced by
+system).</li>
+<li>If exactly one category matches, assign that category.</li>
+<li>If multiple categories match, an error is logged and the first
+matching category (by sequence) is assigned.</li>
+<li>If none match, assign Other Category. If Other Category is not
+defined, the report category will remain empty. Records with an empty
+report category will not be displayed in the SVL report.</li>
 </ol>
 </div>
+<div class="section" id="product-category-configuration">
+<h2><a class="toc-backref" href="#toc-entry-4">Product Category Configuration</a></h2>
+<p>For the valuation report, product categories must be marked for
+inclusion:</p>
+<ol class="arabic simple">
+<li>Go to Inventory &gt; Configuration &gt; Product Categories.</li>
+<li>Open the desired product category.</li>
+<li>Enable the “Include in SVL Report” option.</li>
+</ol>
+</div>
+</div>
 <div class="section" id="usage">
-<h1><a class="toc-backref" href="#toc-entry-2">Usage</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-5">Usage</a></h1>
 <p>To generate an SVL Report, follow these steps:</p>
 <ol class="arabic simple">
 <li>Navigate to Inventory &gt; Reporting &gt; SVL Report.</li>
@@ -423,13 +445,18 @@ reports is downloaded.</p>
 <ol class="arabic simple">
 <li>Go to Inventory &gt; Configuration &gt; SVL Report Categories.</li>
 <li>Create or update categories with a domain.</li>
-<li>New SVL records are categorized automatically.</li>
-<li>For existing SVL records, select them in the list and use Action &gt;
-Set SVL Report Category.</li>
+<li>New SVL records are categorized automatically on creation.</li>
+<li>For existing SVL records, select them in the list and use:<ul>
+<li>Action &gt; Update SVL Report Category to manually set a specific
+category.</li>
+<li>Action &gt; Recompute Report Categories to auto-assign based on
+current category domains.</li>
+</ul>
+</li>
 </ol>
 </div>
 <div class="section" id="bug-tracker">
-<h1><a class="toc-backref" href="#toc-entry-3">Bug Tracker</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-6">Bug Tracker</a></h1>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/qrtl/axls-custom/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -437,15 +464,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h1><a class="toc-backref" href="#toc-entry-4">Credits</a></h1>
+<h1><a class="toc-backref" href="#toc-entry-7">Credits</a></h1>
 <div class="section" id="authors">
-<h2><a class="toc-backref" href="#toc-entry-5">Authors</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-8">Authors</a></h2>
 <ul class="simple">
 <li>Quartile</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h2><a class="toc-backref" href="#toc-entry-6">Maintainers</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-9">Maintainers</a></h2>
 <p>This module is part of the <a class="reference external" href="https://github.com/qrtl/axls-custom/tree/16.0/stock_valuation_layer_reporting">qrtl/axls-custom</a> project on GitHub.</p>
 <p>You are welcome to contribute.</p>
 </div>
