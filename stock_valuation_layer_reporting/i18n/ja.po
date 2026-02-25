@@ -44,7 +44,7 @@ msgstr "分析"
 #. module: stock_valuation_layer_reporting
 #: model_terms:ir.ui.view,arch_db:stock_valuation_layer_reporting.svl_report_category_wizard_view_form
 msgid "Apply"
-msgstr ""
+msgstr "適用"
 
 #. module: stock_valuation_layer_reporting
 #: model:ir.model.fields.selection,name:stock_valuation_layer_reporting.selection__svl_report_category__report_type__both
@@ -127,7 +127,7 @@ msgstr ""
 #. module: stock_valuation_layer_reporting
 #: model:ir.model.fields,field_description:stock_valuation_layer_reporting.field_product_category__is_svl_report_category
 msgid "Include in SVL Report"
-msgstr "在庫評価出力対象"
+msgstr "v2 在庫レポート出力対象"
 
 #. module: stock_valuation_layer_reporting
 #. odoo-python

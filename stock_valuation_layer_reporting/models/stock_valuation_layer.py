@@ -53,11 +53,11 @@ class StockValuationLayer(models.Model):
                 self.product_id.display_name or "",
             )
         else:
-            _logger.error(
+            _logger.warning(
                 "SVL(%s: %s) matched multiple report categories %s",
                 self.reference,
                 self.product_id.display_name or "",
-                matches.mapped("name"),
+                [c.name for c in matches],
             )
         return other_category
 
