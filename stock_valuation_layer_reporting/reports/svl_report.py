@@ -84,6 +84,7 @@ class SVLReportXlsx(models.AbstractModel):
         categories = self.env["product.category"].search(
             [("is_svl_report_category", "=", True)]
         )
+        company_currency = self.env.company.currency_id
         self.setup_summary_sheet(workbook, categories.mapped("name"), "valuation")
         for category in categories:
             ws = workbook.add_worksheet(category.name)
@@ -110,7 +111,6 @@ class SVLReportXlsx(models.AbstractModel):
             product_map = {
                 p.id: p for p in self.env["product.product"].browse(product_ids)
             }
-            company_currency = self.env.company.currency_id
             row = 1
             for valuation_data in valuation_grouped_data:
                 product = product_map[valuation_data["product_id"][0]]

@@ -63,11 +63,18 @@ class StockValuationLayer(models.Model):
 
     def assign_report_category(self):
         categories = self.env["svl.report.category"].search([])
+        category_records = {}
         for record in self:
             category = record._get_report_category_for_record(categories)
             if not category:
                 continue
-            record.write({"report_category_id": category.id})
+            cat_id = category.id
+            if cat_id not in category_records:
+                category_records[cat_id] = record
+            else:
+                category_records[cat_id] |= record
+        for cat_id, records in category_records.items():
+            records.write({"report_category_id": cat_id})
 
     @api.model_create_multi
     def create(self, vals_list):

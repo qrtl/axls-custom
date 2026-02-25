@@ -63,7 +63,7 @@ class SVLReportCategory(models.Model):
             if existing:
                 raise ValidationError(
                     _(
-                        "Only one 'Other Category' is allowed."
+                        "Only one 'Other Category' is allowed. "
                         "Deactivate the existing one or unset 'Other Category'."
                     )
                 )

@@ -18,7 +18,7 @@ class SVLReportWizard(models.TransientModel):
     def export_xlsx(self):
         # Initialize a byte-stream to hold our ZIP data.
         zip_buffer = io.BytesIO()
-
+        report = self.env.ref("stock_valuation_layer_reporting.svl_report_xlsx")
         with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED) as zip_file:
             for report_type in ["valuation", "storable", "consumable", "summary"]:
                 data = {
@@ -28,7 +28,6 @@ class SVLReportWizard(models.TransientModel):
                 }
 
                 # Obtain Excel data in bytes for the given report type
-                report = self.env.ref("stock_valuation_layer_reporting.svl_report_xlsx")
                 excel_content, _ = report._render(
                     report.report_name, [self.id], data=data
                 )

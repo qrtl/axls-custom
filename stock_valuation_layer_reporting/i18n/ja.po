@@ -204,7 +204,7 @@ msgstr "ノート"
 #: code:addons/stock_valuation_layer_reporting/models/svl_report_category.py:0
 #, python-format
 msgid ""
-"Only one 'Other Category' is allowed.Deactivate the existing one or unset "
+"Only one 'Other Category' is allowed. Deactivate the existing one or unset "
 "'Other Category'."
 msgstr ""
 "その他カテゴリは1つのみ設定できます。該当のレポートカテゴリをアーカイブするか、"
