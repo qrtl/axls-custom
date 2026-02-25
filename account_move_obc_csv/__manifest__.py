@@ -15,6 +15,7 @@
     ],
     "data": [
         "data/obc_csv_report_data.xml",
+        "data/server_actions.xml",
         "views/account_analytic_plan_views.xml",
         "views/account_move_views.xml",
         "views/account_tax_views.xml",

@@ -7,13 +7,12 @@ from odoo import _, fields, models
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    is_exported = fields.Boolean("Exported", copy=False)
+    is_exported = fields.Boolean("Exported", copy=False, tracking=True)
 
     def action_unset_exported(self):
         """Unset is_exported field for selected records"""
         count = len(self)
         self.write({"is_exported": False})
-
         message = _("%(count)s record(s) unmarked as exported.") % {"count": count}
         return {
             "type": "ir.actions.client",
