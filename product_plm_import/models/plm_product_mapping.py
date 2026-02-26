@@ -62,7 +62,7 @@ class PlmProductMapping(models.Model):
             try:
                 record.lot_sequence_prefix.format(esc_code="")
             except (ValueError, KeyError):
-                raise ValidationError(_("Lot Sequence Prefix is invalid."))
+                raise ValidationError(_("Lot Sequence Prefix is invalid.")) from None
 
     @api.onchange("product_type")
     def onchange_product_type(self):
