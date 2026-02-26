@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 from odoo import _, fields, models
 from odoo.osv import expression
-from odoo.tools import float_round, html2plaintext
+from odoo.tools import float_is_zero, float_round, html2plaintext
 
 
 class SVLReportXlsx(models.AbstractModel):
@@ -116,7 +116,11 @@ class SVLReportXlsx(models.AbstractModel):
                 product = product_map[valuation_data["product_id"][0]]
                 qty = valuation_data["quantity"]
                 unit_cost = float_round(
-                    valuation_data["value"] / qty if qty else 0,
+                    valuation_data["value"] / qty
+                    if not float_is_zero(
+                        qty, precision_rounding=product.uom_id.rounding
+                    )
+                    else 0,
                     precision_rounding=company_currency.rounding,
                     rounding_method="UP",
                 )

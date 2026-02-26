@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 import logging
+from collections import defaultdict
 
 from odoo import api, fields, models
 
@@ -40,7 +41,7 @@ class StockValuationLayer(models.Model):
                 _logger.error(
                     "SVL(%s: %s) failed to evaluate domain for report category %s: %s",
                     self.reference,
-                    self.product_id.display_name or "",
+                    self.product_id.display_name,
                     cat.name,
                     e,
                 )
@@ -50,29 +51,25 @@ class StockValuationLayer(models.Model):
             _logger.warning(
                 "SVL(%s: %s) matched no report categories",
                 self.reference,
-                self.product_id.display_name or "",
+                self.product_id.display_name,
             )
         else:
             _logger.warning(
                 "SVL(%s: %s) matched multiple report categories %s",
                 self.reference,
-                self.product_id.display_name or "",
+                self.product_id.display_name,
                 [c.name for c in matches],
             )
         return other_category
 
     def assign_report_category(self):
         categories = self.env["svl.report.category"].search([])
-        category_records = {}
+        category_records = defaultdict(lambda: self.env["stock.valuation.layer"])
         for record in self:
             category = record._get_report_category_for_record(categories)
             if not category:
                 continue
-            cat_id = category.id
-            if cat_id not in category_records:
-                category_records[cat_id] = record
-            else:
-                category_records[cat_id] |= record
+            category_records[category.id] |= record
         for cat_id, records in category_records.items():
             records.write({"report_category_id": cat_id})
 
