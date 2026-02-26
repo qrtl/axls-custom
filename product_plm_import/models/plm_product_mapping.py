@@ -43,7 +43,10 @@ class PlmProductMapping(models.Model):
     )
     auto_create_lot = fields.Boolean()
     lot_sequence_padding = fields.Integer()
-    lot_sequence_prefix = fields.Char()
+    lot_sequence_prefix = fields.Char(
+        help="Lot sequence prefix. Supports '{esc_code}' placeholder to use the ESC ID "
+        "of each PLM record (e.g. '{esc_code}')."
+    )
     default_active = fields.Boolean(
         help="Default value for active field of the created product."
     )

@@ -144,7 +144,11 @@ class ProductPlm(models.Model):
             if mapping.lot_sequence_padding:
                 product.lot_sequence_id.padding = mapping.lot_sequence_padding
             if mapping.lot_sequence_prefix:
-                product.lot_sequence_id.prefix = mapping.lot_sequence_prefix
+                prefix = mapping.lot_sequence_prefix.format(
+                    esc_code=plm_rec.esc_code or "",
+                )
+                if prefix:
+                    product.lot_sequence_id.prefix = prefix
             product.product_tmpl_id.active = mapping.default_active
             plm_rec.write({"state": "done", "product_id": product.id})
         # This step fails with CasheMiss error in case product creation in
