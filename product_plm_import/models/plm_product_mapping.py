@@ -3,7 +3,8 @@
 
 import fnmatch
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PlmProductMapping(models.Model):
@@ -52,6 +53,16 @@ class PlmProductMapping(models.Model):
     )
     company_id = fields.Many2one("res.company")
     active = fields.Boolean(default=True)
+
+    @api.constrains("lot_sequence_prefix")
+    def _check_lot_sequence_prefix(self):
+        for record in self:
+            if not record.lot_sequence_prefix:
+                continue
+            try:
+                record.lot_sequence_prefix.format(esc_code="")
+            except (ValueError, KeyError):
+                raise ValidationError(_("Lot Sequence Prefix is invalid."))
 
     @api.onchange("product_type")
     def onchange_product_type(self):
