@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="svl_report_category_in_receipt" model="svl.report.category">
+        <field name="name">入荷</field>
+        <field name="sequence">1</field>
+        <field name="report_type">both</field>
+        <field
+            name="domain"
+        ><![CDATA[[("stock_move_id.location_dest_id.usage", "=", "internal"), ("stock_move_id.location_id.usage", "=", "supplier")]]]></field>
+    </record>
+    <record id="svl_report_category_in_receipt_return" model="svl.report.category">
+        <field name="name">入荷返品</field>
+        <field name="sequence">2</field>
+        <field name="report_type">both</field>
+        <field
+            name="domain"
+        ><![CDATA[[("stock_move_id.location_dest_id.usage", "=", "supplier"), ("stock_move_id.location_id.usage", "=", "internal")]]]></field>
+    </record>
+    <record id="svl_report_category_out_production" model="svl.report.category">
+        <field name="name">出庫</field>
+        <field name="sequence">3</field>
+        <field name="report_type">storable</field>
+        <field
+            name="domain"
+        ><![CDATA[["&", ("stock_move_id.location_dest_id.usage", "=", "production"), "&", ("stock_move_id.location_id.usage", "=", "internal"), "&", ("stock_move_id.location_id.is_subcontracting_location", "=", False), ("stock_move_id.unbuild_id", "=", False)]]]></field>
+    </record>
+    <record id="svl_report_category_out_production_return" model="svl.report.category">
+        <field name="name">出庫返品</field>
+        <field name="sequence">4</field>
+        <field name="report_type">storable</field>
+        <field
+            name="domain"
+        ><![CDATA[["&", ("stock_move_id.location_dest_id.usage", "=", "internal"), "&", ("stock_move_id.location_id.usage", "=", "production"), "&", ("stock_move_id.location_dest_id.is_subcontracting_location", "=", False), ("stock_move_id.unbuild_id", "=", False)]]]></field>
+    </record>
+    <record id="svl_report_category_inventory_adjustment" model="svl.report.category">
+        <field name="name">在庫調整</field>
+        <field name="sequence">5</field>
+        <field name="report_type">storable</field>
+        <field
+            name="domain"
+        ><![CDATA[["&", "|", ("stock_move_id.location_id.usage", "=", "inventory"), ("stock_move_id.location_dest_id.usage", "=", "inventory"), "&", ("stock_move_id.location_dest_id.scrap_location", "!=", True), ("stock_move_id.unbuild_id", "=", False)]]]></field>
+    </record>
+    <record id="svl_report_category_scrap" model="svl.report.category">
+        <field name="name">廃棄</field>
+        <field name="sequence">6</field>
+        <field name="report_type">storable</field>
+        <field
+            name="domain"
+        ><![CDATA[[("stock_move_id.location_dest_id.scrap_location", "=", True)]]]></field>
+    </record>
+    <record id="svl_report_category_subcontracting" model="svl.report.category">
+        <field name="name">外注加工</field>
+        <field name="sequence">7</field>
+        <field name="report_type">storable</field>
+        <field
+            name="domain"
+        ><![CDATA[["&", "|", ("stock_move_id.location_id.is_subcontracting_location", "=", True), ("stock_move_id.location_dest_id.is_subcontracting_location", "=", True), "&", ("stock_move_id.unbuild_id", "=", False), "&", ("stock_move_id.location_id.usage", "!=", "inventory"), ("stock_move_id.location_dest_id.usage", "!=", "inventory")]]]></field>
+    </record>
+    <record id="svl_report_category_price_adjustment" model="svl.report.category">
+        <field name="name">価格調整</field>
+        <field name="sequence">8</field>
+        <field name="report_type">storable</field>
+        <field name="domain"><![CDATA[[("stock_move_id", "=", False)]]]></field>
+    </record>
+    <record id="svl_report_category_unbuild" model="svl.report.category">
+        <field name="name">解体</field>
+        <field name="sequence">9</field>
+        <field name="report_type">storable</field>
+        <field
+            name="domain"
+        ><![CDATA[[("stock_move_id.unbuild_id", "!=", False)]]]></field>
+    </record>
+    <record id="svl_report_category_other" model="svl.report.category">
+        <field name="name">その他</field>
+        <field name="sequence">10</field>
+        <field name="is_other">True</field>
+        <field name="report_type">both</field>
+    </record>
+</odoo>

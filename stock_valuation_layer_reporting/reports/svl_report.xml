@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="svl_report_xlsx" model="ir.actions.report">
+        <field name="name">SVL Report</field>
+        <field name="model">svl.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field
+            name="report_name"
+        >stock_valuation_layer_reporting.svl_report_xlsx</field>
+        <field
+            name="report_file"
+        >stock_valuation_layer_reporting.svl_report_xlsx</field>
+        <field name="binding_model_id" ref="model_svl_report_wizard" />
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
