@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from odoo import api, fields, models, _
-from odoo.tools import float_compare
+from odoo.exceptions import UserError
+from odoo.tools import float_is_zero
+
+_logger = logging.getLogger(__name__)
+
+# All move types that represent vendor billing documents.
+_VENDOR_BILL_TYPES = frozenset({'in_invoice', 'in_refund', 'in_receipt'})
+
+# Move types that can be designated as the Final Invoice.
+# Credit notes are excluded: a reversal document should not close the billing cycle.
+_FINAL_INVOICE_TYPES = frozenset({'in_invoice', 'in_receipt'})
 
 
 class AccountMove(models.Model):
@@ -9,219 +21,269 @@ class AccountMove(models.Model):
     is_final_invoice = fields.Boolean(
         string='Final Invoice',
         default=False,
-        help='When checked, this invoice will update purchase order quantities and create price difference adjustment entries'
+        copy=False,
     )
     price_adjustment_move_id = fields.Many2one(
         'account.move',
         string='Price Adjustment Entry',
         readonly=True,
-        help='Accounting entry created to adjust the price difference between receipt and final invoice'
+        ondelete='set null',
+    )
+    po_has_other_final_invoice = fields.Boolean(
+        string='PO Has Other Final Invoice',
+        compute='_compute_po_has_other_final_invoice',
+    )
+    po_use_separate_valuation = fields.Boolean(
+        string='PO Uses Separate Valuation',
+        compute='_compute_po_use_separate_valuation',
+        help='True when the linked purchase order uses separate valuation mode.',
     )
 
+    @api.depends(
+        'purchase_id',
+        'purchase_id.use_separate_valuation',
+        'invoice_line_ids.purchase_line_id.order_id',
+        'invoice_line_ids.purchase_line_id.order_id.use_separate_valuation',
+    )
+    def _compute_po_use_separate_valuation(self):
+        for move in self:
+            purchase = move._get_linked_purchase_order()
+            move.po_use_separate_valuation = bool(
+                purchase and purchase.use_separate_valuation
+            )
+
+    @api.depends(
+        'purchase_id',
+        'invoice_line_ids.purchase_line_id.order_id',
+        'purchase_id.order_line.invoice_lines.move_id.is_final_invoice',
+        'purchase_id.order_line.invoice_lines.move_id.state',
+    )
+    def _compute_po_has_other_final_invoice(self):
+        for move in self:
+            purchase = move._get_linked_purchase_order()
+            if not purchase:
+                move.po_has_other_final_invoice = False
+                continue
+            move.po_has_other_final_invoice = bool(move._get_po_final_invoices(purchase))
+
     def _post(self, soft=True):
+        """Post moves and trigger GRNI balancing for final vendor bills.
+
+        SVL / price-difference creation for vendor bills is blocked at the line
+        level via AccountMoveLine._apply_price_difference(), so the full super()
+        MRO chain can run safely. This override only adds the GRNI
+        synchronisation step afterwards.
         """
-        Override purchase_stock module's _post() to completely bypass 
-        price difference application for ALL vendor bills.
-        
-        This replicates purchase_stock._post() but excludes vendor bills from processing.
-        """
-        from odoo.tools import float_is_zero
-        from odoo.tools.misc import groupby
-        
-        # Separate vendor bills from other invoices
-        vendor_bills = self.filtered(lambda m: m.move_type in ('in_invoice', 'in_refund', 'in_receipt'))
-        other_invoices = self - vendor_bills
-        
-        result = self.env['account.move']
-        
-        # Process other invoices normally (with purchase_stock logic)
-        if other_invoices:
-            result |= super(AccountMove, other_invoices)._post(soft)
-        
-        # Process vendor bills WITHOUT purchase_stock logic
-        if vendor_bills:
-            # Skip to stock_account and account modules only
-            # by importing the base class before purchase_stock
-            from odoo.addons.stock_account.models.account_move import AccountMove as StockAccountMove
-            result |= StockAccountMove._post(vendor_bills, soft)
-            
-            # Sync price adjustment entries for vendor bills
-            for bill in vendor_bills.filtered(lambda b: b.state == 'posted'):
-                bill._sync_price_adjustment_entry()
-        
+        # Run pre-post validation only on records that will actually be posted.
+        # With soft=True, Odoo skips moves not in 'draft' state; running checks
+        # on those would raise false-positive errors.
+        to_post = self.filtered(lambda m: m.state == 'draft') if soft else self
+
+        for bill in to_post.filtered(
+            lambda m: m.is_final_invoice and m.move_type in _VENDOR_BILL_TYPES
+        ):
+            bill._check_no_existing_final_invoice()
+            bill._check_price_adjustment_account_configured()
+
+        for bill in to_post.filtered(
+            lambda m: not m.is_final_invoice and m.move_type in _VENDOR_BILL_TYPES
+        ):
+            bill._check_no_bill_after_final_invoice()
+
+        result = super()._post(soft)
+
+        # Sync final vendor bills that were just posted.
+        already_synced = self.env['account.move']
+        for bill in result.filtered(
+            lambda m: m.is_final_invoice and m.move_type in _VENDOR_BILL_TYPES
+        ):
+            bill._sync_price_adjustment_entry()
+            already_synced |= bill
+
+        # When a non-final vendor bill (e.g. credit note / reversal) is posted,
+        # re-sync the GRNI adjustment of any existing final invoice on the same PO.
+        # Exclude invoices already synced above to avoid a redundant double-sync.
+        final_invoices_to_sync = self.env['account.move']
+        for bill in result.filtered(
+            lambda m: not m.is_final_invoice and m.move_type in _VENDOR_BILL_TYPES
+        ):
+            purchase = bill._get_linked_purchase_order()
+            if purchase:
+                final_invoices_to_sync |= bill._get_po_final_invoices(purchase)
+
+        for final_inv in final_invoices_to_sync - already_synced:
+            final_inv._sync_price_adjustment_entry()
+
         return result
 
+    # ------------------------------------------------------------------
+    # GRNI adjustment helpers
+    # ------------------------------------------------------------------
+
     def _sync_price_adjustment_entry(self):
-        """Create or update a separate accounting entry to adjust GRNI balance for final invoices"""
+        """Create / update the GRNI balancing entry for a final vendor bill.
+        Protected against re-entrant calls (e.g. _post() + write() both firing
+        for the same invoice) via the skip_price_adjustment_sync context key.
+        """
         self.ensure_one()
-        
-        import logging
-        _logger = logging.getLogger(__name__)
-        
-        _logger.info('=== _sync_price_adjustment_entry called for invoice %s ===', self.name)
-        _logger.info('is_final_invoice: %s, move_type: %s', self.is_final_invoice, self.move_type)
-        
-        if not self.is_final_invoice or self.move_type not in ('in_invoice', 'in_refund', 'in_receipt'):
-            _logger.info('Skipping: not a final vendor bill')
+        if self.env.context.get('skip_price_adjustment_sync'):
+            return
+        _logger.debug('_sync_price_adjustment_entry: %s (is_final=%s)', self.name, self.is_final_invoice)
+
+        if (
+            not self.is_final_invoice
+            or self.state != 'posted'
+            or self.move_type not in _VENDOR_BILL_TYPES
+        ):
             if self.price_adjustment_move_id:
-                _logger.info('Removing existing adjustment entry because invoice is not final')
+                _logger.debug('Removing adjustment entry – invoice is no longer final or posted')
                 self._remove_price_adjustment_entry()
             return
-        
-        purchase = self.purchase_id
+
+        purchase = self._get_linked_purchase_order()
         if not purchase:
-            purchase = self.invoice_line_ids.mapped('purchase_line_id.order_id')[:1]
-            if purchase:
-                _logger.info('Resolved purchase order from invoice lines: %s', purchase.name)
-        if not purchase:
-            _logger.warning('Skipping: invoice is not linked to any purchase order')
+            _logger.warning('_sync_price_adjustment_entry: no linked PO found for %s', self.name)
             return
-        
-        # Get the configured price adjustment account
+
+        # --- Collect GRNI account IDs from PO products ---
+        stock_input_account_ids = self._get_purchase_stock_input_account_ids(purchase)
+
+        if not stock_input_account_ids:
+            _logger.debug('_sync_price_adjustment_entry: no GRNI accounts found')
+            return
+
+        self._check_price_adjustment_account_configured(
+            purchase=purchase,
+            stock_input_account_ids=stock_input_account_ids,
+        )
         price_adjustment_account = self.company_id.purchase_price_adjustment_account_id
-        if not price_adjustment_account:
-            _logger.warning('Skipping: price adjustment account not configured in company settings')
+
+        # Resolve the journal for the GRNI adjustment entry.
+        # Use the dedicated GRNI journal when configured; fall back to the first
+        # general-type journal of the company so that the entry never lands in
+        # the AP journal by accident.
+        grni_journal = self.company_id.purchase_grni_adjustment_journal_id
+        if not grni_journal:
+            grni_journal = self.env['account.journal'].search([
+                ('type', '=', 'general'),
+                ('company_id', '=', self.company_id.id),
+            ], limit=1)
+        if not grni_journal:
+            _logger.warning(
+                '_sync_price_adjustment_entry: no suitable journal found for GRNI adjustment'
+            )
             return
-        
-        _logger.info('Price adjustment account: %s', price_adjustment_account.display_name)
 
-        adjustment_lines = []
-
-        _logger.info('Invoice is linked to purchase order: %s', purchase.name)
-
-        stock_moves = purchase.order_line.mapped('move_ids').filtered(
-            lambda m: m.state == 'done' and m.product_id and m.product_id.type == 'product'
+        # --- Receipt side: GRNI debits/credits from done stock moves ---
+        done_moves = purchase.order_line.mapped('move_ids').filtered(
+            lambda m: m.state == 'done'
+            and m.product_id
+            and m.product_id.type == 'product'
             and m.product_id.categ_id.property_valuation == 'real_time'
         )
-        _logger.info('Done stock moves: %d', len(stock_moves))
-
-        # Identify GRNI accounts from PO products
-        stock_input_account_ids = set()
-        for line in purchase.order_line.filtered(lambda l: l.product_id):
-            product_accounts = line.product_id.product_tmpl_id._get_product_accounts()
-            stock_input_account = product_accounts.get('stock_input')
-            if stock_input_account:
-                stock_input_account_ids.add(stock_input_account.id)
-
-        # Receipt side (GRNI from stock input) - use accounting entries from stock moves
         receipt_balances = {}
-        if stock_moves and stock_input_account_ids:
-            receipt_amls = stock_moves.mapped('account_move_ids.line_ids').filtered(
+        if done_moves:
+            for aml in done_moves.mapped('account_move_ids.line_ids').filtered(
                 lambda l: l.account_id.id in stock_input_account_ids and l.move_id.state == 'posted'
-            )
-        else:
-            receipt_amls = self.env['account.move.line']
+            ):
+                receipt_balances.setdefault(aml.account_id.id, 0.0)
+                receipt_balances[aml.account_id.id] += aml.balance
 
-        for line in receipt_amls:
-            receipt_balances.setdefault(line.account_id.id, 0.0)
-            receipt_balances[line.account_id.id] += line.balance
-
-        # Invoice side (GRNI from vendor bills) - use GRNI lines from PO-related vendor bills
-        po_invoice_moves = purchase.order_line.mapped('invoice_lines').mapped('move_id').filtered(
-            lambda m: m.state == 'posted' and m.move_type in ('in_invoice', 'in_refund', 'in_receipt')
+        # --- Invoice side: GRNI lines from all PO-linked vendor bills ---
+        po_bills = purchase.order_line.mapped('invoice_lines.move_id').filtered(
+            lambda m: m.state == 'posted' and m.move_type in _VENDOR_BILL_TYPES
         )
-        if stock_input_account_ids and po_invoice_moves:
-            invoice_lines = self.env['account.move.line'].search([
-                ('move_id', 'in', po_invoice_moves.ids),
-                ('account_id', 'in', list(stock_input_account_ids)),
-            ])
-        else:
-            invoice_lines = self.env['account.move.line']
-
         invoice_balances = {}
-        for line in invoice_lines:
-            invoice_balances.setdefault(line.account_id.id, 0.0)
-            invoice_balances[line.account_id.id] += line.balance
+        if po_bills:
+            for aml in self.env['account.move.line'].search([
+                ('move_id', 'in', po_bills.ids),
+                ('account_id', 'in', list(stock_input_account_ids)),
+            ]):
+                invoice_balances.setdefault(aml.account_id.id, 0.0)
+                invoice_balances[aml.account_id.id] += aml.balance
 
-        account_ids = set(receipt_balances.keys()) | set(invoice_balances.keys())
-
+        # --- Build adjustment lines ---
         precision_rounding = self.company_id.currency_id.rounding
-        for account_id in account_ids:
-            receipt_balance = receipt_balances.get(account_id, 0.0)
-            invoice_balance = invoice_balances.get(account_id, 0.0)
-            total_balance = receipt_balance + invoice_balance
+        adjustment_lines = []
 
-            if float_compare(abs(total_balance), 0.0, precision_rounding=precision_rounding) == 0:
+        for account_id in set(receipt_balances) | set(invoice_balances):
+            total_balance = (
+                receipt_balances.get(account_id, 0.0)
+                + invoice_balances.get(account_id, 0.0)
+            )
+            if float_is_zero(total_balance, precision_rounding=precision_rounding):
                 continue
 
             stock_input_account = self.env['account.account'].browse(account_id)
-            _logger.info(
-                'GRNI balance for account %s: receipt=%s, invoice=%s, total=%s',
-                stock_input_account.display_name, receipt_balance, invoice_balance, total_balance
+            amount = abs(total_balance)
+            _logger.debug(
+                'GRNI balance for %s: %s', stock_input_account.display_name, total_balance
             )
 
-            amount = abs(total_balance)
             if total_balance > 0:
-                # Debit balance in GRNI -> credit GRNI, debit expense
-                adjustment_lines.append({
-                    'name': _('GRNI adjustment (Final Invoice %s)') % self.name,
-                    'account_id': price_adjustment_account.id,
-                    'debit': amount,
-                    'credit': 0.0,
-                    'partner_id': self.partner_id.id,
-                })
-                adjustment_lines.append({
-                    'name': _('GRNI adjustment (Final Invoice %s)') % self.name,
-                    'account_id': stock_input_account.id,
-                    'debit': 0.0,
-                    'credit': amount,
-                    'partner_id': self.partner_id.id,
-                })
+                # Debit balance → credit GRNI, debit price-adjustment account
+                adjustment_lines += [
+                    self._grni_line_vals(price_adjustment_account.id, debit=amount),
+                    self._grni_line_vals(account_id, credit=amount),
+                ]
             else:
-                # Credit balance in GRNI -> debit GRNI, credit expense
-                adjustment_lines.append({
-                    'name': _('GRNI adjustment (Final Invoice %s)') % self.name,
-                    'account_id': stock_input_account.id,
-                    'debit': amount,
-                    'credit': 0.0,
-                    'partner_id': self.partner_id.id,
-                })
-                adjustment_lines.append({
-                    'name': _('GRNI adjustment (Final Invoice %s)') % self.name,
-                    'account_id': price_adjustment_account.id,
-                    'debit': 0.0,
-                    'credit': amount,
-                    'partner_id': self.partner_id.id,
-                })
-        
-        # Create the adjustment entry if there are lines
+                # Credit balance → debit GRNI, credit price-adjustment account
+                adjustment_lines += [
+                    self._grni_line_vals(account_id, debit=amount),
+                    self._grni_line_vals(price_adjustment_account.id, credit=amount),
+                ]
+
         if adjustment_lines:
             if self.price_adjustment_move_id:
-                _logger.info('Removing existing adjustment entry before re-creating')
                 self._remove_price_adjustment_entry()
 
-            _logger.info('Creating price adjustment entry with %d lines', len(adjustment_lines))
-            adjustment_move_vals = {
+            adj_move = self.env['account.move'].create({
                 'move_type': 'entry',
-                'journal_id': self.journal_id.id,
+                'journal_id': grni_journal.id,
                 'date': self.date,
-                'ref': _('GRNI Adjustment - Final Invoice %s') % self.name,
-                'line_ids': [(0, 0, line) for line in adjustment_lines],
-            }
-            
-            adjustment_move = self.env['account.move'].create(adjustment_move_vals)
-            adjustment_move.action_post()
-            
-            # Link adjustment entry to this invoice
-            self.with_context(skip_price_adjustment_sync=True).write({
-                'price_adjustment_move_id': adjustment_move.id,
+                'ref': _('GRNI Adjustment – Final Invoice %s') % self.name,
+                'line_ids': [(0, 0, v) for v in adjustment_lines],
             })
-            _logger.info('GRNI adjustment entry created and posted: %s', adjustment_move.name)
+            adj_move.action_post()
+            self.with_context(skip_price_adjustment_sync=True).write({
+                'price_adjustment_move_id': adj_move.id,
+            })
+            _logger.debug('GRNI adjustment entry created: %s', adj_move.name)
         else:
-            _logger.info('No adjustment lines created - GRNI already balanced')
+            _logger.debug('GRNI already balanced – no adjustment needed')
             if self.price_adjustment_move_id:
-                _logger.info('Removing existing adjustment entry because GRNI is balanced')
                 self._remove_price_adjustment_entry()
+
+    def _grni_line_vals(self, account_id, debit=0.0, credit=0.0):
+        return {
+            'name': _('GRNI adjustment (Final Invoice %s)') % self.name,
+            'account_id': account_id,
+            'debit': debit,
+            'credit': credit,
+            'partner_id': self.partner_id.id,
+        }
 
     def _remove_price_adjustment_entry(self):
-        """Remove existing adjustment entry (created by this module)."""
+        """Cancel and delete the linked GRNI adjustment entry.
+
+        Raises UserError if the entry cannot be reset to draft (e.g. because it
+        has already been reconciled), so the caller is clearly informed instead
+        of leaving the system in a silent inconsistent state.
+        """
         self.ensure_one()
-        adjustment_move = self.price_adjustment_move_id
-        if not adjustment_move:
+        adj = self.price_adjustment_move_id
+        if not adj:
             return
-        if adjustment_move.state == 'posted':
-            adjustment_move.button_draft()
-        adjustment_move.unlink()
+        try:
+            if adj.state == 'posted':
+                adj.button_draft()
+            adj.unlink()
+        except Exception as e:
+            _logger.exception('Failed to remove GRNI adjustment entry %s', adj.name)
+            raise UserError(_(
+                'Could not remove the GRNI adjustment entry %s.\n'
+                'Please unreconcile or manually reverse it first.\n\nDetail: %s'
+            ) % (adj.name, str(e))) from e
         self.with_context(skip_price_adjustment_sync=True).write({
             'price_adjustment_move_id': False,
         })
@@ -230,39 +292,170 @@ class AccountMove(models.Model):
         res = super().write(vals)
         if self.env.context.get('skip_price_adjustment_sync'):
             return res
-        if 'is_final_invoice' in vals or 'purchase_id' in vals:
-            for move in self.filtered(
-                lambda m: m.state == 'posted' and m.move_type in ('in_invoice', 'in_refund', 'in_receipt')
-            ):
-                move._sync_price_adjustment_entry()
+        # Sync when is_final_invoice changes (covers both toggling on and off).
+        # Sync on purchase_id change only for final invoices – non-final invoices
+        # have no adjustment entry and don't need a round-trip to _sync.
+        if 'is_final_invoice' in vals:
+            trigger_moves = self.filtered(
+                lambda m: m.state == 'posted' and m.move_type in _VENDOR_BILL_TYPES
+            )
+        elif 'purchase_id' in vals:
+            trigger_moves = self.filtered(
+                lambda m: m.is_final_invoice
+                and m.state == 'posted'
+                and m.move_type in _VENDOR_BILL_TYPES
+            )
+        else:
+            trigger_moves = self.env['account.move']
+        for move in trigger_moves:
+            move._sync_price_adjustment_entry()
         return res
 
-    @api.model
-    def _prepare_invoice_vals_from_purchase(self, purchase_order, final_invoice=False):
-        """Prepare invoice values from purchase order with final_invoice flag"""
-        vals = purchase_order._prepare_invoice()
-        vals['is_final_invoice'] = final_invoice
-        return vals
+    def button_draft(self):
+        """On reset-to-draft, keep GRNI adjustment entries consistent.
 
-
-class AccountMoveLine(models.Model):
-    _inherit = 'account.move.line'
-
-    def _create_stock_valuation_layer(self):
-        """Override to prevent stock valuation layer creation from vendor bills"""
-        if self.move_id.move_type in ('in_invoice', 'in_refund', 'in_receipt'):
-            # Skip SVL creation for all vendor bills
-            return self.env['stock.valuation.layer']
-        return super()._create_stock_valuation_layer()
-
-    def _apply_price_difference(self):
+        - Final invoice reset to draft: _sync detects state != 'posted' and
+          removes the adjustment entry.
+        - Non-final bill reset to draft: re-sync the linked PO's final invoice
+          so its adjustment reflects the updated invoice balance.
         """
-        Block price difference SVL creation for vendor bills.
-        This method is triggered by stock_account during posting.
+        result = super().button_draft()
+        if self.env.context.get('skip_price_adjustment_sync'):
+            return result
+        final_invoices_to_sync = self.env['account.move']
+        for move in self.filtered(lambda m: m.move_type in _VENDOR_BILL_TYPES):
+            if move.is_final_invoice:
+                # _sync will detect state != 'posted' and remove the adjustment.
+                final_invoices_to_sync |= move
+            else:
+                purchase = move._get_linked_purchase_order()
+                if purchase:
+                    final_invoices_to_sync |= move._get_po_final_invoices(purchase)
+        for final_inv in final_invoices_to_sync:
+            final_inv._sync_price_adjustment_entry()
+        return result
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    def _get_linked_purchase_order(self):
+        """Return the purchase order linked to this vendor bill."""
+        self.ensure_one()
+        purchase = self.purchase_id
+        if not purchase:
+            purchase = self.invoice_line_ids.mapped('purchase_line_id.order_id')[:1]
+        return purchase
+
+    def _get_po_final_invoices(self, purchase):
+        """Return posted final invoices for purchase, excluding self.
+
+        Used for both validation (does another final invoice exist?) and
+        re-sync triggering (which final invoices need their adjustment updated?).
         """
-        non_vendor_lines = self.filtered(
-            lambda l: l.move_id.move_type not in ('in_invoice', 'in_refund', 'in_receipt')
+        self.ensure_one()
+        return purchase.order_line.mapped('invoice_lines.move_id').filtered(
+            lambda m: m.id != self.id
+            and m.is_final_invoice
+            and m.state == 'posted'
+            and m.move_type in _VENDOR_BILL_TYPES
         )
-        if not non_vendor_lines:
-            return self.env['stock.valuation.layer'], self.env['account.move.line']
-        return super(AccountMoveLine, non_vendor_lines)._apply_price_difference()
+
+    def _get_purchase_stock_input_account_ids(self, purchase):
+        """Return stock-input account IDs found on the purchase order lines."""
+        account_ids = set()
+        for line in purchase.order_line.filtered('product_id'):
+            account = line.product_id.product_tmpl_id._get_product_accounts().get('stock_input')
+            if account:
+                account_ids.add(account.id)
+        return account_ids
+
+    def _check_price_adjustment_account_configured(self, purchase=None, stock_input_account_ids=None):
+        """Raise if a final invoice needs GRNI adjustment but account is not configured."""
+        self.ensure_one()
+        purchase = purchase or self._get_linked_purchase_order()
+        if not purchase:
+            return
+        account_ids = stock_input_account_ids
+        if account_ids is None:
+            account_ids = self._get_purchase_stock_input_account_ids(purchase)
+        if account_ids and not self.company_id.purchase_price_adjustment_account_id:
+            raise UserError(_(
+                'Please configure "Purchase Price Adjustment Account" in Accounting settings '
+                'before posting Final Invoice %s.'
+            ) % (self.display_name or self.name))
+
+    def _check_no_existing_final_invoice(self):
+        """Raise if the linked PO already has a posted final invoice."""
+        self.ensure_one()
+        purchase = self._get_linked_purchase_order()
+        if not purchase:
+            return
+        existing = self._get_po_final_invoices(purchase)
+        if existing:
+            raise UserError(_(
+                'Purchase order %s already has a final invoice: %s.\n'
+                'Please remove the existing final invoice status first.'
+            ) % (purchase.name, existing[0].name))
+
+    def _check_no_bill_after_final_invoice(self):
+        """Raise if trying to post a vendor bill when the linked PO already has
+        a posted final invoice.
+
+        Applies only to separate-valuation POs.  Credit notes (in_refund) are
+        intentionally excluded so that corrections / reversals remain possible
+        after the final invoice has been posted.
+        """
+        self.ensure_one()
+        if self.move_type == 'in_refund':
+            return
+        purchase = self._get_linked_purchase_order()
+        if not purchase or not purchase.use_separate_valuation:
+            return
+        existing_final = self._get_po_final_invoices(purchase)
+        if existing_final:
+            raise UserError(_(
+                'Purchase order %s already has a final invoice (%s).\n'
+                'No additional vendor bills can be posted for this order.'
+            ) % (purchase.name, existing_final[0].name))
+
+    # ------------------------------------------------------------------
+    # Admin actions (Purchase Manager only)
+    # ------------------------------------------------------------------
+
+    def _check_purchase_manager(self):
+        if not self.env.user.has_group('purchase.group_purchase_manager'):
+            raise UserError(_('Only Purchase Managers can change the Final Invoice status.'))
+
+    def action_mark_as_final_invoice(self):
+        """Mark a posted vendor bill as the Final Invoice.
+
+        Available to Purchase Managers only.  Credit notes (in_refund) are
+        intentionally excluded: a reversal document should not close the
+        billing cycle.
+        """
+        self.ensure_one()
+        self._check_purchase_manager()
+        if self.state != 'posted':
+            raise UserError(_('Only posted invoices can be marked as Final Invoice.'))
+        if self.move_type not in _FINAL_INVOICE_TYPES:
+            raise UserError(_('Only vendor bills can be marked as Final Invoice.'))
+        if not self.po_use_separate_valuation:
+            raise UserError(_(
+                'The Final Invoice flag can only be set on vendor bills linked to a purchase '
+                'order that uses Separate Valuation Mode.'
+            ))
+        self._check_no_existing_final_invoice()
+        self._check_price_adjustment_account_configured()
+        self.is_final_invoice = True
+
+    def action_unmark_as_final_invoice(self):
+        """Remove the Final Invoice flag from a posted vendor bill.
+
+        Available to Purchase Managers only.
+        """
+        self.ensure_one()
+        self._check_purchase_manager()
+        if self.state != 'posted':
+            raise UserError(_('Only posted invoices can be modified.'))
+        self.is_final_invoice = False

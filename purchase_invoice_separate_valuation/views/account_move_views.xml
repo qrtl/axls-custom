@@ -1,26 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Add Final Invoice field to Account Move form -->
+    <!-- Vendor Bill / Credit Note form: Final Invoice controls -->
     <record id="view_move_form_inherit" model="ir.ui.view">
         <field name="name">account.move.form.inherit.final.invoice</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='ref']" position="after">
-                <field name="is_final_invoice" attrs="{'invisible': [('move_type', 'not in', ['in_invoice', 'in_refund'])]}"/>
-                <field name="price_adjustment_move_id" attrs="{'invisible': [('price_adjustment_move_id', '=', False)]}" readonly="1"/>
+
+            <!-- Admin buttons in the header (Purchase Manager only) -->
+            <xpath expr="//button[@name='button_draft']" position="after">
+                <button name="action_mark_as_final_invoice"
+                        type="object"
+                        string="Mark as Final Invoice"
+                        class="btn-primary"
+                        groups="purchase.group_purchase_manager"
+                        attrs="{'invisible': ['|',
+                                    ('po_use_separate_valuation', '=', False),
+                                    '|',
+                                    ('is_final_invoice', '=', True),
+                                    '|',
+                                    ('po_has_other_final_invoice', '=', True),
+                                    '|',
+                                    ('state', '!=', 'posted'),
+                                    ('move_type', 'not in', ['in_invoice', 'in_receipt'])
+                                ]}"/>
+                <button name="action_unmark_as_final_invoice"
+                        type="object"
+                        string="Remove Final Invoice Status"
+                        groups="purchase.group_purchase_manager"
+                        attrs="{'invisible': ['|',
+                                    ('is_final_invoice', '=', False),
+                                    '|',
+                                    ('state', '!=', 'posted'),
+                                    ('move_type', 'not in', ['in_invoice', 'in_refund', 'in_receipt'])
+                                ]}"/>
             </xpath>
+
+            <!-- is_final_invoice field after tax_cash_basis_origin_move_id -->
+            <xpath expr="//field[@name='tax_cash_basis_origin_move_id']" position="after">
+                <field name="is_final_invoice"
+                       readonly="1"
+                       attrs="{'invisible': ['|', ('po_use_separate_valuation', '=', False), ('move_type', 'not in', ['in_invoice', 'in_refund', 'in_receipt'])]}"/>
+                <field name="po_has_other_final_invoice" invisible="1"/>
+                <field name="po_use_separate_valuation" invisible="1"/>
+            </xpath>
+
+            <!-- Price Adjustment Entry in Other Info tab -->
+            <xpath expr="//page[@id='other_tab']//group[@name='accounting_info_group']" position="inside">
+                <field name="price_adjustment_move_id"
+                       readonly="1"
+                       attrs="{'invisible': ['|', ('price_adjustment_move_id', '=', False), ('move_type', 'not in', ['in_invoice', 'in_refund', 'in_receipt'])]}"/>
+            </xpath>
+
         </field>
     </record>
 
-    <!-- Add Final Invoice field to tree view for better visibility -->
+    <!-- Vendor Bill list: show Final Invoice column -->
     <record id="view_in_invoice_tree_inherit" model="ir.ui.view">
         <field name="name">account.invoice.supplier.tree.inherit.final.invoice</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_in_invoice_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='invoice_date']" position="after">
-                <field name="is_final_invoice"/>
+                <field name="is_final_invoice" optional="show"/>
             </xpath>
         </field>
     </record>
