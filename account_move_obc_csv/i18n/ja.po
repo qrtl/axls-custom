@@ -6,14 +6,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-28 01:06+0000\n"
-"PO-Revision-Date: 2023-02-28 01:06+0000\n"
+"POT-Creation-Date: 2026-02-10 03:41+0000\n"
+"PO-Revision-Date: 2026-02-10 03:41+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: account_move_obc_csv
+#. odoo-python
+#: code:addons/account_move_obc_csv/models/account_move.py:0
+#, python-format
+msgid "%(count)s record(s) unmarked as exported."
+msgstr "%(count)s レコードの出力済を解除しました。"
 
 #. module: account_move_obc_csv
 #: model:ir.actions.report,print_report_name:account_move_obc_csv.report_obc_csv
@@ -134,6 +141,11 @@ msgid ""
 "This selection will affect which column the analytic account will be mapped "
 "to in the OBC data export."
 msgstr "この選択はOBCデータ出力で分析勘定をどのカラムに表示するかに影響します。"
+
+#. module: account_move_obc_csv
+#: model:ir.actions.server,name:account_move_obc_csv.action_account_move_unset_exported
+msgid "Unset Exported"
+msgstr "出力済を解除"
 
 #. module: account_move_obc_csv
 #: model:ir.model,name:account_move_obc_csv.model_report_account_move_obc_csv_report_obc_csv
