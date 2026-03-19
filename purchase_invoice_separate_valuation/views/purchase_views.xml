@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Wizard action (button target) -->
+    <record id="action_purchase_make_invoice_advance" model="ir.actions.act_window">
+        <field name="name">Create Invoice (Advanced)</field>
+        <field name="res_model">purchase.make_invoice_advance</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
     <!-- Purchase Order form: add Advanced Invoice button, mode badge, and new fields -->
     <record id="view_purchase_order_form_inherit" model="ir.ui.view">
         <field name="name">purchase.order.form.inherit.invoice.wizard</field>
@@ -42,6 +50,12 @@
             <xpath expr="//field[@name='tax_totals']" position="after">
                 <field name="amount_invoiced" readonly="1"/>
                 <field name="amount_to_invoice" readonly="1"/>
+                <field name="final_invoice_move_id"
+                       readonly="1"
+                       attrs="{'invisible': [('has_final_invoice', '=', False)]}"/>
+                <field name="price_adjustment_move_id"
+                       readonly="1"
+                       attrs="{'invisible': [('price_adjustment_move_id', '=', False)]}"/>
                 <field name="use_separate_valuation" invisible="1"/>
                 <field name="has_final_invoice" invisible="1"/>
                 <field name="price_diff_reason"
@@ -57,14 +71,6 @@
             </xpath>
 
         </field>
-    </record>
-
-    <!-- Wizard action (button target) -->
-    <record id="action_purchase_make_invoice_advance" model="ir.actions.act_window">
-        <field name="name">Create Invoice (Advanced)</field>
-        <field name="res_model">purchase.make_invoice_advance</field>
-        <field name="view_mode">form</field>
-        <field name="target">new</field>
     </record>
 
 </odoo>

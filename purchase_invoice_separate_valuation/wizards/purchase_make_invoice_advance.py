@@ -48,10 +48,7 @@ class PurchaseMakeInvoiceAdvance(models.TransientModel):
         if not purchase_order:
             raise UserError(_('Please select a purchase order.'))
 
-        if purchase_order.state not in ('purchase', 'done'):
-            raise UserError(_(
-                'You can only create invoices from confirmed purchase orders.'
-            ))
+        purchase_order._check_can_create_advanced_invoice(is_final=self.is_final_invoice)
 
         invoice_vals = purchase_order._prepare_invoice()
         invoice_vals['is_final_invoice'] = self.is_final_invoice
