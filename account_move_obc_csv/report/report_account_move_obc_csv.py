@@ -89,8 +89,10 @@ class AccountMoveObcCsv(models.AbstractModel):
         """Get the account code to use for OBC export.
         For vendor bill lines using the purchase accrual (Goods Received Not Invoiced)
         account, return the stock valuation account instead to represent it as
-        "material purchase" in the OBC system."""
+        "material purchase" in the OBC system.
+        Returns a tuple of (account_code, is_substituted)."""
         account_code = line.account_id.code
+        is_substituted = False
         categ = line.product_id.categ_id
         if (
             categ
@@ -101,9 +103,30 @@ class AccountMoveObcCsv(models.AbstractModel):
             account_valuation = categ.property_stock_valuation_account_id
             if account_valuation and line.account_id == account_input:
                 account_code = account_valuation.code
-        return account_code
+                is_substituted = True
+        return account_code, is_substituted
 
-    def _update_vals(self, vals, line, move_analytic_accounts, drcr, account_code):
+    def _get_line_analytic_account(self, line, plan_type, is_substituted):
+        """Return the analytic account for the given plan type from the line.
+
+        When account substitution has been applied (e.g. GRNI -> stock valuation),
+        the analytic accounts should not be filled from analytic lines.
+        """
+        if is_substituted:
+            return self.env["account.analytic.account"]
+        return line.analytic_line_ids.filtered(
+            lambda x: x.plan_type == plan_type
+        ).account_id[:1]
+
+    def _update_vals(
+        self,
+        vals,
+        line,
+        move_analytic_accounts,
+        drcr,
+        account_code,
+        is_substituted=False,
+    ):
         subaccount_code = ""
         if "." in account_code:
             # maxsplit=1 - we assume that an account code should contain only one
@@ -111,12 +134,8 @@ class AccountMoveObcCsv(models.AbstractModel):
             account_code, subaccount_code = account_code.split(".", 1)
         # We assume that there should be only one project/department per journal
         # item if any.
-        project = line.analytic_line_ids.filtered(
-            lambda x: x.plan_type == "project"
-        ).account_id[:1]
-        department = line.analytic_line_ids.filtered(
-            lambda x: x.plan_type == "department"
-        ).account_id[:1]
+        project = self._get_line_analytic_account(line, "project", is_substituted)
+        department = self._get_line_analytic_account(line, "department", is_substituted)
         if line.account_id.account_type in ("asset_receivable", "liability_payable"):
             # For AP/AR journal items, we let the first identified project/department
             # analytic accounts represent the entry, and set them in the corresponding
@@ -167,7 +186,7 @@ class AccountMoveObcCsv(models.AbstractModel):
         line_count = 1
         purchase_line = record.stock_move_id.purchase_line_id
         for line in move_lines:
-            account_code = self._get_account_for_export(line)
+            account_code, is_substituted = self._get_account_for_export(line)
             first_line = False
             if (line.debit and first_debit) or (line.credit and first_credit):
                 first_line = True
@@ -188,12 +207,22 @@ class AccountMoveObcCsv(models.AbstractModel):
             vals["GL0011001"] = remarks
             if line.debit:
                 vals = self._update_vals(
-                    vals, line, move_analytic_accounts, "dr", account_code
+                    vals,
+                    line,
+                    move_analytic_accounts,
+                    "dr",
+                    account_code,
+                    is_substituted,
                 )
                 first_debit = False
             if line.credit:
                 vals = self._update_vals(
-                    vals, line, move_analytic_accounts, "cr", account_code
+                    vals,
+                    line,
+                    move_analytic_accounts,
+                    "cr",
+                    account_code,
+                    is_substituted,
                 )
                 first_credit = False
             vals_dict[line_num] = vals
