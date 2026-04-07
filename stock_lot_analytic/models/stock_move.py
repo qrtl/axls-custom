@@ -14,6 +14,7 @@ class StockMove(models.Model):
                 move.location_id.usage == "internal"
                 or move.location_dest_id.usage != "internal"
                 or not move.lot_ids
+                or not move.analytic_distribution
             ):
                 continue
             move.lot_ids.write({"analytic_distribution": move.analytic_distribution})

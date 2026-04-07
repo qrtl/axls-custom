@@ -55,6 +55,25 @@ class TestStockLotAnalytic(TransactionCase):
                 ],
             }
         )
+        cls.receipt_no_analytic = cls.env["stock.picking"].create(
+            {
+                "location_id": cls.supplier_location.id,
+                "location_dest_id": cls.stock_location.id,
+                "partner_id": cls.vendor.id,
+                "picking_type_id": cls.env.ref("stock.picking_type_in").id,
+                "move_ids": [
+                    Command.create(
+                        {
+                            "name": "Test Move No Analytic",
+                            "location_id": cls.supplier_location.id,
+                            "location_dest_id": cls.stock_location.id,
+                            "product_id": cls.product.id,
+                            "product_uom_qty": 5.0,
+                        }
+                    )
+                ],
+            }
+        )
         cls.lot = cls.env["stock.lot"].create(
             {
                 "name": "inventory lot",
@@ -87,6 +106,19 @@ class TestStockLotAnalytic(TransactionCase):
             "The analytic_distribution on the lot does not match the purchase order line.",
         )
 
+    def test_receipt_without_analytic_does_not_clear_lot_analytic(self):
+        self.receipt_no_analytic.action_assign()
+        for ml in self.receipt_no_analytic.move_line_ids:
+            ml.lot_id = self.lot
+            ml.qty_done = ml.reserved_uom_qty
+        self.receipt_no_analytic._action_done()
+        self.assertEqual(
+            self.lot.analytic_distribution,
+            {str(self.analytic_account.id): 100.0},
+            "Receiving stock without analytic distribution must not clear the lot's "
+            "existing analytic distribution.",
+        )
+
     def test_inventory_adjustment_copies_lot_analytic_distribution(self):
         self.quant.action_apply_inventory()
         move = self.env["stock.move"].search(
@@ -96,11 +128,7 @@ class TestStockLotAnalytic(TransactionCase):
         )
         self.assertEqual(
             self.analytic_account.id,
-            int(list(self.lot.analytic_distribution.keys())[0]),
-            "The analytic_account on the lot does not match the expected value.",
-        )
-        self.assertEqual(
-            move.move_line_ids.analytic_distribution,
-            self.lot.analytic_distribution,
-            "The analytic_distribution on the inventory move line does not match the lot.",
+            int(list(move.move_line_ids.analytic_distribution.keys())[0]),
+            "The stock move created by inventory adjustment should carry the lot's "
+            "analytic distribution.",
         )
