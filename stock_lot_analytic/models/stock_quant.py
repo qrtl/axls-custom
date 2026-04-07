@@ -15,3 +15,13 @@ class StockQuant(models.Model):
         fields = super()._get_inventory_fields_create()
         fields += ["analytic_distribution", "analytic_precision"]
         return fields
+
+    def _get_inventory_move_values(self, qty, location_id, location_dest_id, out=False):
+        vals = super()._get_inventory_move_values(
+            qty, location_id, location_dest_id, out=out
+        )
+        analytic_distribution = self.lot_id.analytic_distribution
+        if analytic_distribution:
+            vals["analytic_distribution"] = analytic_distribution
+            vals["move_line_ids"][0][2]["analytic_distribution"] = analytic_distribution
+        return vals
