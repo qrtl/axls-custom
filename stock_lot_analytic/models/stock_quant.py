@@ -23,5 +23,4 @@ class StockQuant(models.Model):
         analytic_distribution = self.lot_id.analytic_distribution
         if analytic_distribution:
             vals["analytic_distribution"] = analytic_distribution
-            vals["move_line_ids"][0][2]["analytic_distribution"] = analytic_distribution
         return vals
