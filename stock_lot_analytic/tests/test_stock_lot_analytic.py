@@ -127,8 +127,8 @@ class TestStockLotAnalytic(TransactionCase):
             limit=1,
         )
         self.assertEqual(
-            self.analytic_account.id,
-            int(list(move.move_line_ids.analytic_distribution.keys())[0]),
+            move.move_line_ids.analytic_distribution,
+            {str(self.analytic_account.id): 100.0},
             "The stock move created by inventory adjustment should carry the lot's "
             "analytic distribution.",
         )
