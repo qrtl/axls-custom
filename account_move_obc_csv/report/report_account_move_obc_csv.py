@@ -109,10 +109,11 @@ class AccountMoveObcCsv(models.AbstractModel):
     def _get_line_analytic_account(self, line, plan_type, is_substituted):
         """Return the analytic account for the given plan type from the line.
 
-        When account substitution has been applied (e.g. GRNI -> stock valuation),
-        the analytic accounts should not be filled from analytic lines.
+        Even when the account code is substituted for OBC export (e.g. GRNI ->
+        stock valuation), the bill line's department should still be used.
+        Project should remain blank in that case.
         """
-        if is_substituted:
+        if is_substituted and plan_type == "project":
             return self.env["account.analytic.account"]
         return line.analytic_line_ids.filtered(
             lambda x: x.plan_type == plan_type
