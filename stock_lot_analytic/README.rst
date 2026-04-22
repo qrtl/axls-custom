@@ -1,3 +1,7 @@
+.. image:: https://odoo-community.org/readme-banner-image
+   :target: https://odoo-community.org/get-involved?utm_source=readme
+   :alt: Odoo Community Association
+
 ==================
 Stock Lot Analytic
 ==================
@@ -13,7 +17,7 @@ Stock Lot Analytic
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github
@@ -24,13 +28,13 @@ Stock Lot Analytic
 
 This module does the following:
 
--  Adds analytic distribution field to stock.lot and stock.quant models
-   (by inheriting analytic.mixin).
--  Assigns analytic distribution to created lots/serials (and quants)
-   upon purchase receipt (analytic distribution is taken from the
-   purchase order line).
--  Updates to the analytic distribution on stock.lot are recorded in the
-   chatter for traceability.
+- Adds analytic distribution field to stock.lot and stock.quant models
+  (by inheriting analytic.mixin).
+- Assigns analytic distribution to created lots/serials (and quants)
+  upon purchase receipt (analytic distribution is taken from the
+  purchase order line).
+- Updates to the analytic distribution on stock.lot are recorded in the
+  chatter for traceability.
 
 Note that analytic distribution should be maintained in stock.lot,
 although you could directly update it in stock.quant (and have it
@@ -74,10 +78,10 @@ Authors
 Contributors
 ------------
 
--  `Quartile <https://www.quartile.co>`__:
+- `Quartile <https://www.quartile.co>`__:
 
-   -  Aung Ko Ko Lin
-   -  Toshikimi Shigenobu
+  - Aung Ko Ko Lin
+  - Toshikimi Shigenobu
 
 Maintainers
 -----------

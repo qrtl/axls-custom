@@ -16,7 +16,19 @@ class TestStockLotAnalytic(TransactionCase):
                 "tracking": "lot",
             }
         )
-        cls.analytic_account = cls.env.ref("analytic.analytic_agrolait")
+        cls.analytic_plan = cls.env["account.analytic.plan"].create(
+            {
+                "name": "Test Plan",
+                "default_applicability": "optional",
+                "company_id": False,
+            }
+        )
+        cls.analytic_account = cls.env["account.analytic.account"].create(
+            {
+                "name": "Test Analytic Account",
+                "plan_id": cls.analytic_plan.id,
+            }
+        )
         cls.vendor = cls.env["res.partner"].create({"name": "Test Vendor"})
         cls.supplier_location = cls.env.ref("stock.stock_location_suppliers")
         cls.stock_location = cls.env.ref("stock.stock_location_stock")
@@ -43,6 +55,41 @@ class TestStockLotAnalytic(TransactionCase):
                 ],
             }
         )
+        cls.receipt_no_analytic = cls.env["stock.picking"].create(
+            {
+                "location_id": cls.supplier_location.id,
+                "location_dest_id": cls.stock_location.id,
+                "partner_id": cls.vendor.id,
+                "picking_type_id": cls.env.ref("stock.picking_type_in").id,
+                "move_ids": [
+                    Command.create(
+                        {
+                            "name": "Test Move No Analytic",
+                            "location_id": cls.supplier_location.id,
+                            "location_dest_id": cls.stock_location.id,
+                            "product_id": cls.product.id,
+                            "product_uom_qty": 5.0,
+                        }
+                    )
+                ],
+            }
+        )
+        cls.lot = cls.env["stock.lot"].create(
+            {
+                "name": "inventory lot",
+                "product_id": cls.product.id,
+                "company_id": cls.env.company.id,
+                "analytic_distribution": {str(cls.analytic_account.id): 100.0},
+            }
+        )
+        cls.quant = cls.env["stock.quant"].create(
+            {
+                "location_id": cls.stock_location.id,
+                "product_id": cls.product.id,
+                "lot_id": cls.lot.id,
+                "inventory_quantity": 1.0,
+            }
+        )
 
     def test_stock_lot_analytic_with_incoming_picking(self):
         self.receipt.action_assign()
@@ -57,4 +104,31 @@ class TestStockLotAnalytic(TransactionCase):
             lot.analytic_distribution,
             self.receipt.move_ids.analytic_distribution,
             "The analytic_distribution on the lot does not match the purchase order line.",
+        )
+
+    def test_receipt_without_analytic_does_not_clear_lot_analytic(self):
+        self.receipt_no_analytic.action_assign()
+        for ml in self.receipt_no_analytic.move_line_ids:
+            ml.lot_id = self.lot
+            ml.qty_done = ml.reserved_uom_qty
+        self.receipt_no_analytic._action_done()
+        self.assertEqual(
+            self.lot.analytic_distribution,
+            {str(self.analytic_account.id): 100.0},
+            "Receiving stock without analytic distribution must not clear the lot's "
+            "existing analytic distribution.",
+        )
+
+    def test_inventory_adjustment_copies_lot_analytic_distribution(self):
+        self.quant.action_apply_inventory()
+        move = self.env["stock.move"].search(
+            [("is_inventory", "=", True), ("move_line_ids.lot_id", "=", self.lot.id)],
+            order="id desc",
+            limit=1,
+        )
+        self.assertEqual(
+            move.move_line_ids.analytic_distribution,
+            {str(self.analytic_account.id): 100.0},
+            "The stock move created by inventory adjustment should carry the lot's "
+            "analytic distribution.",
         )
