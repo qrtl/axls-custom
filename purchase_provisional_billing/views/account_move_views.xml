@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_sep_val_inherit" model="ir.ui.view">
+        <field name="name">account.move.form.sep.val.inherit</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='oe_title']/h1" position="after">
+                <div attrs="{'invisible': [('sep_val_move_type', '=', False)]}">
+                    <span
+                        class="badge rounded-pill text-bg-info me-1"
+                        attrs="{'invisible': [('sep_val_move_type', '!=', 'advance_bill')]}"
+                    >Advance Bill</span>
+                    <span
+                        class="badge rounded-pill text-bg-success me-1"
+                        attrs="{'invisible': [('sep_val_move_type', '!=', 'final_bill')]}"
+                    >Final Bill</span>
+                    <span
+                        class="badge rounded-pill text-bg-warning me-1"
+                        attrs="{'invisible': [('sep_val_move_type', '!=', 'advance_application')]}"
+                    >Application Credit Note</span>
+                    <span
+                        class="badge rounded-pill text-bg-secondary me-1"
+                        attrs="{'invisible': [('sep_val_move_type', '!=', 'adjustment_entry')]}"
+                    >Adjustment Entry</span>
+                </div>
+            </xpath>
+
+            <xpath expr="//group[@id='header_left_group']/field[@name='partner_id']" position="after">
+                <field name="sep_val_move_type" invisible="1"/>
+                <field
+                    name="sep_val_purchase_id"
+                    readonly="1"
+                    attrs="{'invisible': [('sep_val_purchase_id', '=', False)]}"
+                />
+                <field
+                    name="sep_val_origin_move_id"
+                    readonly="1"
+                    attrs="{'invisible': [('sep_val_move_type', '!=', 'advance_application')]}"
+                />
+                <field
+                    name="sep_val_target_move_id"
+                    readonly="1"
+                    attrs="{'invisible': [('sep_val_move_type', '!=', 'advance_application')]}"
+                />
+                <field
+                    name="sep_val_advance_applied_amount"
+                    attrs="{'invisible': [('sep_val_move_type', '!=', 'advance_bill')]}"
+                />
+                <field
+                    name="sep_val_advance_remaining_amount"
+                    attrs="{'invisible': [('sep_val_move_type', '!=', 'advance_bill')]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

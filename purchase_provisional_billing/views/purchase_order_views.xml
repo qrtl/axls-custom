@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_form_sep_val_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.form.sep.val.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button
+                    name="action_view_advance_bills"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-file-text-o"
+                    string="Advance Bills"
+                    attrs="{'invisible': [('separate_valuation', '=', False)]}"
+                />
+                <button
+                    name="action_view_sep_val_documents"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-files-o"
+                    string="Sep. Val. Docs"
+                    attrs="{'invisible': [('separate_valuation', '=', False)]}"
+                />
+            </xpath>
+
+            <xpath
+                expr="//button[@name='action_create_invoice' and contains(@class,'oe_highlight')]"
+                position="attributes"
+            >
+                <attribute name="attrs">
+                    {'invisible': ['|', '|', ('state', 'not in', ('purchase', 'done')), ('invoice_status', 'in', ('no', 'invoiced')), ('separate_valuation', '=', True)]}
+                </attribute>
+            </xpath>
+            <xpath
+                expr="//button[@name='action_create_invoice' and not(contains(@class,'oe_highlight'))]"
+                position="attributes"
+            >
+                <attribute name="attrs">
+                    {'invisible': ['|', '|', '|', ('state', 'not in', ('purchase', 'done')), ('invoice_status', 'not in', ('no', 'invoiced')), ('order_line', '=', []), ('separate_valuation', '=', True)]}
+                </attribute>
+            </xpath>
+
+            <xpath
+                expr="//button[@name='action_create_invoice' and contains(@class,'oe_highlight')]"
+                position="after"
+            >
+                <button
+                    name="action_create_advance_bill"
+                    string="Create Advance Bill"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', '|', ('separate_valuation', '=', False), ('state', 'not in', ('purchase', 'done')), ('sep_val_final_bill_id', '!=', False)]}"
+                    data-hotkey="w"
+                />
+                <button
+                    name="action_create_final_bill"
+                    string="Create Final Bill"
+                    type="object"
+                    class="oe_highlight"
+                    attrs="{'invisible': ['|', '|', ('separate_valuation', '=', False), ('state', 'not in', ('purchase', 'done')), ('sep_val_final_bill_id', '!=', False)]}"
+                />
+                <button
+                    name="action_unset_final_bill"
+                    string="Unset Final Bill"
+                    type="object"
+                    attrs="{'invisible': ['|', ('separate_valuation', '=', False), ('sep_val_final_bill_id', '=', False)]}"
+                    confirm="Remove the Final Bill link from this purchase order? The bill itself will not be deleted."
+                />
+            </xpath>
+
+            <xpath expr="//group[@name='invoice_info']" position="inside">
+                <field name="separate_valuation"/>
+                <field name="sep_val_final_bill_id" invisible="1"/>
+                <field
+                    name="sep_val_advance_total"
+                    attrs="{'invisible': [('separate_valuation', '=', False)]}"
+                />
+                <field
+                    name="sep_val_applied_total"
+                    attrs="{'invisible': [('separate_valuation', '=', False)]}"
+                />
+                <field
+                    name="sep_val_unapplied_advance_total"
+                    attrs="{'invisible': [('separate_valuation', '=', False)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>
