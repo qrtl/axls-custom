@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_sep_val_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form.sep.val</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='default_accounts']" position="after">
+                <h2>Purchase Deposit — Separate Valuation</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="sep_val_grni_adjustment_account_id"/>
+                            <div class="text-muted">
+                                Account that absorbs the Stock-Input residual on
+                                Separate-Valuation purchase orders when the vendor
+                                bill amount differs from the receipt cost.
+                            </div>
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="sep_val_grni_adjustment_account_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <label for="sep_val_grni_adjustment_journal_id"/>
+                            <div class="text-muted">
+                                Journal used to post the GRNI adjustment entry.
+                                Falls back to the first General journal if blank.
+                            </div>
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="sep_val_grni_adjustment_journal_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
