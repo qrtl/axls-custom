@@ -7,23 +7,15 @@ from odoo.tools.float_utils import float_is_zero
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    is_deposit_line = fields.Boolean(
-        related="purchase_line_id.is_deposit",
-        store=True,
-        string="Is Deposit Line",
-        help="True when this account move line is the deposit (or deposit "
-        "offset) line for a purchase order. The Company Currency Amount "
-        "override is only honoured on deposit lines.",
-    )
     company_amount = fields.Monetary(
         string="Company Currency Amount",
         currency_field="company_currency_id",
         help="Manually-entered company-currency value of this line. "
-        "When set on a deposit line (non-zero), the line's balance is "
-        "forced to this value, bypassing the standard amount_currency × "
-        "exchange_rate calculation. Useful for foreign-currency deposits "
-        "where you actually paid an exact JPY amount that doesn't match "
-        "today's exchange rate. Ignored on non-deposit lines.",
+        "When set (non-zero), the line's balance is forced to this value, "
+        "bypassing the standard amount_currency × exchange_rate "
+        "calculation. Useful for foreign-currency vendor bills where you "
+        "actually paid an exact JPY amount that doesn't match today's "
+        "exchange rate.",
     )
 
     @api.onchange("company_amount")
@@ -37,14 +29,9 @@ class AccountMoveLine(models.Model):
         """Force the line's balance to ``company_amount`` with the sign that
         matches the line's intended direction. The companion AP / receivable
         line is auto-balanced by Odoo from the sum of the other lines.
-
-        Defence-in-depth: the override is only honoured on deposit lines
-        (``is_deposit_line``); on any other line the value is ignored.
         """
         self.ensure_one()
         if not self.company_amount:
-            return
-        if not self.is_deposit_line:
             return
         rounding = self.company_currency_id.rounding
         amount_currency_positive = self.amount_currency >= 0
@@ -72,3 +59,18 @@ class AccountMoveLine(models.Model):
         for line in lines.filtered("company_amount"):
             line._apply_company_amount_override()
         return lines
+
+    def _get_gross_unit_price(self):
+        # Make purchase_stock's price-diff logic (which divides by currency_rate)
+        # see the company_amount override, so SVL/AML adjustments are generated.
+        res = super()._get_gross_unit_price()
+        if (
+            self.company_amount
+            and self.quantity
+            and self.currency_rate
+            and self.currency_id != self.company_currency_id
+            and self.move_id.move_type in ("in_invoice", "in_refund")
+        ):
+            sign = -1 if self.move_id.move_type == "in_refund" else 1
+            return abs(self.company_amount) / self.quantity * self.currency_rate * sign
+        return res

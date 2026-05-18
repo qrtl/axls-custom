@@ -18,20 +18,29 @@ line, regardless of the rate.
 
 ## What it does
 
-1. **`Company Currency Amount` field on deposit lines only.**
-   - Optional column in the vendor-bill line tree.
-   - **Editable only on deposit lines** (where the underlying PO line
-     has ``is_deposit = True``). Read-only on regular product / tax /
-     AP lines for safety. The scope can be widened later if needed.
+1. **`Company Currency Amount` field on every vendor-bill line.**
+   - Optional column in the vendor-bill line tree (in_invoice /
+     in_refund only).
    - Leave blank to use the standard rate-based conversion.
-   - Enter a value to force the deposit line's ``balance``
-     (debit/credit) to that company-currency amount. The foreign
-     currency ``amount_currency`` stays at ``price_unit × quantity``;
-     only the company-currency side is replaced.
+   - Enter a value to force the line's ``balance`` (debit/credit) to
+     that company-currency amount. The foreign currency
+     ``amount_currency`` stays at ``price_unit × quantity``; only the
+     company-currency side is replaced.
    - The companion AP / payable line is auto-balanced by Odoo from
      the remaining lines, so the journal still nets to zero.
 
-2. **Deposit → final invoice propagation.**
+2. **Stock valuation adjustment for product lines.**
+   - When the overridden line is a stockable product valued in real
+     time, the override also drives ``purchase_stock``'s price-diff
+     logic. The hook is ``_get_gross_unit_price``: it returns a
+     foreign-currency unit price that, divided by the date-based
+     ``currency_rate``, yields exactly ``company_amount / quantity``.
+   - As a result, both the price-difference AML (stock_in vs.
+     expense) and the corresponding ``stock.valuation.layer``
+     adjustment reflect the user-entered JPY value rather than the
+     rate-converted one.
+
+3. **Deposit → final invoice propagation.**
    - When a deposit vendor bill (created by ``purchase_deposit``'s
      *Register Deposit* wizard) is posted, its line's
      ``company_amount`` is captured and stored on the corresponding
@@ -44,13 +53,6 @@ line, regardless of the rate.
      deposit bill's JPY balance, so the deposit account closes out
      cleanly even when the exchange rate has moved between deposit
      posting and final invoice creation.
-
-3. **Deposit-line scope only (initial release).** The override is
-   intentionally restricted to deposit lines. If a future requirement
-   needs direct override on regular product lines of the final
-   invoice, remove the ``is_deposit_line`` gate in
-   ``_apply_company_amount_override`` and the corresponding
-   ``readonly`` attribute on the view.
 
 ## Example
 
@@ -80,6 +82,25 @@ The user pays ¥4000 to the deposit bill and ¥7000 (or whatever the
 USD $70 actually settles at) to the final bill. Exchange-rate
 differences at payment time are recorded in Odoo's standard
 exchange-diff journal.
+
+## Direct override on a product line
+
+When a regular product line on a vendor bill is overridden — e.g.
+the PO is USD 100 / qty 1 and the user enters
+``company_amount = ¥17000`` instead of the rate-converted ¥15000 —
+``_get_gross_unit_price`` makes the price-diff logic see the JPY
+override:
+
+```
+Receipt SVL : qty 1, value ¥15000  (rate-based at receipt date)
+Vendor bill : $100, company_amount = ¥17000
+  Journal:  stock_in   debit  ¥15000
+            expense    debit  ¥2000
+            AP         credit ¥17000  amount_currency -$100
+  SVL adj  : value +¥2000 on the receipt layer
+```
+
+The stock valuation now reflects the actual JPY paid.
 
 ## Notes
 
