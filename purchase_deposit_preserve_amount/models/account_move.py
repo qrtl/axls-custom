@@ -32,9 +32,11 @@ class AccountMove(models.Model):
                 continue
             amount_diff = 0.0
             for line in deposit_lines:
-                balance = line.purchase_line_id.invoice_lines.filtered(
-                    lambda l: l.move_id.state == "posted" and l.move_id.is_deposit
-                ).balance
+                balance = sum(
+                    line.purchase_line_id.invoice_lines.filtered(
+                        lambda l: l.move_id.state == "posted" and l.move_id.is_deposit
+                    ).mapped("balance")
+                )
                 amount_diff += balance + line.balance
                 line.with_context(skip_deposit_adjustment=True).balance = -1 * balance
             if not amount_diff:
@@ -51,7 +53,10 @@ class AccountMove(models.Model):
             remaining = amount_diff
             for idx, line in enumerate(product_lines):
                 if idx < line_count - 1:
-                    raw_share = amount_diff * (line.balance / total_balance)
+                    if total_balance:
+                        raw_share = amount_diff * (line.balance / total_balance)
+                    else:
+                        raw_share = amount_diff / line_count
                     share = rec.currency_id.round(raw_share)
                     remaining -= share
                 else:
