@@ -17,6 +17,24 @@ class AccountMoveLine(models.Model):
         "actually paid an exact JPY amount that doesn't match today's "
         "exchange rate.",
     )
+    deposit_amount_adjusted = fields.Boolean(
+        copy=False,
+        help="Set automatically when this product line's company_amount was "
+        "filled by the deposit rate-difference adjustment on the final "
+        "invoice. Lets the value be recomputed when the rate changes without "
+        "mistaking it for a manual override.",
+    )
+
+    def _deposit_natural_balance(self):
+        """Rate-based company-currency value of this line, i.e. what
+        ``balance`` would be without any ``company_amount`` override. Used by
+        the deposit rate-difference adjustment so its computation stays
+        idempotent regardless of overrides already applied.
+        """
+        self.ensure_one()
+        if not self.currency_rate:
+            return self.balance
+        return self.amount_currency / self.currency_rate
 
     @api.onchange("company_amount")
     def _onchange_company_amount(self):

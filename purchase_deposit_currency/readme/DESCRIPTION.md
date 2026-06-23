@@ -54,6 +54,22 @@ line, regardless of the rate.
      cleanly even when the exchange rate has moved between deposit
      posting and final invoice creation.
 
+4. **Rate-difference absorbed by the product line(s).**
+   - Because the offset line is pinned to the JPY actually paid while
+     the product lines are booked at the *current* rate, there is a
+     rate-difference (the deposit valued at today's rate vs. the JPY
+     actually paid). This difference is part of the goods'
+     acquisition cost, so the module pushes it onto the product
+     line(s) via their ``company_amount`` (distributed proportionally
+     when there is more than one).
+   - End result: the product line reflects the **true cost**
+     (deposit paid + remaining foreign amount × current rate), and
+     the auto-balanced payable equals exactly the **remaining**
+     foreign amount converted at the current rate.
+   - The value is recomputed if the rate changes (e.g. the invoice
+     date is edited) and never overwrites a ``company_amount`` the
+     user entered manually on a product line.
+
 ## Example
 
 ```
@@ -68,20 +84,21 @@ Register Deposit wizard (standard purchase_deposit, no changes):
              AP               credit ¥4000  amount_currency -$30
   → PO deposit line now stores deposit_company_amount = ¥4000
 
-Standard "Create Bill" on the PO:
+Standard "Create Bill" on the PO (current rate USD 1 = ¥160):
   → Final invoice in USD:
-      Product line:        $100   company_amount = ¥11000 (auto rate)
+      Product line:        $100   company_amount = ¥15200 (auto adj.)
       Deposit offset:     -$30    company_amount = -¥4000 (propagated)
-      AP line:            -$70    balance       = -¥7000  (auto-balanced)
-  → Optionally, the user can further override company_amount on the
-    product line of the final invoice (e.g. ¥10800 instead of the
-    rate-based ¥11000).
+      AP line:            -$70    balance       = -¥11200 (auto-balanced)
+  → Product line = ¥4000 (deposit paid) + $70 × 160 (¥11200) = ¥15200,
+    i.e. the rate-difference (deposit at 160 = ¥4800 vs. ¥4000 paid =
+    ¥800) is subtracted from $100 × 160 = ¥16000 → ¥15200.
+  → The user may still override company_amount manually on the product
+    line; a manual value is never overwritten by the auto adjustment.
 ```
 
-The user pays ¥4000 to the deposit bill and ¥7000 (or whatever the
-USD $70 actually settles at) to the final bill. Exchange-rate
-differences at payment time are recorded in Odoo's standard
-exchange-diff journal.
+The user pays ¥4000 to the deposit bill and ¥11200 (USD $70 at the
+current rate) to the final bill. Exchange-rate differences at payment
+time are recorded in Odoo's standard exchange-diff journal.
 
 ## Direct override on a product line
 

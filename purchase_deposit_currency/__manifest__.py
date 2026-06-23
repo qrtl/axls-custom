@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 {
     "name": "Purchase Deposit Multi-Currency",
-    "version": "16.0.2.1.0",
+    "version": "16.0.2.2.0",
     "author": "Quartile Limited",
     "website": "https://www.quartile.co",
     "category": "Purchase",
