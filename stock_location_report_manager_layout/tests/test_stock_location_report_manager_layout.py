@@ -1,12 +1,10 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo.tests import new_test_user, tagged
-
-from odoo.addons.base.tests.common import BaseCommon
+from odoo.tests import TransactionCase, new_test_user, tagged
 
 
 @tagged("post_install", "-at_install")
-class TestStockLocationReportManagerLayout(BaseCommon):
+class TestStockLocationReportManagerLayout(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
