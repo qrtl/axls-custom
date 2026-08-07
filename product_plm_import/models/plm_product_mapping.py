@@ -3,7 +3,8 @@
 
 import fnmatch
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PlmProductMapping(models.Model):
@@ -43,12 +44,25 @@ class PlmProductMapping(models.Model):
     )
     auto_create_lot = fields.Boolean()
     lot_sequence_padding = fields.Integer()
-    lot_sequence_prefix = fields.Char()
+    lot_sequence_prefix = fields.Char(
+        help="Lot sequence prefix. Supports '{esc_code}' placeholder to use the ESC ID "
+        "of each PLM record (e.g. '{esc_code}')."
+    )
     default_active = fields.Boolean(
         help="Default value for active field of the created product."
     )
     company_id = fields.Many2one("res.company")
     active = fields.Boolean(default=True)
+
+    @api.constrains("lot_sequence_prefix")
+    def _check_lot_sequence_prefix(self):
+        for record in self:
+            if not record.lot_sequence_prefix:
+                continue
+            try:
+                record.lot_sequence_prefix.format(esc_code="")
+            except (ValueError, KeyError):
+                raise ValidationError(_("Lot Sequence Prefix is invalid.")) from None
 
     @api.onchange("product_type")
     def onchange_product_type(self):
