@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="account_analytic_account_view_form" model="ir.ui.view">
+        <field
+            name="name"
+        >account.analytic.account.form (analytic_budget_number)</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form" />
+        <field name="arch" type="xml">
+            <field name="plan_id" position="after">
+                <field name="subsystem" />
+                <field name="component" />
+                <field name="model_type" />
+            </field>
+        </field>
+    </record>
+    <record id="account_analytic_account_view_tree" model="ir.ui.view">
+        <field
+            name="name"
+        >account.analytic.account.tree (analytic_budget_number)</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_list" />
+        <field name="arch" type="xml">
+            <field name="plan_id" position="after">
+                <field name="subsystem" optional="hide" />
+                <field name="component" optional="hide" />
+                <field name="model_type" optional="hide" />
+            </field>
+        </field>
+    </record>
+    <record id="account_analytic_account_view_search" model="ir.ui.view">
+        <field
+            name="name"
+        >account.analytic.account.search (analytic_budget_number)</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_search" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="subsystem" />
+                <field name="component" />
+                <field name="model_type" />
+            </field>
+            <filter name="associatedpartner" position="after">
+                <filter
+                    string="Subsystem"
+                    name="groupby_subsystem"
+                    domain="[]"
+                    context="{'group_by': 'subsystem'}"
+                />
+                <filter
+                    string="Component"
+                    name="groupby_component"
+                    domain="[]"
+                    context="{'group_by': 'component'}"
+                />
+                <filter
+                    string="Model"
+                    name="groupby_model_type"
+                    domain="[]"
+                    context="{'group_by': 'model_type'}"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>

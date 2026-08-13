@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="purchase_order_line_view_tree" model="ir.ui.view">
+        <field name="name">purchase.order.line.tree (analytic_budget_number)</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_tree" />
+        <field name="arch" type="xml">
+            <field name="order_id" position="after">
+                <field
+                    name="analytic_budget_id"
+                    groups="analytic.group_analytic_accounting"
+                />
+            </field>
+        </field>
+    </record>
+    <record id="purchase_order_line_view_search" model="ir.ui.view">
+        <field name="name">purchase.order.line.search (analytic_budget_number)</field>
+        <field name="model">purchase.order.line</field>
+        <field name="inherit_id" ref="purchase.purchase_order_line_search" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field
+                    name="analytic_budget_id"
+                    groups="analytic.group_analytic_accounting"
+                />
+            </field>
+            <filter name="order_reference" position="after">
+                <filter
+                    string="Analytic Budget"
+                    name="groupby_analytic_budget"
+                    domain="[]"
+                    context="{'group_by': 'analytic_budget_id'}"
+                    groups="analytic.group_analytic_accounting"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>
