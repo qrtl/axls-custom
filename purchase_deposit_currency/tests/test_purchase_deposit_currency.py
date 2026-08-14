@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from odoo import fields
+from odoo.exceptions import ValidationError
 from odoo.tests.common import Form, TransactionCase
 
 
@@ -191,8 +192,7 @@ class TestPurchaseDepositCurrency(TransactionCase):
             lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
         )
         product_line = bill.line_ids.filtered(
-            lambda l: l.display_type == "product"
-            and not l.purchase_line_id.is_deposit
+            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
         )
         payable_line = bill.line_ids.filtered(
             lambda l: l.account_id.account_type == "liability_payable"
@@ -215,3 +215,67 @@ class TestPurchaseDepositCurrency(TransactionCase):
         # Stock valuation reflects the true acquisition cost.
         svls = bill.line_ids.mapped("stock_valuation_layer_ids")
         self.assertEqual(sum(svls.mapped("value")), -900.0)
+
+    def _create_bill_without_deposit(self):
+        """A plain foreign-currency vendor bill, no purchase deposit involved."""
+        bill = self.env["account.move"].create(
+            {
+                "move_type": "in_invoice",
+                "partner_id": self.vendor.id,
+                "company_id": self.company.id,
+                "journal_id": self.journal.id,
+                "currency_id": self.currency_usd.id,
+                "invoice_date": fields.Date.from_string("2025-11-01"),
+                "invoice_line_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": self.product.id,
+                            "quantity": 1.0,
+                            "price_unit": 100.0,
+                        },
+                    )
+                ],
+            }
+        )
+        return bill, bill.invoice_line_ids
+
+    def test_company_amount_not_allowed_without_deposit(self):
+        """Outside the deposit flow the field is closed: the helper reports
+        False and writing a value is rejected.
+        """
+        bill, line = self._create_bill_without_deposit()
+        self.assertFalse(line.company_amount_allowed)
+        with self.assertRaises(ValidationError):
+            line.company_amount = 17000
+
+    def test_standard_conversion_untouched_without_deposit(self):
+        """A bill with no deposit keeps Odoo's rate-based balance."""
+        bill, line = self._create_bill_without_deposit()
+        # USD 100 at the 2025-11-01 rate (1 USD = 160 JPY).
+        self.assertEqual(line.balance, 16000)
+        bill.action_post()
+        self.assertEqual(line.balance, 16000)
+
+    def test_company_amount_allowed_on_deposit_bill(self):
+        """The deposit bill and the final invoice are both in scope."""
+        po = self._create_purchase_order()
+        self._create_advance_payment(po)
+        deposit_bill = po.invoice_ids
+        deposit_bill.invoice_date = fields.Date.from_string("2025-10-01")
+        deposit_line = deposit_bill.line_ids.filtered(
+            lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
+        )
+        self.assertTrue(deposit_line.company_amount_allowed)
+        deposit_line.company_amount = 3900
+        deposit_bill.action_post()
+
+        po.picking_ids.move_ids.write({"quantity_done": 1})
+        po.picking_ids.button_validate()
+        res = po.with_context(create_bill=True).action_create_invoice()
+        bill = self.env["account.move"].browse(res["res_id"])
+        product_line = bill.line_ids.filtered(
+            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
+        )
+        self.assertTrue(product_line.company_amount_allowed)

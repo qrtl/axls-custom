@@ -18,9 +18,16 @@ line, regardless of the rate.
 
 ## What it does
 
-1. **`Company Currency Amount` field on every vendor-bill line.**
+1. **`Company Currency Amount` field on deposit-related vendor-bill lines.**
    - Optional column in the vendor-bill line tree (in_invoice /
      in_refund only).
+   - **Scope: the purchase-deposit flow only.** The field is editable
+     only on a move that carries a deposit line — i.e. the deposit
+     vendor bill itself (positive deposit line) or the final invoice
+     (negative deposit-offset line). On any other vendor bill it is
+     read-only, and a value set there is rejected by a constraint.
+     Outside the deposit flow Odoo's standard rate conversion applies,
+     unchanged.
    - Leave blank to use the standard rate-based conversion.
    - Enter a value to force the line's ``balance`` (debit/credit) to
      that company-currency amount. The foreign currency
@@ -102,11 +109,11 @@ time are recorded in Odoo's standard exchange-diff journal.
 
 ## Direct override on a product line
 
-When a regular product line on a vendor bill is overridden — e.g.
-the PO is USD 100 / qty 1 and the user enters
-``company_amount = ¥17000`` instead of the rate-converted ¥15000 —
-``_get_gross_unit_price`` makes the price-diff logic see the JPY
-override:
+Within the deposit flow, a product line on the **final invoice** may
+also be overridden by hand — e.g. the PO is USD 100 / qty 1 and the
+user enters ``company_amount = ¥17000`` instead of the rate-converted
+¥15000. ``_get_gross_unit_price`` makes the price-diff logic see the
+JPY override:
 
 ```
 Receipt SVL : qty 1, value ¥15000  (rate-based at receipt date)
@@ -117,12 +124,20 @@ Vendor bill : $100, company_amount = ¥17000
   SVL adj  : value +¥2000 on the receipt layer
 ```
 
-The stock valuation now reflects the actual JPY paid.
+The stock valuation now reflects the actual JPY paid. A manual value
+is never overwritten by the deposit rate-difference adjustment.
+
+On a vendor bill with no deposit line the field is read-only, so this
+override is not available there.
 
 ## Notes
 
 - A ``company_amount`` of zero / empty is treated as "no override" —
   Odoo's rate-based conversion applies as usual.
+- The scope restriction is deliberate for the first release: the
+  requirement is the purchase-deposit flow only. Extending the
+  override to plain vendor bills would mean splitting the module so
+  the generic part no longer depends on ``purchase_deposit``.
 - The override only affects the line it's set on; AP and tax lines
   are auto-balanced and do not need a separate override.
 - Tax-exclusive vs tax-inclusive behaviour is unchanged: the foreign
