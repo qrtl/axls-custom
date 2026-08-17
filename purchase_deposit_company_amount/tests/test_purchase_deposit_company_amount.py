@@ -1,12 +1,12 @@
-# Copyright 2026 Quartile Limited
+# Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields
+from odoo import Command, fields
 from odoo.exceptions import ValidationError
 from odoo.tests.common import Form, TransactionCase
 
 
-class TestPurchaseDepositCurrency(TransactionCase):
+class TestPurchaseDepositCompanyAmount(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -160,61 +160,23 @@ class TestPurchaseDepositCurrency(TransactionCase):
         wizard = advance_form.save()
         wizard.create_invoices()
 
-    def test_deposit_rate_difference_lands_on_product_line(self):
-        """USD 100 PO, USD 30 deposit paid as JPY 3900 (manual override),
-        final invoice at rate 160. The product line must carry the true cost
-        (3900 + 70*160 = 15100) and the payable must be the remaining USD 70
-        at the current rate (-11200).
-        """
-        po = self._create_purchase_order()
-        self._create_advance_payment(po)
-        deposit_bill = po.invoice_ids
-        deposit_bill.invoice_date = fields.Date.from_string("2025-10-01")
-        deposit_line = deposit_bill.line_ids.filtered(
-            lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
-        )
-        self.assertTrue(deposit_line, "Deposit bill should have a deposit line.")
-        # Manually enter the JPY actually paid for the deposit (not 30*rate).
-        deposit_line.company_amount = 3900
-        self.assertEqual(deposit_line.balance, 3900)
-        deposit_bill.action_post()
-        deposit_po_line = po.order_line.filtered("is_deposit")
-        self.assertEqual(deposit_po_line.deposit_company_amount, 3900)
-
-        # Receive the goods, then create the final bill.
+    def _create_final_bill(self, po):
         po.picking_ids.move_ids.write({"quantity_done": 1})
         po.picking_ids.button_validate()
         res = po.with_context(create_bill=True).action_create_invoice()
         bill = self.env["account.move"].browse(res["res_id"])
         bill.invoice_date = fields.Date.from_string("2025-11-01")
+        return bill
 
-        offset_line = bill.line_ids.filtered(
-            lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
+    def _post_deposit_bill(self, po, company_amount):
+        deposit_bill = po.invoice_ids
+        deposit_bill.invoice_date = fields.Date.from_string("2025-10-01")
+        deposit_line = deposit_bill.line_ids.filtered(
+            lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
         )
-        product_line = bill.line_ids.filtered(
-            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
-        )
-        payable_line = bill.line_ids.filtered(
-            lambda l: l.account_id.account_type == "liability_payable"
-        )
-
-        # Offset line still pinned to the JPY actually paid for the deposit.
-        self.assertEqual(offset_line.balance, -3900)
-        # Rate difference (160 vs the 130 effectively paid) lands on the goods.
-        self.assertTrue(product_line.deposit_amount_adjusted)
-        self.assertEqual(product_line.company_amount, 15100)
-        self.assertEqual(product_line.balance, 15100)
-        # Remaining USD 70 payable at the current rate.
-        self.assertEqual(payable_line.balance, -11200)
-
-        # Posting must not disturb the balances.
-        bill.action_post()
-        self.assertEqual(offset_line.balance, -3900)
-        self.assertEqual(product_line.balance, 15100)
-        self.assertEqual(payable_line.balance, -11200)
-        # Stock valuation reflects the true acquisition cost.
-        svls = bill.line_ids.mapped("stock_valuation_layer_ids")
-        self.assertEqual(sum(svls.mapped("value")), -900.0)
+        deposit_line.company_amount = company_amount
+        deposit_bill.action_post()
+        return deposit_bill, deposit_line
 
     def _create_bill_without_deposit(self):
         """A plain foreign-currency vendor bill, no purchase deposit involved."""
@@ -227,55 +189,118 @@ class TestPurchaseDepositCurrency(TransactionCase):
                 "currency_id": self.currency_usd.id,
                 "invoice_date": fields.Date.from_string("2025-11-01"),
                 "invoice_line_ids": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "product_id": self.product.id,
                             "quantity": 1.0,
                             "price_unit": 100.0,
-                        },
+                        }
                     )
                 ],
             }
         )
         return bill, bill.invoice_line_ids
 
-    def test_company_amount_not_allowed_without_deposit(self):
-        """Outside the deposit flow the field is closed: the helper reports
-        False and writing a value is rejected.
+    def test_deposit_rate_difference_lands_on_product_line(self):
+        """The end-to-end accounting outcome, which no single line of the
+        implementation states: USD 100 PO, USD 30 deposit settled for 3900,
+        final bill at rate 160. The offset must stay pinned to the 3900 really
+        paid, the goods must carry the true cost (3900 + 70*160 = 15100), the
+        payable must be exactly the remaining USD 70 at the current rate, and
+        the valuation layer must follow the goods rather than the rate.
         """
-        bill, line = self._create_bill_without_deposit()
-        self.assertFalse(line.company_amount_allowed)
-        with self.assertRaises(ValidationError):
-            line.company_amount = 17000
-
-    def test_standard_conversion_untouched_without_deposit(self):
-        """A bill with no deposit keeps Odoo's rate-based balance."""
-        bill, line = self._create_bill_without_deposit()
-        # USD 100 at the 2025-11-01 rate (1 USD = 160 JPY).
-        self.assertEqual(line.balance, 16000)
-        bill.action_post()
-        self.assertEqual(line.balance, 16000)
-
-    def test_company_amount_allowed_on_deposit_bill(self):
-        """The deposit bill and the final invoice are both in scope."""
         po = self._create_purchase_order()
         self._create_advance_payment(po)
-        deposit_bill = po.invoice_ids
-        deposit_bill.invoice_date = fields.Date.from_string("2025-10-01")
-        deposit_line = deposit_bill.line_ids.filtered(
-            lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
+        _deposit_bill, deposit_line = self._post_deposit_bill(po, 3900)
+        self.assertEqual(deposit_line.balance, 3900)
+        deposit_po_line = po.order_line.filtered("is_deposit")
+        self.assertEqual(deposit_po_line.deposit_company_amount, 3900)
+        bill = self._create_final_bill(po)
+        offset_line = bill.line_ids.filtered(
+            lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
         )
-        self.assertTrue(deposit_line.company_amount_allowed)
-        deposit_line.company_amount = 3900
-        deposit_bill.action_post()
-
-        po.picking_ids.move_ids.write({"quantity_done": 1})
-        po.picking_ids.button_validate()
-        res = po.with_context(create_bill=True).action_create_invoice()
-        bill = self.env["account.move"].browse(res["res_id"])
         product_line = bill.line_ids.filtered(
             lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
         )
-        self.assertTrue(product_line.company_amount_allowed)
+        payable_line = bill.line_ids.filtered(
+            lambda l: l.account_id.account_type == "liability_payable"
+        )
+        self.assertEqual(offset_line.balance, -3900)
+        self.assertEqual(product_line.balance, 15100)
+        self.assertEqual(payable_line.balance, -11200)
+        # The rate difference is booked into the goods, not parked on a manual
+        # override: company_amount stays empty and means "the user typed this".
+        self.assertFalse(product_line.company_amount)
+        bill.action_post()
+        self.assertEqual(offset_line.balance, -3900)
+        self.assertEqual(product_line.balance, 15100)
+        self.assertEqual(payable_line.balance, -11200)
+        svls = bill.line_ids.mapped("stock_valuation_layer_ids")
+        self.assertEqual(sum(svls.mapped("value")), -900.0)
+
+    def test_manual_product_override_wins_over_rate_difference(self):
+        """A hand-priced product line must be left alone by the rate-difference
+        distribution. Invisible at the point of change: the distribution reads
+        an empty company_amount as its opt-in, so a refactor that spreads the
+        delta over every product line would still balance and still post.
+        """
+        po = self._create_purchase_order()
+        self._create_advance_payment(po)
+        self._post_deposit_bill(po, 3900)
+        bill = self._create_final_bill(po)
+        product_line = bill.line_ids.filtered(
+            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
+        )
+        product_line.company_amount = 17000
+        # 17000 exactly -- not 17000 less the 900 rate difference.
+        self.assertEqual(product_line.balance, 17000)
+        payable_line = bill.line_ids.filtered(
+            lambda l: l.account_id.account_type == "liability_payable"
+        )
+        self.assertEqual(payable_line.balance, -13100)
+
+    def test_deposit_value_is_read_back_from_the_ledger(self):
+        """The deposit value must be derived from posted bill lines, not
+        snapshotted when the deposit bill is posted. Defends against going back
+        to a stored field written in action_post, under which resetting or
+        reversing the deposit bill leaves the purchase order still handing a
+        stale amount to the final bill.
+        """
+        po = self._create_purchase_order()
+        self._create_advance_payment(po)
+        deposit_bill, _deposit_line = self._post_deposit_bill(po, 3900)
+        deposit_po_line = po.order_line.filtered("is_deposit")
+        self.assertEqual(deposit_po_line.deposit_company_amount, 3900)
+        deposit_bill.button_draft()
+        self.assertEqual(deposit_po_line.deposit_company_amount, 0)
+
+    def test_removing_the_deposit_line_rejects_the_override(self):
+        """The scope rule has to be enforced on the way out as well as the way
+        in. Defends the constraint's dependency list: hung off
+        account.move.line.company_amount alone it only fires when that field is
+        written, so dropping the deposit line from a bill that already carries
+        an override slips through and the bill keeps forcing balances it is no
+        longer entitled to.
+        """
+        po = self._create_purchase_order()
+        self._create_advance_payment(po)
+        self._post_deposit_bill(po, 3900)
+        bill = self._create_final_bill(po)
+        product_line = bill.line_ids.filtered(
+            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
+        )
+        product_line.company_amount = 17000
+        offset_line = bill.line_ids.filtered(
+            lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
+        )
+        with self.assertRaises(ValidationError):
+            bill.write({"line_ids": [Command.unlink(offset_line.id)]})
+
+    def test_standard_conversion_untouched_without_deposit(self):
+        """The override hooks _sync_invoice, which runs for every invoice line
+        in the database. Defends the scope check inside it: a bill with no
+        deposit must keep Odoo's rate-based balance untouched.
+        """
+        _bill, line = self._create_bill_without_deposit()
+        # USD 100 at the 2025-11-01 rate (1 USD = 160 JPY).
+        self.assertEqual(line.balance, 16000)
