@@ -87,25 +87,6 @@ class AccountMoveLine(models.Model):
         lines = container["records"].with_context(skip_company_amount_sync=True)
         lines.move_id._apply_company_amount_overrides()
 
-    def _is_in_deposit_flow(self):
-        """This line's move carries a deposit line: the deposit vendor bill, or
-        the final bill holding the deposit-offset line.
-
-        Distinct from ``_is_company_amount_allowed``, which asks who may type a
-        value. This asks whether the move's balances are pinned at all, which is
-        what decides whether stock valuation has to follow them -- true for the
-        goods lines, which absorb the deposit's rate difference without ever
-        carrying a value the user entered.
-        """
-        self.ensure_one()
-        if self.move_id.move_type not in ("in_invoice", "in_refund"):
-            return False
-        return bool(
-            self.move_id.line_ids.filtered(
-                lambda l: l.display_type == "product" and l.purchase_line_id.is_deposit
-            )
-        )
-
     def _is_company_amount_allowed(self):
         """Only the deposit line itself may be pinned by hand.
 
@@ -163,9 +144,13 @@ class AccountMoveLine(models.Model):
             self.quantity, precision_rounding=self.product_uom_id.rounding
         ):
             return res
+        # Gate on the move netting off a deposit, not on ``is_deposit``: the
+        # goods line lives on the *final* bill, which is not itself a deposit
+        # bill. Nor on whether this line may be edited -- it may not, and its
+        # balance is pinned all the same.
         if (
             self.currency_id == self.company_currency_id
-            or not self._is_in_deposit_flow()
+            or not self.move_id._get_deposit_offset_lines()
         ):
             return res
         if self.company_currency_id.is_zero(

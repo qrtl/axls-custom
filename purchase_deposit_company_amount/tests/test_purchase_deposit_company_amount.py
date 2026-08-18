@@ -275,12 +275,14 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         )
         self.assertFalse(goods_line.company_amount_allowed)
         self.assertFalse(offset_line.company_amount_allowed)
-        # The two gates deliberately disagree about the goods line, and merging
-        # them would zero the stock valuation adjustment: the user may not type
-        # here, but this line's balance IS pinned (it absorbed the deposit's
-        # rate difference), so valuation has to keep following it.
+        # The editing rule and the valuation gate deliberately disagree about
+        # the goods line, and collapsing them zeroes the stock valuation
+        # adjustment: nobody may type here, yet this line's balance IS pinned
+        # (it absorbed the deposit's rate difference), so valuation has to keep
+        # following it. Note the gate cannot be is_deposit either -- asserted
+        # False on this very bill above.
         self.assertFalse(goods_line._is_company_amount_allowed())
-        self.assertTrue(goods_line._is_in_deposit_flow())
+        self.assertTrue(bill._get_deposit_offset_lines())
         with self.assertRaises(ValidationError):
             goods_line.company_amount = 17000
         with self.assertRaises(ValidationError):
