@@ -101,6 +101,13 @@ class AccountMove(models.Model):
         and the payable keeps its rate-converted value. The move is then saved
         unbalanced.
 
+        That bites precisely when the override makes the move's total blind to
+        the rate. On the deposit bill it does: the one non-payable line is
+        pinned to the amount paid, so the needed total is the same before and
+        after. The final bill is not affected -- its goods line is rate-based
+        plus the deposit's rate difference, so the total does move and Odoo's
+        own sync notices and rewrites the payable.
+
         So rather than trying to provoke that sync, enforce the invariant it
         would have enforced. When the payment-term line does not exist yet --
         during creation -- there is nothing to correct here and the standard

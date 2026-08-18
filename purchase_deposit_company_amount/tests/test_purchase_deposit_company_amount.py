@@ -346,3 +346,29 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         self.assertNotAlmostEqual(
             product_line.balance, product_line._get_rate_based_balance(), places=2
         )
+
+    def test_changing_the_bill_date_on_the_final_bill(self):
+        """Back-dating the final bill re-derives the goods line at the new rate
+        while the offset stays pinned to what the deposit cost, and the payable
+        follows. Unlike the deposit bill, the move's total does move with the
+        rate here, which is what lets Odoo's own payment-term sync notice.
+        """
+        po = self._create_purchase_order()
+        self._create_advance_payment(po)
+        self._post_deposit_bill(po, 3900)
+        bill = self._create_final_bill(po)
+        bill.invoice_date = fields.Date.from_string("2025-10-01")
+        offset_line = bill.line_ids.filtered(
+            lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
+        )
+        goods_line = bill.line_ids.filtered(
+            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
+        )
+        payable_line = bill.line_ids.filtered(
+            lambda l: l.account_id.account_type == "liability_payable"
+        )
+        # Rate 150: goods 15000 less the 600 rate difference on the deposit.
+        self.assertEqual(offset_line.balance, -3900)
+        self.assertEqual(goods_line.balance, 14400)
+        self.assertEqual(payable_line.balance, -10500)
+        bill.action_post()
