@@ -12,13 +12,13 @@
                 expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']"
                 position="after"
             >
-                <!-- Only a deposit bill can carry the override, so the column is
-                     not shown anywhere else. -->
-                <field name="company_amount_allowed" invisible="1" />
+                <!-- A deposit bill holds exactly one line, the deposit itself,
+                     so hiding the column off deposit bills is the whole rule.
+                     The constraint still refuses a value written any other way. -->
                 <field
                     name="company_amount"
                     optional="hide"
-                    attrs="{'column_invisible': [('parent.is_deposit', '=', False)], 'readonly': [('company_amount_allowed', '=', False)]}"
+                    attrs="{'column_invisible': [('parent.is_deposit', '=', False)]}"
                 />
             </xpath>
         </field>

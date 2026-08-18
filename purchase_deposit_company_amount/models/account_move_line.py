@@ -19,28 +19,9 @@ class AccountMoveLine(models.Model):
         "foreign-currency amount stays untouched. Enter it unsigned -- the "
         "debit/credit direction follows the line's foreign-currency amount. "
         "Leave it empty to keep the standard conversion. Only available on "
-        "the deposit line of a vendor bill taking part in a purchase-deposit "
-        "flow; every other line follows from it automatically.",
+        "the deposit line of a deposit bill; every other line follows from it "
+        "automatically.",
     )
-    company_amount_allowed = fields.Boolean(
-        compute="_compute_company_amount_allowed",
-        help="Technical field driving the read-only state of "
-        "'Company Currency Amount' in the form view: True when this line "
-        "belongs to a vendor bill that carries a purchase deposit, which is "
-        "the only situation where the override is accepted.",
-    )
-
-    @api.depends(
-        "display_type",
-        "purchase_line_id.is_deposit",
-        "quantity",
-        "move_id.move_type",
-        "move_id.line_ids.display_type",
-        "move_id.line_ids.purchase_line_id.is_deposit",
-    )
-    def _compute_company_amount_allowed(self):
-        for line in self:
-            line.company_amount_allowed = line._is_company_amount_allowed()
 
     @api.constrains(
         "company_amount", "display_type", "purchase_line_id", "quantity", "move_id"
