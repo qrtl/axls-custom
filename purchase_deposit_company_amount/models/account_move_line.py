@@ -19,7 +19,8 @@ class AccountMoveLine(models.Model):
         "foreign-currency amount stays untouched. Enter it unsigned -- the "
         "debit/credit direction follows the line's foreign-currency amount. "
         "Leave it empty to keep the standard conversion. Only available on "
-        "vendor bills that take part in a purchase-deposit flow.",
+        "the deposit line of a vendor bill taking part in a purchase-deposit "
+        "flow; every other line follows from it automatically.",
     )
     company_amount_allowed = fields.Boolean(
         compute="_compute_company_amount_allowed",
@@ -31,6 +32,7 @@ class AccountMoveLine(models.Model):
 
     @api.depends(
         "display_type",
+        "purchase_line_id.is_deposit",
         "move_id.move_type",
         "move_id.line_ids.display_type",
         "move_id.line_ids.purchase_line_id.is_deposit",
@@ -82,16 +84,43 @@ class AccountMoveLine(models.Model):
         lines = container["records"].with_context(skip_company_amount_sync=True)
         lines.move_id._apply_company_amount_overrides()
 
-    def _is_company_amount_allowed(self):
+    def _is_in_deposit_flow(self):
+        """This line's move carries a deposit line: the deposit vendor bill, or
+        the final bill holding the deposit-offset line.
+
+        Distinct from ``_is_company_amount_allowed``, which asks who may type a
+        value. This asks whether the move's balances are pinned at all, which is
+        what decides whether stock valuation has to follow them -- true for the
+        goods lines, which absorb the deposit's rate difference without ever
+        carrying a value the user entered.
+        """
         self.ensure_one()
         if self.move_id.move_type not in ("in_invoice", "in_refund"):
-            return False
-        if self.display_type != "product":
             return False
         return bool(
             self.move_id.line_ids.filtered(
                 lambda l: l.display_type == "product" and l.purchase_line_id.is_deposit
             )
+        )
+
+    def _is_company_amount_allowed(self):
+        """Only the deposit line itself may be pinned by hand.
+
+        What is known outside Odoo is the amount paid for the deposit, so that
+        is the only line worth typing on. The rest of the bill follows from it:
+        the goods lines take the rate difference automatically, and the offset
+        line on the final bill is read back from the posted deposit bill.
+
+        Note this is a property of the line alone, unlike the wider rule it
+        replaced, which had to inspect the move's other lines. That is why a
+        single constraint on ``account.move.line`` now covers it; there is no
+        structural change to the move that can invalidate a value already set.
+        """
+        self.ensure_one()
+        return (
+            self.move_id.move_type in ("in_invoice", "in_refund")
+            and self.display_type == "product"
+            and bool(self.purchase_line_id.is_deposit)
         )
 
     def _get_rate_based_balance(self):
@@ -130,7 +159,7 @@ class AccountMoveLine(models.Model):
             return res
         if (
             self.currency_id == self.company_currency_id
-            or not self._is_company_amount_allowed()
+            or not self._is_in_deposit_flow()
         ):
             return res
         if self.company_currency_id.is_zero(

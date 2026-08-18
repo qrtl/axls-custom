@@ -17,7 +17,6 @@ where the rate on the final bill date is USD 1 = JPY 160:
 The product line carries 3900 paid for the deposit plus USD 70 at the
 current rate, and the payable is the remaining USD 70 at that rate.
 
-A product line on the final bill can also be given a Company Currency
-Amount by hand, in which case it keeps that value and is left out of the
-exchange rate difference. Leave the field empty to keep the standard
-conversion.
+The field is only editable on deposit lines, the deposit being the one
+amount known outside Odoo. The goods lines follow from it automatically and
+are read-only. Leave the field empty to keep the standard conversion.

@@ -238,27 +238,6 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         svls = bill.line_ids.mapped("stock_valuation_layer_ids")
         self.assertEqual(sum(svls.mapped("value")), -900.0)
 
-    def test_manual_product_override_wins_over_rate_difference(self):
-        """A hand-priced product line must be left alone by the rate-difference
-        distribution. Invisible at the point of change: the distribution reads
-        an empty company_amount as its opt-in, so a refactor that spreads the
-        delta over every product line would still balance and still post.
-        """
-        po = self._create_purchase_order()
-        self._create_advance_payment(po)
-        self._post_deposit_bill(po, 3900)
-        bill = self._create_final_bill(po)
-        product_line = bill.line_ids.filtered(
-            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
-        )
-        product_line.company_amount = 17000
-        # 17000 exactly -- not 17000 less the 900 rate difference.
-        self.assertEqual(product_line.balance, 17000)
-        payable_line = bill.line_ids.filtered(
-            lambda l: l.account_id.account_type == "liability_payable"
-        )
-        self.assertEqual(payable_line.balance, -13100)
-
     def test_deposit_value_is_read_back_from_the_ledger(self):
         """The deposit value must be derived from posted bill lines, not
         snapshotted when the deposit bill is posted. Defends against going back
@@ -274,27 +253,27 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         deposit_bill.button_draft()
         self.assertEqual(deposit_po_line.deposit_company_amount, 0)
 
-    def test_removing_the_deposit_line_rejects_the_override(self):
-        """The scope rule has to be enforced on the way out as well as the way
-        in. Defends the constraint's dependency list: hung off
-        account.move.line.company_amount alone it only fires when that field is
-        written, so dropping the deposit line from a bill that already carries
-        an override slips through and the bill keeps forcing balances it is no
-        longer entitled to.
+    def test_override_rejected_on_a_goods_line(self):
+        """Only the deposit line may be pinned by hand. A goods line sitting on
+        the same bill must still refuse, even though the bill is squarely in
+        the deposit flow -- the two are easy to conflate, and the gate that
+        decides stock valuation deliberately does accept that goods line.
         """
         po = self._create_purchase_order()
         self._create_advance_payment(po)
         self._post_deposit_bill(po, 3900)
         bill = self._create_final_bill(po)
-        product_line = bill.line_ids.filtered(
+        goods_line = bill.line_ids.filtered(
             lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
         )
-        product_line.company_amount = 17000
+        self.assertFalse(goods_line.company_amount_allowed)
+        with self.assertRaises(ValidationError):
+            goods_line.company_amount = 17000
+        # The deposit-offset line on the same bill remains eligible.
         offset_line = bill.line_ids.filtered(
             lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
         )
-        with self.assertRaises(ValidationError):
-            bill.write({"line_ids": [Command.unlink(offset_line.id)]})
+        self.assertTrue(offset_line.company_amount_allowed)
 
     def test_standard_conversion_untouched_without_deposit(self):
         """The override hooks _sync_invoice, which runs for every invoice line

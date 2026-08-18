@@ -1,17 +1,17 @@
 This module does the following:
 
-- Adds a Company Currency Amount field to vendor bill lines, which forces
-  the line's balance to the amount entered instead of converting the
-  foreign currency amount at the exchange rate.
+- Adds a Company Currency Amount field to the deposit line of a vendor
+  bill, which forces the line's balance to the amount entered instead of
+  converting the foreign currency amount at the exchange rate.
 - Carries the company currency value of a posted deposit bill over to the
   deposit offset line of the final bill, so the deposit account closes out
   at the amount that was actually paid.
 - Books the resulting exchange rate difference into the product lines, and
   reflects it in the stock valuation of the received goods.
 
-The field is only available on vendor bills that take part in a purchase
-deposit flow, which means the deposit bill itself or the final bill that
-nets it off. Elsewhere the standard rate conversion applies.
+The field is only available on the deposit line of a vendor bill taking
+part in a purchase deposit flow. Elsewhere the standard rate conversion
+applies.
 
 ## Background:
 

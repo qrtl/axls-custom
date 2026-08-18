@@ -1,29 +1,10 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-from odoo import api, models
+from odoo import models
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
-
-    @api.constrains("move_type", "line_ids")
-    def _check_company_amount_allowed(self):
-        """Guard the override's scope against structural changes to the move.
-
-        The rule reads the whole move -- its type and whether any of its lines
-        is a deposit line -- so removing the deposit line has to re-check it.
-        Hung off ``account.move.line.company_amount`` alone it would only fire
-        when that one field is written, and stripping the deposit line from a
-        bill that already carries overrides would slip through untouched,
-        leaving the move forcing balances it is no longer entitled to.
-
-        This covers lines being added and removed; the companion constraint on
-        ``account.move.line`` covers the values on the lines themselves.
-        Odoo 16 ignores dotted paths in ``@api.constrains`` (it warns that they
-        are "not a field name"), so the check genuinely has to live on both
-        models rather than reaching across the relation from one.
-        """
-        self.line_ids._check_company_amount_allowed()
 
     def _get_deposit_offset_lines(self):
         """The negative-quantity deposit lines ``purchase_deposit`` adds to the
@@ -79,10 +60,10 @@ class AccountMove(models.Model):
             for line in offset_lines
             if line in targets
         )
+        # Goods lines never carry a value the user typed -- only the deposit
+        # line may be pinned by hand -- so they all absorb.
         absorbing_lines = product_lines.filtered(
-            lambda l: not l.company_amount
-            and l.purchase_line_id
-            and not l.purchase_line_id.is_deposit
+            lambda l: l.purchase_line_id and not l.purchase_line_id.is_deposit
         )
         if company_currency.is_zero(delta) or not absorbing_lines:
             return targets
