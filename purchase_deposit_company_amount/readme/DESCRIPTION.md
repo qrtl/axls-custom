@@ -1,91 +1,26 @@
-When a purchase order is in a foreign currency, the deposit is usually settled
-for an exact company-currency amount that has nothing to do with the exchange
-rate configured for that day. Odoo books the deposit at the rate, so the
-deposit account never closes out cleanly against what was actually paid.
+This module does the following:
 
-This module lets the user enter the company-currency amount directly on the
-vendor-bill line, carries that amount over to the final bill, and books the
-resulting rate difference where it belongs.
+- Adds a Company Currency Amount field to vendor bill lines, which forces
+  the line's balance to the amount entered instead of converting the
+  foreign currency amount at the exchange rate.
+- Carries the company currency value of a posted deposit bill over to the
+  deposit offset line of the final bill, so the deposit account closes out
+  at the amount that was actually paid.
+- Books the resulting exchange rate difference into the product lines, and
+  reflects it in the stock valuation of the received goods.
 
-## What it does
+The field is only available on vendor bills that take part in a purchase
+deposit flow, which means the deposit bill itself or the final bill that
+nets it off. Elsewhere the standard rate conversion applies.
 
-**A `Company Currency Amount` override on vendor-bill lines.** An optional
-column on the bill line list. Leave it empty for the standard conversion; fill
-it in to force the line's balance to that amount, unsigned — the debit/credit
-direction follows the line's own foreign-currency amount. The foreign-currency
-amount itself is untouched, so tax and the vendor total are unaffected, and the
-payable line is auto-balanced by Odoo as usual.
+## Background:
 
-The override is confined to the purchase-deposit flow: it is accepted only on a
-vendor bill that carries a deposit line, which means the deposit bill itself or
-the final bill that nets it off. Everywhere else the field is read-only and a
-value set through code is rejected.
+When a purchase order is in a foreign currency, the deposit is usually
+settled for an exact company currency amount that does not match the
+exchange rate configured for that day. Odoo books the deposit at the rate,
+so the deposit account never closes out cleanly against what was paid.
 
-**Deposit value carried to the final bill.** The deposit's company-currency
-value is read back from the posted deposit bill, and the deposit-offset line
-that `purchase_deposit` puts on the final bill is pinned to it. The offset
-therefore always mirrors what the deposit really cost, however far the rate has
-moved in between. Reverse the deposit bill and the value stops being carried
-over, because it is derived from the ledger rather than snapshotted.
-
-**Rate difference absorbed by the goods.** Pinning the offset while the product
-lines are booked at the current rate leaves a difference. A paid deposit is a
-non-monetary asset, so the goods are measured at the deposit's own rate for the
-prepaid slice and at the current rate for the remainder — the difference is part
-of the acquisition cost, not an FX gain or loss. The module pushes it onto the
-product lines, split proportionally when there is more than one. Lines the user
-has priced by hand are left alone.
-
-**Stock valuation follows.** For stockable products valued in real time, the
-effective company-currency value also drives `purchase_stock`'s
-price-difference logic through `_get_gross_unit_price`, so the price-difference
-journal item and the `stock.valuation.layer` adjustment both reflect the amount
-actually paid rather than the rate-converted one.
-
-## Example
-
-Company currency JPY, purchase order for USD 100, 30% deposit.
-
-```
-Register Deposit (standard purchase_deposit, unchanged):
-  Deposit bill in USD: 1 x $30
-  User enters Company Currency Amount = 3900
-  Post:  Deposit account  debit  3900   amount_currency   30
-         Payable          credit 3900   amount_currency  -30
-
-Create Bill on the PO, current rate USD 1 = JPY 160:
-  Product line:      $100   balance   15100
-  Deposit offset:    -$30   balance   -3900
-  Payable:           -$70   balance  -11200
-```
-
-The deposit at today's rate would be 4800, against 3900 actually paid; the
-900 difference comes off the goods, so the product line lands at
-`3900 + 70 x 160 = 15100` and the payable is exactly the remaining USD 70 at the
-current rate. Exchange differences arising when those two payments are settled
-are recorded by Odoo's standard exchange-difference mechanism.
-
-## Overriding a product line directly
-
-Within the deposit flow a product line on the final bill can also be priced by
-hand — say the goods are known to have cost 17000 rather than the 16000 the rate
-implies. The stock valuation follows:
-
-```
-Receipt layer : qty 1, value 15000 (rate at receipt date)
-Vendor bill   : $100, Company Currency Amount = 17000
-  stock_in   debit  15000
-  expense    debit   2000
-  payable    credit 17000   amount_currency  -100
-  Valuation layer adjustment: +2000
-```
-
-## Notes
-
-- An empty or zero value means "no override" — the standard conversion applies.
-- The override affects only the line it is set on. Payable and tax lines are
-  auto-balanced and need no override of their own; tax is still computed from
-  the foreign-currency amount, so tax-inclusive and tax-exclusive behaviour is
-  unchanged.
-- Balances are recomputed whenever the bill is written, so editing the invoice
-  date — and with it the rate — re-derives the rate difference.
+A paid deposit is a non-monetary asset, so the goods are measured at the
+deposit's own rate for the prepaid portion and at the current rate for the
+remainder. The difference is part of the acquisition cost rather than an
+exchange gain or loss, which is why it is booked into the product lines.
