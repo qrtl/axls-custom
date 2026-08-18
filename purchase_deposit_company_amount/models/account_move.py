@@ -1,46 +1,29 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-from odoo import _, api, models
-from odoo.exceptions import ValidationError
+from odoo import api, models
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
 
-    @api.constrains(
-        "move_type",
-        "line_ids",
-        "line_ids.company_amount",
-        "line_ids.display_type",
-        "line_ids.purchase_line_id",
-    )
+    @api.constrains("move_type", "line_ids")
     def _check_company_amount_allowed(self):
-        """Guard the override's scope from the move, not from the line.
+        """Guard the override's scope against structural changes to the move.
 
         The rule reads the whole move -- its type and whether any of its lines
-        is a deposit line -- so it has to be constrained on the move's fields.
+        is a deposit line -- so removing the deposit line has to re-check it.
         Hung off ``account.move.line.company_amount`` alone it would only fire
-        when that one field is written, and removing the deposit line from a
+        when that one field is written, and stripping the deposit line from a
         bill that already carries overrides would slip through untouched,
         leaving the move forcing balances it is no longer entitled to.
+
+        This covers lines being added and removed; the companion constraint on
+        ``account.move.line`` covers the values on the lines themselves.
+        Odoo 16 ignores dotted paths in ``@api.constrains`` (it warns that they
+        are "not a field name"), so the check genuinely has to live on both
+        models rather than reaching across the relation from one.
         """
-        for move in self:
-            for line in move.line_ids.filtered("company_amount"):
-                if line._is_company_amount_allowed():
-                    continue
-                raise ValidationError(
-                    _(
-                        "'%(field)s' can only be set on a vendor bill that "
-                        "carries a purchase deposit. On line '%(line)s' of "
-                        "'%(move)s' the standard exchange-rate conversion "
-                        "applies; clear the value to continue."
-                    )
-                    % {
-                        "field": line._fields["company_amount"].string,
-                        "line": line.name or line.product_id.display_name or "/",
-                        "move": move.display_name,
-                    }
-                )
+        self.line_ids._check_company_amount_allowed()
 
     def _get_deposit_offset_lines(self):
         """The negative-quantity deposit lines ``purchase_deposit`` adds to the
@@ -124,11 +107,59 @@ class AccountMove(models.Model):
             )
         return targets
 
+    def _rebalance_payment_term_lines(self):
+        """Absorb any leftover imbalance into the payment-term line(s).
+
+        Odoo normally rebuilds the payable from ``needed_terms`` whenever the
+        lines move, but that sync only fires when the *needed* values change.
+        Pinning a balance does not always change them: editing the bill date
+        moves ``currency_rate``, so the standard invoice sync re-derives every
+        line's balance from the new rate -- payable included -- while the
+        overridden lines are put straight back where they were. The needed
+        totals come out identical, the sync concludes there is nothing to do,
+        and the payable keeps its rate-converted value. The move is then saved
+        unbalanced.
+
+        So rather than trying to provoke that sync, enforce the invariant it
+        would have enforced. When the payment-term line does not exist yet --
+        during creation -- there is nothing to correct here and the standard
+        sync builds it from the overridden balances anyway.
+        """
+        self.ensure_one()
+        company_currency = self.company_id.currency_id
+        term_lines = self.line_ids.filtered(lambda l: l.display_type == "payment_term")
+        if not term_lines:
+            return
+        imbalance = company_currency.round(sum(self.line_ids.mapped("balance")))
+        if company_currency.is_zero(imbalance):
+            return
+        weights = {line: abs(line.balance) for line in term_lines}
+        total_weight = sum(weights.values())
+        remaining = imbalance
+        for idx, line in enumerate(term_lines):
+            if idx < len(term_lines) - 1:
+                if total_weight:
+                    share = company_currency.round(
+                        imbalance * weights[line] / total_weight
+                    )
+                else:
+                    share = company_currency.round(imbalance / len(term_lines))
+                remaining -= share
+            else:
+                # The last line takes the rounding remainder, so the move comes
+                # out balanced to the cent.
+                share = company_currency.round(remaining)
+            line.balance = company_currency.round(line.balance - share)
+
     def _apply_company_amount_overrides(self):
         for move in self:
             if move.move_type not in ("in_invoice", "in_refund"):
                 continue
             company_currency = move.company_id.currency_id
-            for line, target in move._get_company_amount_targets().items():
+            targets = move._get_company_amount_targets()
+            if not targets:
+                continue
+            for line, target in targets.items():
                 if not company_currency.is_zero(line.balance - target):
                     line.balance = target
+            move._rebalance_payment_term_lines()

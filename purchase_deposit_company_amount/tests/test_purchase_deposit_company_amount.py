@@ -304,3 +304,40 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         _bill, line = self._create_bill_without_deposit()
         # USD 100 at the 2025-11-01 rate (1 USD = 160 JPY).
         self.assertEqual(line.balance, 16000)
+
+    def test_changing_the_bill_date_rebalances_the_deposit_bill(self):
+        """Editing the bill date moves currency_rate, which makes the standard
+        sync recompute every line's balance from the rate. The override has to
+        be re-applied and the payable rebuilt from it, or the move is left
+        unbalanced. Defends the ordering against the payment-term line being
+        settled from rate-converted balances instead of overridden ones.
+        """
+        po = self._create_purchase_order()
+        self._create_advance_payment(po)
+        deposit_bill = po.invoice_ids
+        deposit_bill.invoice_date = fields.Date.from_string("2025-11-01")
+        deposit_line = deposit_bill.line_ids.filtered(
+            lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
+        )
+        deposit_line.company_amount = 3900
+        self.assertEqual(deposit_line.balance, 3900)
+        # Back-date the bill: USD 1 = JPY 150 instead of 160.
+        deposit_bill.invoice_date = fields.Date.from_string("2025-10-01")
+        payable_line = deposit_bill.line_ids.filtered(
+            lambda l: l.account_id.account_type == "liability_payable"
+        )
+        self.assertEqual(deposit_line.balance, 3900)
+        self.assertEqual(payable_line.balance, -3900)
+        deposit_bill.action_post()
+
+    def test_override_rejected_on_a_plain_vendor_bill(self):
+        """A bill with no deposit must refuse the override on a direct write.
+        Defends the account.move.line half of the constraint: Odoo 16 ignores
+        dotted paths in @api.constrains, so the account.move constraint cannot
+        see a value written straight onto a line and this case is only covered
+        while the line-level constraint exists.
+        """
+        _bill, line = self._create_bill_without_deposit()
+        self.assertFalse(line.company_amount_allowed)
+        with self.assertRaises(ValidationError):
+            line.company_amount = 17000

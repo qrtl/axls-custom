@@ -2,7 +2,8 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 from contextlib import contextmanager
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class AccountMoveLine(models.Model):
@@ -37,6 +38,32 @@ class AccountMoveLine(models.Model):
         for line in self:
             line.company_amount_allowed = line._is_company_amount_allowed()
 
+    @api.constrains("company_amount", "display_type", "purchase_line_id", "move_id")
+    def _check_company_amount_allowed(self):
+        """Reject an override on a line that is not entitled to one.
+
+        Constrained on the fields the check actually reads, so writing any of
+        them re-validates. The companion constraint on ``account.move`` catches
+        the other half -- lines being added to or removed from the move, which
+        changes the answer without touching any field here.
+        """
+        for line in self.filtered("company_amount"):
+            if line._is_company_amount_allowed():
+                continue
+            raise ValidationError(
+                _(
+                    "'%(field)s' can only be set on a vendor bill that carries "
+                    "a purchase deposit. On line '%(line)s' of '%(move)s' the "
+                    "standard exchange-rate conversion applies; clear the value "
+                    "to continue."
+                )
+                % {
+                    "field": line._fields["company_amount"].string,
+                    "line": line.name or line.product_id.display_name or "/",
+                    "move": line.move_id.display_name,
+                }
+            )
+
     @contextmanager
     def _sync_invoice(self, container):
         """Re-pin overridden balances once the standard invoice sync has run.
@@ -49,10 +76,10 @@ class AccountMoveLine(models.Model):
 
         Ordering matters and is what makes the payable come out right:
         ``account.move._sync_dynamic_lines`` enters the payment-term sync
-        *before* this one, so it exits *after* it. By then ``line_ids.balance``
-        has moved, which invalidates ``amount_total_signed`` and re-triggers
-        ``needed_terms`` -- the payable is rebuilt from the balances we just
-        wrote rather than from the rate-converted ones.
+        *before* this one, so it exits *after* it, and rebuilds the payable
+        from the balances written here rather than from the rate-converted
+        ones. See ``account.move._apply_company_amount_overrides`` for why
+        that rebuild has to be prompted rather than left to happen.
         """
         with super()._sync_invoice(container):
             yield
