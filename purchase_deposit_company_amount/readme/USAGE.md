@@ -17,6 +17,8 @@ where the rate on the final bill date is USD 1 = JPY 160:
 The product line carries 3900 paid for the deposit plus USD 70 at the
 current rate, and the payable is the remaining USD 70 at that rate.
 
-The field is only editable on deposit lines, the deposit being the one
-amount known outside Odoo. The goods lines follow from it automatically and
-are read-only. Leave the field empty to keep the standard conversion.
+The column only appears on the deposit bill, the deposit being the one
+amount known outside Odoo. Everything on the final bill is derived from it:
+the offset line is read back from the posted deposit bill and the goods
+lines take the rate difference. Leave the field empty on the deposit bill to
+keep the standard conversion.

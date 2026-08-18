@@ -33,6 +33,7 @@ class AccountMoveLine(models.Model):
     @api.depends(
         "display_type",
         "purchase_line_id.is_deposit",
+        "quantity",
         "move_id.move_type",
         "move_id.line_ids.display_type",
         "move_id.line_ids.purchase_line_id.is_deposit",
@@ -41,7 +42,9 @@ class AccountMoveLine(models.Model):
         for line in self:
             line.company_amount_allowed = line._is_company_amount_allowed()
 
-    @api.constrains("company_amount", "display_type", "purchase_line_id", "move_id")
+    @api.constrains(
+        "company_amount", "display_type", "purchase_line_id", "quantity", "move_id"
+    )
     def _check_company_amount_allowed(self):
         for line in self.filtered("company_amount"):
             if line._is_company_amount_allowed():
@@ -111,16 +114,19 @@ class AccountMoveLine(models.Model):
         the goods lines take the rate difference automatically, and the offset
         line on the final bill is read back from the posted deposit bill.
 
-        Note this is a property of the line alone, unlike the wider rule it
-        replaced, which had to inspect the move's other lines. That is why a
-        single constraint on ``account.move.line`` now covers it; there is no
-        structural change to the move that can invalidate a value already set.
+        The positive quantity is what confines this to the deposit bill: the
+        final bill's offset reuses the same deposit purchase order line with a
+        negative quantity, and its value is read back from the posted deposit
+        bill rather than typed. So this stays a property of the line alone and
+        needs no look at ``account.move.is_deposit``, which the conditions
+        below already imply.
         """
         self.ensure_one()
         return (
             self.move_id.move_type in ("in_invoice", "in_refund")
             and self.display_type == "product"
             and bool(self.purchase_line_id.is_deposit)
+            and self.quantity > 0
         )
 
     def _get_rate_based_balance(self):

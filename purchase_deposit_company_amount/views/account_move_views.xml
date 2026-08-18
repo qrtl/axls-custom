@@ -5,17 +5,20 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form" />
         <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <field name="is_deposit" invisible="1" />
+            </xpath>
             <xpath
                 expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']"
                 position="after"
             >
-                <!-- Only editable on lines belonging to a purchase-deposit flow;
-                     elsewhere the standard rate conversion applies. -->
+                <!-- Only a deposit bill can carry the override, so the column is
+                     not shown anywhere else. -->
                 <field name="company_amount_allowed" invisible="1" />
                 <field
                     name="company_amount"
                     optional="hide"
-                    attrs="{'column_invisible': [('parent.move_type', 'not in', ('in_invoice', 'in_refund'))], 'readonly': [('company_amount_allowed', '=', False)]}"
+                    attrs="{'column_invisible': [('parent.is_deposit', '=', False)], 'readonly': [('company_amount_allowed', '=', False)]}"
                 />
             </xpath>
         </field>

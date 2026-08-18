@@ -253,27 +253,32 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         deposit_bill.button_draft()
         self.assertEqual(deposit_po_line.deposit_company_amount, 0)
 
-    def test_override_rejected_on_a_goods_line(self):
-        """Only the deposit line may be pinned by hand. A goods line sitting on
-        the same bill must still refuse, even though the bill is squarely in
-        the deposit flow -- the two are easy to conflate, and the gate that
-        decides stock valuation deliberately does accept that goods line.
+    def test_only_the_deposit_bill_line_may_be_pinned(self):
+        """The deposit bill's own line takes the override; nothing on the final
+        bill does. The offset line there is the same purchase order line with a
+        negative quantity, so it looks eligible on every test but the sign --
+        and its value is derived from the posted deposit bill, which typing
+        over would quietly untie.
         """
         po = self._create_purchase_order()
         self._create_advance_payment(po)
-        self._post_deposit_bill(po, 3900)
+        _deposit_bill, deposit_line = self._post_deposit_bill(po, 3900)
+        self.assertTrue(deposit_line.company_amount_allowed)
         bill = self._create_final_bill(po)
+        self.assertTrue(_deposit_bill.is_deposit)
+        self.assertFalse(bill.is_deposit)
         goods_line = bill.line_ids.filtered(
             lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
         )
-        self.assertFalse(goods_line.company_amount_allowed)
-        with self.assertRaises(ValidationError):
-            goods_line.company_amount = 17000
-        # The deposit-offset line on the same bill remains eligible.
         offset_line = bill.line_ids.filtered(
             lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
         )
-        self.assertTrue(offset_line.company_amount_allowed)
+        self.assertFalse(goods_line.company_amount_allowed)
+        self.assertFalse(offset_line.company_amount_allowed)
+        with self.assertRaises(ValidationError):
+            goods_line.company_amount = 17000
+        with self.assertRaises(ValidationError):
+            offset_line.company_amount = 3000
 
     def test_standard_conversion_untouched_without_deposit(self):
         """The override hooks _sync_invoice, which runs for every invoice line

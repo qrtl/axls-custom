@@ -1,10 +1,35 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
-from odoo import models
+from odoo import api, fields, models
 
 
 class AccountMove(models.Model):
     _inherit = "account.move"
+
+    is_deposit = fields.Boolean(
+        string="Is a Deposit Bill",
+        compute="_compute_is_deposit",
+        help="Technical field: this bill was raised by the Register Deposit "
+        "wizard, i.e. it books a deposit rather than netting one off. It is "
+        "the only kind of bill on which the company-currency amount can be "
+        "entered by hand.",
+    )
+
+    @api.depends(
+        "invoice_line_ids.purchase_line_id.is_deposit",
+        "invoice_line_ids.quantity",
+    )
+    def _compute_is_deposit(self):
+        """A deposit bill books the deposit with a positive quantity. The final
+        bill reuses the same deposit purchase order line for its offset, but
+        with a negative one, so the sign is what tells the two apart.
+        """
+        for move in self:
+            move.is_deposit = bool(
+                move.invoice_line_ids.filtered(
+                    lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
+                )
+            )
 
     def _get_deposit_offset_lines(self):
         """The negative-quantity deposit lines ``purchase_deposit`` adds to the
