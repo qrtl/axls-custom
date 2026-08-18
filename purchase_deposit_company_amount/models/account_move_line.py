@@ -4,6 +4,7 @@ from contextlib import contextmanager
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.tools.float_utils import float_is_zero
 
 
 class AccountMoveLine(models.Model):
@@ -40,13 +41,6 @@ class AccountMoveLine(models.Model):
 
     @api.constrains("company_amount", "display_type", "purchase_line_id", "move_id")
     def _check_company_amount_allowed(self):
-        """Reject an override on a line that is not entitled to one.
-
-        Constrained on the fields the check actually reads, so writing any of
-        them re-validates. The companion constraint on ``account.move`` catches
-        the other half -- lines being added to or removed from the move, which
-        changes the answer without touching any field here.
-        """
         for line in self.filtered("company_amount"):
             if line._is_company_amount_allowed():
                 continue
@@ -89,19 +83,6 @@ class AccountMoveLine(models.Model):
         lines.move_id._apply_company_amount_overrides()
 
     def _is_company_amount_allowed(self):
-        """The override only makes sense inside the ``purchase_deposit`` flow.
-
-        Two cases qualify, and both are recognised by the presence of a deposit
-        line on the move itself:
-
-        * the deposit vendor bill -- it holds the positive deposit line whose
-          company-currency value the user wants to pin;
-        * the final invoice -- it holds the negative deposit-offset line, and
-          its product lines absorb the deposit's rate difference.
-
-        On any other vendor bill the standard ``amount_currency /
-        currency_rate`` conversion applies, unchanged.
-        """
         self.ensure_one()
         if self.move_id.move_type not in ("in_invoice", "in_refund"):
             return False
@@ -125,24 +106,35 @@ class AccountMoveLine(models.Model):
         return self.company_currency_id.round(self.amount_currency / self.currency_rate)
 
     def _get_gross_unit_price(self):
-        """Let ``purchase_stock``'s price-difference logic see the overridden
-        company-currency value, so both the price-difference AML and the
+        """Let the price-difference logic see the overridden company-currency
+        value, so both the price-difference journal item and the
         ``stock.valuation.layer`` adjustment reflect what was really paid.
 
-        The caller divides this back down by the rate, so we scale the
-        effective balance up by ``currency_rate`` to land on
-        ``balance / quantity`` in company currency.
+        This acts on the *goods* line of the bill, never on the deposit line:
+        ``purchase_deposit`` requires the deposit product to be a service, so
+        it carries no valuation layer and the caller skips it. The goods line
+        is the one whose balance absorbed the deposit's rate difference, which
+        is exactly what has to reach the stock valuation.
+
+        Standard computes ``price_subtotal / quantity`` in document currency,
+        and the caller converts back with ``/ currency_rate``. Since
+        ``price_subtotal`` is ``balance * currency_rate`` on a bill and its
+        negation on a refund -- the same negation standard then applies -- the
+        override is that formula with the overridden balance substituted in,
+        and needs no sign handling of its own.
         """
         res = super()._get_gross_unit_price()
-        if not (
-            self.quantity
-            and self.currency_rate
-            and self.currency_id != self.company_currency_id
-            and self._is_company_amount_allowed()
+        if float_is_zero(
+            self.quantity, precision_rounding=self.product_uom_id.rounding
         ):
             return res
-        rate_based = self._get_rate_based_balance()
-        if self.company_currency_id.is_zero(self.balance - rate_based):
+        if (
+            self.currency_id == self.company_currency_id
+            or not self._is_company_amount_allowed()
+        ):
             return res
-        sign = -1 if self.move_id.move_type == "in_refund" else 1
-        return abs(self.balance) / self.quantity * self.currency_rate * sign
+        if self.company_currency_id.is_zero(
+            self.balance - self._get_rate_based_balance()
+        ):
+            return res
+        return self.balance / self.quantity * self.currency_rate

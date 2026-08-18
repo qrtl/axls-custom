@@ -341,3 +341,29 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         self.assertFalse(line.company_amount_allowed)
         with self.assertRaises(ValidationError):
             line.company_amount = 17000
+
+    def test_gross_unit_price_round_trips_to_the_overridden_balance(self):
+        """purchase_stock consumes _get_gross_unit_price by dividing it back by
+        currency_rate, so the value must be the overridden balance expressed in
+        document currency. Defends that round trip: the scaling factor has to
+        stay currency_rate (the caller's own field, not a date-based
+        conversion), and the balance has to be the overridden one rather than
+        the rate-based one, or the valuation silently reverts to the rate.
+        """
+        po = self._create_purchase_order()
+        self._create_advance_payment(po)
+        self._post_deposit_bill(po, 3900)
+        bill = self._create_final_bill(po)
+        product_line = bill.line_ids.filtered(
+            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
+        )
+        gross = product_line._get_gross_unit_price()
+        self.assertAlmostEqual(
+            gross / product_line.currency_rate * product_line.quantity,
+            product_line.balance,
+            places=2,
+        )
+        # And it is the overridden balance, not the rate-based one.
+        self.assertNotAlmostEqual(
+            product_line.balance, product_line._get_rate_based_balance(), places=2
+        )
