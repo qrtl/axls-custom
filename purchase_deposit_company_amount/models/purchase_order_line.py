@@ -30,16 +30,6 @@ class PurchaseOrderLine(models.Model):
         "invoice_lines.parent_state",
     )
     def _compute_deposit_company_amount(self):
-        """Derive the deposit's company-currency value from the ledger rather
-        than snapshotting it when the deposit bill is posted.
-
-        Only positive-quantity lines count: the deposit bill books the deposit
-        with quantity 1, while the offset line ``purchase_deposit`` puts on the
-        final bill reuses the same ``purchase_line_id`` with quantity -1 and
-        must not be counted as a second deposit. Summing signed balances also
-        makes a reversal self-cancelling -- the credit note's line nets the
-        original off to zero, so an undone deposit stops propagating.
-        """
         for line in self:
             if not line.is_deposit:
                 line.deposit_company_amount = 0.0

@@ -12,9 +12,6 @@
                 expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']"
                 position="after"
             >
-                <!-- A deposit bill holds exactly one line, the deposit itself,
-                     so hiding the column off deposit bills is the whole rule.
-                     The constraint still refuses a value written any other way. -->
                 <field
                     name="company_amount"
                     optional="hide"

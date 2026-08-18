@@ -263,7 +263,7 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         po = self._create_purchase_order()
         self._create_advance_payment(po)
         _deposit_bill, deposit_line = self._post_deposit_bill(po, 3900)
-        self.assertTrue(deposit_line._is_company_amount_allowed())
+        self.assertTrue(deposit_line.move_id.is_deposit)
         bill = self._create_final_bill(po)
         self.assertTrue(_deposit_bill.is_deposit)
         self.assertFalse(bill.is_deposit)
@@ -273,14 +273,12 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         offset_line = bill.line_ids.filtered(
             lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
         )
-        # The editing rule and the valuation gate deliberately disagree about
-        # the goods line, and collapsing them zeroes the stock valuation
-        # adjustment: nobody may type here, yet this line's balance IS pinned
-        # (it absorbed the deposit's rate difference), so valuation has to keep
-        # following it. Note the gate cannot be is_deposit either -- asserted
-        # False on this very bill above.
-        self.assertFalse(goods_line._is_company_amount_allowed())
-        self.assertFalse(offset_line._is_company_amount_allowed())
+        # The two move-level concepts are disjoint, and this bill is where they
+        # part company: nobody may type on it, yet its goods line's balance IS
+        # pinned (it absorbed the deposit's rate difference), so stock valuation
+        # has to keep following it. Gating valuation on is_deposit instead
+        # zeroes the adjustment.
+        self.assertFalse(bill.is_deposit)
         self.assertTrue(bill._get_deposit_offset_lines())
         with self.assertRaises(ValidationError):
             goods_line.company_amount = 17000

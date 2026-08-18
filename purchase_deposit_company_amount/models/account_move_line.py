@@ -23,19 +23,22 @@ class AccountMoveLine(models.Model):
         "automatically.",
     )
 
-    @api.constrains(
-        "company_amount", "display_type", "purchase_line_id", "quantity", "move_id"
-    )
+    @api.constrains("company_amount", "move_id")
     def _check_company_amount_allowed(self):
+        """Only a deposit bill may carry the override.
+
+        ``is_deposit`` is enough on its own: it looks for a deposit line with a
+        positive quantity, so the final bill is out (its offset reuses the same
+        purchase order line with a negative one) and so is every other bill.
+        """
         for line in self.filtered("company_amount"):
-            if line._is_company_amount_allowed():
+            if line.move_id.is_deposit:
                 continue
             raise ValidationError(
                 _(
-                    "'%(field)s' can only be set on a vendor bill that carries "
-                    "a purchase deposit. On line '%(line)s' of '%(move)s' the "
-                    "standard exchange-rate conversion applies; clear the value "
-                    "to continue."
+                    "'%(field)s' can only be set on a deposit bill. On line "
+                    "'%(line)s' of '%(move)s' the standard exchange-rate "
+                    "conversion applies; clear the value to continue."
                 )
                 % {
                     "field": line._fields["company_amount"].string,
@@ -67,29 +70,6 @@ class AccountMoveLine(models.Model):
             return
         lines = container["records"].with_context(skip_company_amount_sync=True)
         lines.move_id._apply_company_amount_overrides()
-
-    def _is_company_amount_allowed(self):
-        """Only the deposit line itself may be pinned by hand.
-
-        What is known outside Odoo is the amount paid for the deposit, so that
-        is the only line worth typing on. The rest of the bill follows from it:
-        the goods lines take the rate difference automatically, and the offset
-        line on the final bill is read back from the posted deposit bill.
-
-        The positive quantity is what confines this to the deposit bill: the
-        final bill's offset reuses the same deposit purchase order line with a
-        negative quantity, and its value is read back from the posted deposit
-        bill rather than typed. So this stays a property of the line alone and
-        needs no look at ``account.move.is_deposit``, which the conditions
-        below already imply.
-        """
-        self.ensure_one()
-        return (
-            self.move_id.move_type in ("in_invoice", "in_refund")
-            and self.display_type == "product"
-            and bool(self.purchase_line_id.is_deposit)
-            and self.quantity > 0
-        )
 
     def _get_rate_based_balance(self):
         """Company-currency value this line would carry with no override, i.e.
@@ -125,10 +105,6 @@ class AccountMoveLine(models.Model):
             self.quantity, precision_rounding=self.product_uom_id.rounding
         ):
             return res
-        # Gate on the move netting off a deposit, not on ``is_deposit``: the
-        # goods line lives on the *final* bill, which is not itself a deposit
-        # bill. Nor on whether this line may be edited -- it may not, and its
-        # balance is pinned all the same.
         if (
             self.currency_id == self.company_currency_id
             or not self.move_id._get_deposit_offset_lines()

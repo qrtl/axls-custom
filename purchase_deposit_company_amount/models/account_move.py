@@ -114,30 +114,6 @@ class AccountMove(models.Model):
         return targets
 
     def _rebalance_payment_term_lines(self):
-        """Absorb any leftover imbalance into the payment-term line(s).
-
-        Odoo normally rebuilds the payable from ``needed_terms`` whenever the
-        lines move, but that sync only fires when the *needed* values change.
-        Pinning a balance does not always change them: editing the bill date
-        moves ``currency_rate``, so the standard invoice sync re-derives every
-        line's balance from the new rate -- payable included -- while the
-        overridden lines are put straight back where they were. The needed
-        totals come out identical, the sync concludes there is nothing to do,
-        and the payable keeps its rate-converted value. The move is then saved
-        unbalanced.
-
-        That bites precisely when the override makes the move's total blind to
-        the rate. On the deposit bill it does: the one non-payable line is
-        pinned to the amount paid, so the needed total is the same before and
-        after. The final bill is not affected -- its goods line is rate-based
-        plus the deposit's rate difference, so the total does move and Odoo's
-        own sync notices and rewrites the payable.
-
-        So rather than trying to provoke that sync, enforce the invariant it
-        would have enforced. When the payment-term line does not exist yet --
-        during creation -- there is nothing to correct here and the standard
-        sync builds it from the overridden balances anyway.
-        """
         self.ensure_one()
         company_currency = self.company_id.currency_id
         term_lines = self.line_ids.filtered(lambda l: l.display_type == "payment_term")
@@ -159,8 +135,6 @@ class AccountMove(models.Model):
                     share = company_currency.round(imbalance / len(term_lines))
                 remaining -= share
             else:
-                # The last line takes the rounding remainder, so the move comes
-                # out balanced to the cent.
                 share = company_currency.round(remaining)
             line.balance = company_currency.round(line.balance - share)
 

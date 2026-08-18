@@ -1,3 +1,7 @@
+.. image:: https://odoo-community.org/readme-banner-image
+   :target: https://odoo-community.org/get-involved?utm_source=readme
+   :alt: Odoo Community Association
+
 ===============================
 Purchase Deposit Company Amount
 ===============================
@@ -13,7 +17,7 @@ Purchase Deposit Company Amount
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github
@@ -37,8 +41,13 @@ The field is only available on the deposit line of the deposit bill, and
 the column is hidden on every other bill. Everything on the final bill
 is derived, and elsewhere the standard rate conversion applies.
 
-Background:
------------
+**Table of contents**
+
+.. contents::
+   :local:
+
+Use Cases / Context
+===================
 
 When a purchase order is in a foreign currency, the deposit is usually
 settled for an exact company currency amount that does not match the
@@ -51,11 +60,6 @@ deposit's own rate for the prepaid portion and at the current rate for
 the remainder. The difference is part of the acquisition cost rather
 than an exchange gain or loss, which is why it is booked into the
 product lines.
-
-**Table of contents**
-
-.. contents::
-   :local:
 
 Usage
 =====
