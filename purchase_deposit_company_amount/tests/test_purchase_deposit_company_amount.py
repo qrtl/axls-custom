@@ -115,6 +115,22 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
                 "company_id": cls.company.id,
             }
         )
+        cls.product_b = cls.env["product.product"].create(
+            {
+                "name": "Deposit Test Product B",
+                "type": "product",
+                "categ_id": cls.category.id,
+                "company_id": cls.company.id,
+            }
+        )
+        cls.product_c = cls.env["product.product"].create(
+            {
+                "name": "Deposit Test Product C",
+                "type": "product",
+                "categ_id": cls.category.id,
+                "company_id": cls.company.id,
+            }
+        )
         cls.account_deposit = Account.create(
             {
                 "name": "Purchase Deposit",
@@ -132,21 +148,33 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
             }
         )
 
-    def _create_purchase_order(self):
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+    DEPOSIT_DATE = "2025-10-01"  # USD 1 = JPY 150
+    FINAL_DATE = "2025-11-01"  # USD 1 = JPY 160
+
+    def _create_purchase_order(self, lines=None):
+        """Confirmed USD purchase order. Defaults to a single USD 100 line;
+        pass ``[(product, price), ...]`` for more, all at quantity 1 so one
+        receipt validates them together.
+        """
+        lines = lines or [(self.product, 100.0)]
         with Form(self.env["purchase.order"]) as po_form:
             po_form.partner_id = self.vendor
-            po_form.date_order = fields.Date.from_string("2025-10-01")
+            po_form.date_order = fields.Date.from_string(self.DEPOSIT_DATE)
             po_form.company_id = self.company
             po_form.currency_id = self.currency_usd
-            with po_form.order_line.new() as line:
-                line.product_id = self.product
-                line.product_qty = 1.0
-                line.price_unit = 100.0
+            for product, price in lines:
+                with po_form.order_line.new() as line:
+                    line.product_id = product
+                    line.product_qty = 1.0
+                    line.price_unit = price
         po = po_form.save()
         po.button_confirm()
         return po
 
-    def _create_advance_payment(self, po):
+    def _register_deposit(self, po, percentage=30):
         wizard_env = self.env["purchase.advance.payment.inv"].with_context(
             active_id=po.id,
             active_ids=po.ids,
@@ -155,39 +183,38 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         )
         with Form(wizard_env) as advance_form:
             advance_form.advance_payment_method = "percentage"
-            advance_form.amount = 30
+            advance_form.amount = percentage
             advance_form.deposit_account_id = self.account_deposit
-        wizard = advance_form.save()
-        wizard.create_invoices()
+        advance_form.save().create_invoices()
+        deposit_bill = po.invoice_ids
+        deposit_bill.invoice_date = fields.Date.from_string(self.DEPOSIT_DATE)
+        return deposit_bill
+
+    def _post_deposit_bill(self, po, company_amount, percentage=30):
+        """Register a deposit, pin it to the amount actually paid, post it."""
+        deposit_bill = self._register_deposit(po, percentage)
+        self._deposit_line(deposit_bill).company_amount = company_amount
+        deposit_bill.action_post()
+        return deposit_bill
 
     def _create_final_bill(self, po):
         po.picking_ids.move_ids.write({"quantity_done": 1})
         po.picking_ids.button_validate()
         res = po.with_context(create_bill=True).action_create_invoice()
         bill = self.env["account.move"].browse(res["res_id"])
-        bill.invoice_date = fields.Date.from_string("2025-11-01")
+        bill.invoice_date = fields.Date.from_string(self.FINAL_DATE)
         return bill
-
-    def _post_deposit_bill(self, po, company_amount):
-        deposit_bill = po.invoice_ids
-        deposit_bill.invoice_date = fields.Date.from_string("2025-10-01")
-        deposit_line = deposit_bill.line_ids.filtered(
-            lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
-        )
-        deposit_line.company_amount = company_amount
-        deposit_bill.action_post()
-        return deposit_bill, deposit_line
 
     def _create_bill_without_deposit(self):
         """A plain foreign-currency vendor bill, no purchase deposit involved."""
-        bill = self.env["account.move"].create(
+        return self.env["account.move"].create(
             {
                 "move_type": "in_invoice",
                 "partner_id": self.vendor.id,
                 "company_id": self.company.id,
                 "journal_id": self.journal.id,
                 "currency_id": self.currency_usd.id,
-                "invoice_date": fields.Date.from_string("2025-11-01"),
+                "invoice_date": fields.Date.from_string(self.FINAL_DATE),
                 "invoice_line_ids": [
                     Command.create(
                         {
@@ -199,44 +226,113 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
                 ],
             }
         )
-        return bill, bill.invoice_line_ids
 
-    def test_deposit_rate_difference_lands_on_product_line(self):
-        """The end-to-end accounting outcome, which no single line of the
-        implementation states: USD 100 PO, USD 30 deposit settled for 3900,
-        final bill at rate 160. The offset must stay pinned to the 3900 really
-        paid, the goods must carry the true cost (3900 + 70*160 = 15100), the
-        payable must be exactly the remaining USD 70 at the current rate, and
-        the valuation layer must follow the goods rather than the rate.
-        """
-        po = self._create_purchase_order()
-        self._create_advance_payment(po)
-        _deposit_bill, deposit_line = self._post_deposit_bill(po, 3900)
-        self.assertEqual(deposit_line.balance, 3900)
-        deposit_po_line = po.order_line.filtered("is_deposit")
-        self.assertEqual(deposit_po_line.deposit_company_amount, 3900)
-        bill = self._create_final_bill(po)
-        offset_line = bill.line_ids.filtered(
+    def _deposit_line(self, move):
+        """The deposit bill's own line, which the positive quantity picks out."""
+        return move.line_ids.filtered(
+            lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
+        )
+
+    def _offset_line(self, move):
+        """The final bill's deposit offset: same purchase order line, negated."""
+        return move.line_ids.filtered(
             lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
         )
-        product_line = bill.line_ids.filtered(
+
+    def _goods_lines(self, move):
+        return move.line_ids.filtered(
             lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
         )
-        payable_line = bill.line_ids.filtered(
+
+    def _goods_line(self, move, product):
+        return self._goods_lines(move).filtered(lambda l: l.product_id == product)
+
+    def _payable_line(self, move):
+        return move.line_ids.filtered(
             lambda l: l.account_id.account_type == "liability_payable"
         )
-        self.assertEqual(offset_line.balance, -3900)
-        self.assertEqual(product_line.balance, 15100)
-        self.assertEqual(payable_line.balance, -11200)
-        # The rate difference is booked into the goods, not parked on a manual
-        # override: company_amount stays empty and means "the user typed this".
-        self.assertFalse(product_line.company_amount)
+
+    # ------------------------------------------------------------------
+    # Tests
+    # ------------------------------------------------------------------
+    def test_deposit_rate_difference_lands_on_the_goods(self):
+        """The end-to-end outcome, which no single line of the implementation
+        states. USD 100 order, USD 30 deposit settled for 3900, final bill at
+        rate 160: the offset stays pinned to the 3900 really paid, the goods
+        carry the true cost (3900 + 70*160), the payable is exactly the
+        remaining USD 70 at the current rate, and the valuation layer follows
+        the goods rather than the rate.
+        """
+        po = self._create_purchase_order()
+        self._post_deposit_bill(po, 3900)
+        self.assertEqual(
+            po.order_line.filtered("is_deposit").deposit_company_amount, 3900
+        )
+        bill = self._create_final_bill(po)
+        goods_line = self._goods_lines(bill)
+        self.assertEqual(self._offset_line(bill).balance, -3900)
+        self.assertEqual(goods_line.balance, 15100)
+        self.assertEqual(self._payable_line(bill).balance, -11200)
+        # The difference is booked into the goods, not parked on the override:
+        # company_amount stays empty and keeps meaning "the user typed this".
+        self.assertFalse(goods_line.company_amount)
+        # purchase_stock divides the gross unit price back by currency_rate, so
+        # it has to round trip to the overridden balance, not the rate-based one.
+        self.assertAlmostEqual(
+            goods_line._get_gross_unit_price()
+            / goods_line.currency_rate
+            * goods_line.quantity,
+            goods_line.balance,
+            places=2,
+        )
+        self.assertNotAlmostEqual(
+            goods_line.balance, goods_line._get_rate_based_balance(), places=2
+        )
         bill.action_post()
-        self.assertEqual(offset_line.balance, -3900)
-        self.assertEqual(product_line.balance, 15100)
-        self.assertEqual(payable_line.balance, -11200)
-        svls = bill.line_ids.mapped("stock_valuation_layer_ids")
-        self.assertEqual(sum(svls.mapped("value")), -900.0)
+        self.assertEqual(self._offset_line(bill).balance, -3900)
+        self.assertEqual(goods_line.balance, 15100)
+        self.assertEqual(self._payable_line(bill).balance, -11200)
+        self.assertEqual(
+            sum(bill.line_ids.mapped("stock_valuation_layer_ids").mapped("value")),
+            -900.0,
+        )
+
+    def test_rate_difference_is_prorated_across_goods_lines(self):
+        """With more than one goods line the difference is split by value, and
+        the last line sweeps up the rounding so the shares still add back to it
+        exactly. A single-line order reaches neither: it takes the remainder
+        branch on the first pass, leaving the weighting and the sweep untested.
+
+        USD 20 + 30 + 50, deposit USD 30 settled for 3801, final rate 160. The
+        difference is -999, which the weights turn into -199.8, -299.7 and
+        -499.5. Rounded on their own those are -200, -300 and -500, one yen more
+        than there is to give away, so the last line has to take -499 instead.
+        """
+        po = self._create_purchase_order(
+            [(self.product, 20.0), (self.product_b, 30.0), (self.product_c, 50.0)]
+        )
+        self._post_deposit_bill(po, 3801)
+        bill = self._create_final_bill(po)
+        line_a = self._goods_line(bill, self.product)
+        line_b = self._goods_line(bill, self.product_b)
+        line_c = self._goods_line(bill, self.product_c)
+        # Rate-based 3200, 4800 and 8000, less the shares. Line A pins the
+        # weighting: an equal split would have given it -333, not -200.
+        self.assertEqual(line_a.balance, 3000)
+        self.assertEqual(line_b.balance, 4500)
+        # Line C pins the sweep: rounding its own share would give 7500.
+        self.assertEqual(line_c.balance, 7501)
+        self.assertEqual(self._offset_line(bill).balance, -3801)
+        # The shares add back to the difference exactly, which is what leaves
+        # the payable at the remaining USD 70 converted at the current rate
+        # rather than a yen out.
+        self.assertEqual(line_a.balance + line_b.balance + line_c.balance - 16000, -999)
+        self.assertEqual(self._payable_line(bill).balance, -11200)
+        bill.action_post()
+        self.assertEqual(
+            sum(bill.line_ids.mapped("stock_valuation_layer_ids").mapped("value")),
+            -999.0,
+        )
 
     def test_deposit_value_is_read_back_from_the_ledger(self):
         """The deposit value must be derived from posted bill lines, not
@@ -246,138 +342,75 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         stale amount to the final bill.
         """
         po = self._create_purchase_order()
-        self._create_advance_payment(po)
-        deposit_bill, _deposit_line = self._post_deposit_bill(po, 3900)
+        deposit_bill = self._post_deposit_bill(po, 3900)
         deposit_po_line = po.order_line.filtered("is_deposit")
         self.assertEqual(deposit_po_line.deposit_company_amount, 3900)
         deposit_bill.button_draft()
         self.assertEqual(deposit_po_line.deposit_company_amount, 0)
 
-    def test_only_the_deposit_bill_line_may_be_pinned(self):
-        """The deposit bill's own line takes the override; nothing on the final
-        bill does. The offset line there is the same purchase order line with a
-        negative quantity, so it looks eligible on every test but the sign --
-        and its value is derived from the posted deposit bill, which typing
-        over would quietly untie.
+    def test_only_the_deposit_bill_may_be_pinned(self):
+        """Both lines of the final bill refuse the override. The offset is the
+        same purchase order line as the deposit's and so looks eligible on every
+        test but the sign, while its value is derived from the posted deposit
+        bill and typing over it would quietly untie the two.
         """
         po = self._create_purchase_order()
-        self._create_advance_payment(po)
-        _deposit_bill, deposit_line = self._post_deposit_bill(po, 3900)
-        self.assertTrue(deposit_line.move_id.is_deposit)
+        deposit_bill = self._post_deposit_bill(po, 3900)
+        self.assertTrue(deposit_bill.is_deposit)
         bill = self._create_final_bill(po)
-        self.assertTrue(_deposit_bill.is_deposit)
-        self.assertFalse(bill.is_deposit)
-        goods_line = bill.line_ids.filtered(
-            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
-        )
-        offset_line = bill.line_ids.filtered(
-            lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
-        )
-        # The two move-level concepts are disjoint, and this bill is where they
-        # part company: nobody may type on it, yet its goods line's balance IS
-        # pinned (it absorbed the deposit's rate difference), so stock valuation
-        # has to keep following it. Gating valuation on is_deposit instead
-        # zeroes the adjustment.
+        # The two move-level concepts are disjoint, and the final bill is where
+        # they part company: nobody may type on it, yet its goods line's balance
+        # IS pinned, so stock valuation has to keep following it. Gating
+        # valuation on is_deposit instead zeroes the adjustment.
         self.assertFalse(bill.is_deposit)
         self.assertTrue(bill._get_deposit_offset_lines())
         with self.assertRaises(ValidationError):
-            goods_line.company_amount = 17000
+            self._goods_lines(bill).company_amount = 17000
         with self.assertRaises(ValidationError):
-            offset_line.company_amount = 3000
+            self._offset_line(bill).company_amount = 3000
 
-    def test_standard_conversion_untouched_without_deposit(self):
-        """The override hooks _sync_invoice, which runs for every invoice line
-        in the database. Defends the scope check inside it: a bill with no
-        deposit must keep Odoo's rate-based balance untouched.
+    def test_plain_vendor_bill_is_untouched(self):
+        """A bill with no deposit keeps Odoo's rate-based balance and refuses
+        the override. The module hooks _sync_invoice, which runs for every
+        invoice line in the database, so both halves are worth stating.
         """
-        _bill, line = self._create_bill_without_deposit()
-        # USD 100 at the 2025-11-01 rate (1 USD = 160 JPY).
-        self.assertEqual(line.balance, 16000)
-
-    def test_changing_the_bill_date_rebalances_the_deposit_bill(self):
-        """Editing the bill date moves currency_rate, which makes the standard
-        sync recompute every line's balance from the rate. The override has to
-        be re-applied and the payable rebuilt from it, or the move is left
-        unbalanced. Defends the ordering against the payment-term line being
-        settled from rate-converted balances instead of overridden ones.
-        """
-        po = self._create_purchase_order()
-        self._create_advance_payment(po)
-        deposit_bill = po.invoice_ids
-        deposit_bill.invoice_date = fields.Date.from_string("2025-11-01")
-        deposit_line = deposit_bill.line_ids.filtered(
-            lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
-        )
-        deposit_line.company_amount = 3900
-        self.assertEqual(deposit_line.balance, 3900)
-        # Back-date the bill: USD 1 = JPY 150 instead of 160.
-        deposit_bill.invoice_date = fields.Date.from_string("2025-10-01")
-        payable_line = deposit_bill.line_ids.filtered(
-            lambda l: l.account_id.account_type == "liability_payable"
-        )
-        self.assertEqual(deposit_line.balance, 3900)
-        self.assertEqual(payable_line.balance, -3900)
-        deposit_bill.action_post()
-
-    def test_override_rejected_on_a_plain_vendor_bill(self):
-        """A bill with no deposit must refuse the override on a direct write.
-        Defends the account.move.line half of the constraint: Odoo 16 ignores
-        dotted paths in @api.constrains, so the account.move constraint cannot
-        see a value written straight onto a line and this case is only covered
-        while the line-level constraint exists.
-        """
-        _bill, line = self._create_bill_without_deposit()
+        bill = self._create_bill_without_deposit()
+        line = bill.invoice_line_ids
+        self.assertFalse(bill.is_deposit)
+        self.assertEqual(line.balance, 16000)  # USD 100 at the 2025-11-01 rate
         with self.assertRaises(ValidationError):
             line.company_amount = 17000
 
-    def test_gross_unit_price_round_trips_to_the_overridden_balance(self):
-        """purchase_stock consumes _get_gross_unit_price by dividing it back by
-        currency_rate, so the value must be the overridden balance expressed in
-        document currency. Defends that round trip: the scaling factor has to
-        stay currency_rate (the caller's own field, not a date-based
-        conversion), and the balance has to be the overridden one rather than
-        the rate-based one, or the valuation silently reverts to the rate.
+    def test_changing_the_bill_date_rebalances_the_deposit_bill(self):
+        """Editing the bill date moves currency_rate, so the standard sync
+        re-derives every balance from the new rate, payable included, while the
+        override puts the deposit line straight back. The needed totals come out
+        identical, Odoo's payment-term sync concludes there is nothing to do,
+        and the bill would be left unbalanced.
         """
         po = self._create_purchase_order()
-        self._create_advance_payment(po)
-        self._post_deposit_bill(po, 3900)
-        bill = self._create_final_bill(po)
-        product_line = bill.line_ids.filtered(
-            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
-        )
-        gross = product_line._get_gross_unit_price()
-        self.assertAlmostEqual(
-            gross / product_line.currency_rate * product_line.quantity,
-            product_line.balance,
-            places=2,
-        )
-        # And it is the overridden balance, not the rate-based one.
-        self.assertNotAlmostEqual(
-            product_line.balance, product_line._get_rate_based_balance(), places=2
-        )
+        deposit_bill = self._register_deposit(po)
+        deposit_bill.invoice_date = fields.Date.from_string(self.FINAL_DATE)
+        deposit_line = self._deposit_line(deposit_bill)
+        deposit_line.company_amount = 3900
+        self.assertEqual(deposit_line.balance, 3900)
+        # Back-date the bill: USD 1 = JPY 150 instead of 160.
+        deposit_bill.invoice_date = fields.Date.from_string(self.DEPOSIT_DATE)
+        self.assertEqual(deposit_line.balance, 3900)
+        self.assertEqual(self._payable_line(deposit_bill).balance, -3900)
+        deposit_bill.action_post()
 
     def test_changing_the_bill_date_on_the_final_bill(self):
-        """Back-dating the final bill re-derives the goods line at the new rate
-        while the offset stays pinned to what the deposit cost, and the payable
-        follows. Unlike the deposit bill, the move's total does move with the
-        rate here, which is what lets Odoo's own payment-term sync notice.
+        """The counterpart, which needs no such help. Back-dating the final bill
+        re-derives the goods at the new rate while the offset stays pinned, so
+        the move's total does shift and Odoo's own payment-term sync notices.
         """
         po = self._create_purchase_order()
-        self._create_advance_payment(po)
         self._post_deposit_bill(po, 3900)
         bill = self._create_final_bill(po)
-        bill.invoice_date = fields.Date.from_string("2025-10-01")
-        offset_line = bill.line_ids.filtered(
-            lambda l: l.purchase_line_id.is_deposit and l.quantity < 0
-        )
-        goods_line = bill.line_ids.filtered(
-            lambda l: l.display_type == "product" and not l.purchase_line_id.is_deposit
-        )
-        payable_line = bill.line_ids.filtered(
-            lambda l: l.account_id.account_type == "liability_payable"
-        )
+        bill.invoice_date = fields.Date.from_string(self.DEPOSIT_DATE)
         # Rate 150: goods 15000 less the 600 rate difference on the deposit.
-        self.assertEqual(offset_line.balance, -3900)
-        self.assertEqual(goods_line.balance, 14400)
-        self.assertEqual(payable_line.balance, -10500)
+        self.assertEqual(self._offset_line(bill).balance, -3900)
+        self.assertEqual(self._goods_lines(bill).balance, 14400)
+        self.assertEqual(self._payable_line(bill).balance, -10500)
         bill.action_post()

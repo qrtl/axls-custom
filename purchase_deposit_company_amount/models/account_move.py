@@ -96,18 +96,22 @@ class AccountMove(models.Model):
             line: abs(line._get_rate_based_balance()) for line in absorbing_lines
         }
         total_weight = sum(weights.values())
+        if not total_weight:
+            # Nothing to prorate against. Unreachable through the wizard, since
+            # goods worth nothing give a percentage deposit of nothing and so no
+            # difference to spread, but the division below needs the guard; the
+            # payment-term rebalance keeps the move balanced either way.
+            return targets
         remaining = delta
-        for idx, line in enumerate(absorbing_lines):
-            if idx < len(absorbing_lines) - 1:
-                if total_weight:
-                    share = company_currency.round(delta * weights[line] / total_weight)
-                else:
-                    share = company_currency.round(delta / len(absorbing_lines))
-                remaining -= share
-            else:
+        last_line = absorbing_lines[-1]
+        for line in absorbing_lines:
+            if line == last_line:
                 # The last line takes the rounding remainder, so the shares add
                 # back up to the delta exactly and the move stays balanced.
                 share = company_currency.round(remaining)
+            else:
+                share = company_currency.round(delta * weights[line] / total_weight)
+                remaining -= share
             targets[line] = company_currency.round(
                 line._get_rate_based_balance() + share
             )
