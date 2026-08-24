@@ -7,10 +7,10 @@ from odoo import api, fields, models
 class PurchaseOrder(models.Model):
     _inherit = "purchase.order"
 
-    analytic_account_ids = fields.Many2many(
+    line_analytic_account_ids = fields.Many2many(
         "account.analytic.account",
         string="Analytic Accounts of Lines",
-        compute="_compute_analytic_account_ids",
+        compute="_compute_line_analytic_account_ids",
         store=True,
         help="Analytic accounts the lines of the order are distributed to. It "
         "holds the accounts of every line, so the order still shows what it is "
@@ -19,7 +19,7 @@ class PurchaseOrder(models.Model):
     )
 
     @api.depends("order_line.analytic_distribution")
-    def _compute_analytic_account_ids(self):
+    def _compute_line_analytic_account_ids(self):
         # The keys of the analytic_distribution json field are the ids of the
         # analytic accounts the distribution applies to.
         account_ids_by_order = {
@@ -40,6 +40,6 @@ class PurchaseOrder(models.Model):
         )
         existing_ids = set(accounts.exists().ids)
         for order, account_ids in account_ids_by_order.items():
-            order.analytic_account_ids = accounts.browse(
+            order.line_analytic_account_ids = accounts.browse(
                 sorted(account_ids & existing_ids)
             )

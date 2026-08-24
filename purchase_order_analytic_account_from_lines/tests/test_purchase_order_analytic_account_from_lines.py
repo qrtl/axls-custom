@@ -7,7 +7,7 @@ from odoo.tests.common import TransactionCase, tagged
 # Purchase orders cannot be created at install, as the fields the modules
 # depending on purchase make mandatory are not in the registry yet.
 @tagged("post_install", "-at_install")
-class TestPurchaseOrderAnalyticAccount(TransactionCase):
+class TestPurchaseOrderAnalyticAccountFromLines(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -49,25 +49,25 @@ class TestPurchaseOrderAnalyticAccount(TransactionCase):
             ]
         )
         self.assertEqual(
-            self.order.analytic_account_ids,
+            self.order.line_analytic_account_ids,
             self.account | self.account_2 | self.other_account,
         )
         # The accounts follow the distribution of the lines, whichever plan
         # they belong to.
         other_line.analytic_distribution = {str(self.other_account.id): 100.0}
         self.assertEqual(
-            self.order.analytic_account_ids, self.account | self.other_account
+            self.order.line_analytic_account_ids, self.account | self.other_account
         )
         # A deleted account leaves the order, as the distribution it stays
         # behind in holds no reference to it.
         self.other_account.unlink()
-        self.assertEqual(self.order.analytic_account_ids, self.account)
+        self.assertEqual(self.order.line_analytic_account_ids, self.account)
         # A line without distribution adds none, and an order without lines
         # holds none.
         line.analytic_distribution = False
-        self.assertFalse(self.order.analytic_account_ids)
+        self.assertFalse(self.order.line_analytic_account_ids)
         other_line.unlink()
-        self.assertFalse(self.order.analytic_account_ids)
+        self.assertFalse(self.order.line_analytic_account_ids)
 
     def test_archived_account_stays_on_the_order(self):
         """An archived account is kept, so it is back as soon as it is too."""
@@ -81,10 +81,10 @@ class TestPurchaseOrderAnalyticAccount(TransactionCase):
         # filtered out of an x2many when it is read is up to the ORM. What is
         # tested here is the value the order keeps.
         self.assertEqual(
-            self.order.with_context(active_test=False).analytic_account_ids,
+            self.order.with_context(active_test=False).line_analytic_account_ids,
             self.account | self.other_account,
         )
         self.other_account.action_unarchive()
         self.assertEqual(
-            self.order.analytic_account_ids, self.account | self.other_account
+            self.order.line_analytic_account_ids, self.account | self.other_account
         )

@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-# 	* purchase_order_analytic_account
+# 	* purchase_order_analytic_account_from_lines
 #
 msgid ""
 msgstr ""
@@ -15,13 +15,13 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: purchase_order_analytic_account
-#: model:ir.model.fields,field_description:purchase_order_analytic_account.field_purchase_order__analytic_account_ids
+#. module: purchase_order_analytic_account_from_lines
+#: model:ir.model.fields,field_description:purchase_order_analytic_account_from_lines.field_purchase_order__line_analytic_account_ids
 msgid "Analytic Accounts of Lines"
 msgstr "明細の分析勘定"
 
-#. module: purchase_order_analytic_account
-#: model:ir.model.fields,help:purchase_order_analytic_account.field_purchase_order__analytic_account_ids
+#. module: purchase_order_analytic_account_from_lines
+#: model:ir.model.fields,help:purchase_order_analytic_account_from_lines.field_purchase_order__line_analytic_account_ids
 msgid ""
 "Analytic accounts the lines of the order are distributed to. It holds the "
 "accounts of every line, so the order still shows what it is distributed to "
@@ -29,7 +29,7 @@ msgid ""
 "analytic account."
 msgstr "オーダの明細が配賦されている分析勘定。すべての明細の勘定を保持するため、明細ごとに配賦が異なる場合でもオーダの配賦先が表示されます。保存されるため、購買オーダを分析勘定で絞り込むこともできます。"
 
-#. module: purchase_order_analytic_account
-#: model:ir.model,name:purchase_order_analytic_account.model_purchase_order
+#. module: purchase_order_analytic_account_from_lines
+#: model:ir.model,name:purchase_order_analytic_account_from_lines.model_purchase_order
 msgid "Purchase Order"
 msgstr "購買オーダ"
