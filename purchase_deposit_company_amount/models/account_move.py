@@ -79,7 +79,19 @@ class AccountMove(models.Model):
             deposit_amount = line.purchase_line_id.deposit_company_amount
             if line in targets or company_currency.is_zero(deposit_amount):
                 continue
-            targets[line] = -deposit_amount
+            # The offset credits the deposit account on a bill and debits it
+            # back on a refund. _reverse_moves sign-flips neither the quantity
+            # nor purchase_line_id, so the reversal of a final bill still
+            # arrives here as an offset line, only pointing the other way -- a
+            # fixed negative would credit the deposit a second time instead of
+            # reinstating it. The direction is taken from the line rather than
+            # from move_type because move_type flips the moment the reversal is
+            # created, while amount_currency is still mid-sync; balance has to
+            # agree in sign with amount_currency as it stands right now, which
+            # is what account_move_line_check_amount_currency_balance_sign
+            # enforces, and what makes the override safe to re-run.
+            sign = -1 if line.amount_currency < 0 else 1
+            targets[line] = sign * abs(deposit_amount)
         delta = sum(
             line._get_rate_based_balance() - targets[line]
             for line in offset_lines

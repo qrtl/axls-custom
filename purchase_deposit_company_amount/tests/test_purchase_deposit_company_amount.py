@@ -3,9 +3,13 @@
 
 from odoo import Command, fields
 from odoo.exceptions import ValidationError
-from odoo.tests.common import Form, TransactionCase
+from odoo.tests.common import Form, TransactionCase, tagged
 
 
+# sale_stock loads after this module, so at at_install time res_company has no
+# security_lead field yet and its default cannot apply -- while the column is
+# already NOT NULL. Creating the test company then fails outright.
+@tagged("post_install", "-at_install")
 class TestPurchaseDepositCompanyAmount(TransactionCase):
     @classmethod
     def setUpClass(cls):
@@ -197,11 +201,16 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         deposit_bill.action_post()
         return deposit_bill
 
-    def _create_final_bill(self, po):
-        po.picking_ids.move_ids.write({"quantity_done": 1})
-        po.picking_ids.button_validate()
-        res = po.with_context(create_bill=True).action_create_invoice()
-        bill = self.env["account.move"].browse(res["res_id"])
+    def _create_final_bill(self, po, receive=True):
+        """Pass ``receive=False`` to bill an order whose goods are already in,
+        as when a credited bill is entered again.
+        """
+        if receive:
+            po.picking_ids.move_ids.write({"quantity_done": 1})
+            po.picking_ids.button_validate()
+        existing = po.invoice_ids
+        po.with_context(create_bill=True).action_create_invoice()
+        bill = po.invoice_ids - existing
         bill.invoice_date = fields.Date.from_string(self.FINAL_DATE)
         return bill
 
@@ -380,6 +389,86 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         self.assertEqual(line.balance, 16000)  # USD 100 at the 2025-11-01 rate
         with self.assertRaises(ValidationError):
             line.company_amount = 17000
+
+    def test_credit_note_reverses_the_final_bill(self):
+        """A credit note has to undo the final bill line for line, and getting
+        there needs the offset's direction taken from the move.
+
+        _reverse_moves copies product lines untouched -- it sign-flips only
+        entry and cogs lines -- so the offset arrives on the refund with its
+        negative quantity and its purchase order line intact, still picked up
+        by _get_deposit_offset_lines. What does flip is direction_sign, since
+        in_refund is inbound, which turns the offset into a debit. Pinning it
+        to a fixed negative credits the deposit account a second time instead
+        of reinstating it, and the doubled difference is then spread into the
+        goods. The move stays balanced either way -- the difference is only
+        ever moved between the deposit and the goods, never into the payable --
+        so the payable reconciles cleanly and nothing flags the error.
+        """
+        po = self._create_purchase_order()
+        self._post_deposit_bill(po, 3900)
+        bill = self._create_final_bill(po)
+        bill.action_post()
+        refund = bill._reverse_moves()
+        # _reverse_moves leaves the date to the user; the rate is the bill's.
+        refund.invoice_date = fields.Date.from_string(self.FINAL_DATE)
+        self.assertEqual(refund.move_type, "in_refund")
+        self.assertTrue(refund._get_deposit_offset_lines())
+        # Every line is the bill's, negated.
+        self.assertEqual(self._offset_line(refund).balance, 3900)
+        self.assertEqual(self._goods_lines(refund).balance, -15100)
+        self.assertEqual(self._payable_line(refund).balance, 11200)
+        refund.action_post()
+        self.assertEqual(self._offset_line(refund).balance, 3900)
+        self.assertEqual(self._goods_lines(refund).balance, -15100)
+        # The pair nets to nothing, which is the whole point of a reversal: the
+        # deposit account closes out and no phantom cost is left in stock.
+        pair = bill + refund
+        for account in pair.line_ids.account_id:
+            self.assertEqual(
+                sum(
+                    pair.line_ids.filtered(lambda l: l.account_id == account).mapped(
+                        "balance"
+                    )
+                ),
+                0,
+                "%s does not net to zero across the bill and its reversal"
+                % account.display_name,
+            )
+
+    def test_credit_note_and_rebill_leave_no_residue(self):
+        """The usual correction: reverse the final bill, then enter it again.
+        deposit_company_amount is read off posted deposit bills only, so the
+        reversal of a *final* bill -- which carries no positive-quantity
+        deposit line -- leaves it at 3900 and the new bill prices identically.
+        Any sign error on the refund would therefore not cancel out here; it
+        would accumulate.
+        """
+        po = self._create_purchase_order()
+        self._post_deposit_bill(po, 3900)
+        bill = self._create_final_bill(po)
+        bill.action_post()
+        refund = bill._reverse_moves()
+        refund.invoice_date = fields.Date.from_string(self.FINAL_DATE)
+        refund.action_post()
+        deposit_line = po.order_line.filtered("is_deposit")
+        self.assertEqual(deposit_line.deposit_company_amount, 3900)
+        rebill = self._create_final_bill(po, receive=False)
+        rebill.action_post()
+        self.assertEqual(self._offset_line(rebill).balance, -3900)
+        self.assertEqual(self._goods_lines(rebill).balance, 15100)
+        # Net of all three, the deposit account is closed out exactly once and
+        # the goods carry their true cost exactly once.
+        posted = bill + refund + rebill
+        self.assertEqual(
+            sum(
+                posted.line_ids.filtered(
+                    lambda l: l.account_id == self.account_deposit
+                ).mapped("balance")
+            ),
+            -3900,
+        )
+        self.assertEqual(sum(self._goods_lines(posted).mapped("balance")), 15100)
 
     def test_changing_the_bill_date_rebalances_the_deposit_bill(self):
         """Editing the bill date moves currency_rate, so the standard sync
