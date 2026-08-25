@@ -17,27 +17,39 @@ class PurchaseOrderLine(models.Model):
         compute="_compute_deposit_company_amount",
         currency_field="company_currency_id",
         help="Company-currency value actually booked by the posted deposit "
-        "vendor bill(s) for this deposit line. The final vendor bill pins its "
-        "deposit-offset line to this value so the deposit account closes out "
-        "at the amount that was really paid, whatever the exchange rate has "
-        "done since.",
+        "vendor bill(s) for this deposit line, and zero unless one of them "
+        "carries a hand-entered Company Currency Amount. The final vendor bill "
+        "pins its deposit-offset line to this value so the deposit account "
+        "closes out at the amount that was really paid, whatever the exchange "
+        "rate has done since.",
     )
 
     @api.depends(
         "is_deposit",
         "invoice_lines.balance",
+        "invoice_lines.company_amount",
         "invoice_lines.quantity",
         "invoice_lines.parent_state",
     )
     def _compute_deposit_company_amount(self):
+        """Zero unless somebody pinned the deposit by hand, which is what makes
+        the whole override opt-in: with no one having said what the deposit
+        really cost, the exchange rate is the best figure there is and the final
+        bill is left to Odoo's standard conversion.
+
+        Once any one bill is pinned, every posted bill for this deposit counts,
+        pinned or not. Their balances together are what actually sits in the
+        deposit account, and closing that out exactly is the point.
+        """
         for line in self:
+            line.deposit_company_amount = 0.0
             if not line.is_deposit:
-                line.deposit_company_amount = 0.0
                 continue
-            line.deposit_company_amount = sum(
-                invoice_line.balance
-                for invoice_line in line.invoice_lines
-                if invoice_line.quantity > 0
-                and invoice_line.parent_state == "posted"
-                and invoice_line.move_id.move_type in ("in_invoice", "in_refund")
+            booked_lines = line.invoice_lines.filtered(
+                lambda l: l.quantity > 0
+                and l.parent_state == "posted"
+                and l.move_id.move_type in ("in_invoice", "in_refund")
             )
+            if not booked_lines.filtered("company_amount"):
+                continue
+            line.deposit_company_amount = sum(booked_lines.mapped("balance"))

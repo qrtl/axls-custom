@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="account.view_move_form" />
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="inside">
-                <field name="is_deposit" invisible="1" />
+                <field name="allow_company_amount" invisible="1" />
             </xpath>
             <xpath
                 expr="//field[@name='invoice_line_ids']/tree/field[@name='price_subtotal']"
@@ -15,7 +15,7 @@
                 <field
                     name="company_amount"
                     optional="hide"
-                    attrs="{'column_invisible': [('parent.is_deposit', '=', False)]}"
+                    attrs="{'column_invisible': [('parent.allow_company_amount', '=', False)]}"
                 />
             </xpath>
         </field>

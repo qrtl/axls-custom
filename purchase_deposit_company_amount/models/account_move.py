@@ -14,6 +14,11 @@ class AccountMove(models.Model):
         "the only kind of bill on which the company-currency amount can be "
         "entered by hand.",
     )
+    allow_company_amount = fields.Boolean(
+        compute="_compute_allow_company_amount",
+        help="Technical field: the company-currency amount may be entered by "
+        "hand on this bill's deposit line.",
+    )
 
     @api.depends(
         "invoice_line_ids.purchase_line_id.is_deposit",
@@ -30,6 +35,28 @@ class AccountMove(models.Model):
                     lambda l: l.purchase_line_id.is_deposit and l.quantity > 0
                 )
             )
+
+    @api.depends("is_deposit", "currency_id", "company_currency_id")
+    def _compute_allow_company_amount(self):
+        """A deposit bill kept in the company currency has nothing to override:
+        its balance already *is* the amount paid, and
+        ``_get_company_amount_targets`` skips the move entirely. Accepting a
+        value there would silently do nothing, so the field is refused and its
+        column hidden.
+        """
+        for move in self:
+            move.allow_company_amount = bool(
+                move.is_deposit and move.currency_id != move.company_currency_id
+            )
+
+    @api.constrains("currency_id", "line_ids")
+    def _check_company_amount_allowed(self):
+        """Odoo 16 ignores dotted paths in ``@api.constrains``, so the line-level
+        check cannot see the bill turning ineligible under a value already
+        entered -- switching the bill to the company currency, or the deposit
+        line losing its positive quantity. Re-run it from the move.
+        """
+        self.line_ids._check_company_amount_allowed()
 
     def _get_deposit_offset_lines(self):
         """The negative-quantity deposit lines ``purchase_deposit`` adds to the
@@ -155,8 +182,18 @@ class AccountMove(models.Model):
             line.balance = company_currency.round(line.balance - share)
 
     def _apply_company_amount_overrides(self):
+        """Posted moves are left alone, as every sibling of this hook in
+        ``account.move._sync_dynamic_lines`` does. The targets are derived from
+        ``currency_rate``, which is *not* stored -- it is resolved from
+        ``res.currency.rate`` on every read -- so correcting or back-filling a
+        rate after the fact silently moves them. Without this guard the next
+        write to touch the move's lines, reconciling a payment among them,
+        would re-book a posted entry and push the difference onto the payable.
+        """
         for move in self:
             if move.move_type not in ("in_invoice", "in_refund"):
+                continue
+            if move.state == "posted":
                 continue
             company_currency = move.company_id.currency_id
             targets = move._get_company_amount_targets()

@@ -17,8 +17,12 @@ where the rate on the final bill date is USD 1 = JPY 160:
 The product line carries 3900 paid for the deposit plus USD 70 at the
 current rate, and the payable is the remaining USD 70 at that rate.
 
-The column only appears on the deposit bill, the deposit being the one
-amount known outside Odoo. Everything on the final bill is derived from it:
-the offset line is read back from the posted deposit bill and the goods
-lines take the rate difference. Leave the field empty on the deposit bill to
-keep the standard conversion.
+The column only appears on a deposit bill in a foreign currency, the deposit
+being the one amount known outside Odoo. In the company currency there is no
+conversion to override, so the field is refused there.
+
+Everything on the final bill is derived from what was entered: the offset
+line is read back from the posted deposit bill and the goods lines take the
+rate difference. Leaving the field empty on the deposit bill opts out of all
+of it -- the deposit, the offset and the goods are then converted at the
+exchange rate exactly as Odoo does without this module.

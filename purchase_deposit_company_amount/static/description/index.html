@@ -386,9 +386,10 @@ closes out at the amount that was actually paid.</li>
 <li>Books the resulting exchange rate difference into the product lines,
 and reflects it in the stock valuation of the received goods.</li>
 </ul>
-<p>The field is only available on the deposit line of the deposit bill, and
-the column is hidden on every other bill. Everything on the final bill
-is derived, and elsewhere the standard rate conversion applies.</p>
+<p>The field is only available on the deposit line of a deposit bill raised
+in a foreign currency, and the column is hidden everywhere else.
+Everything on the final bill is derived from it, and a deposit nobody
+entered an amount for keeps the standard rate conversion throughout.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
@@ -433,11 +434,15 @@ Payable           -$70   -11200
 </pre>
 <p>The product line carries 3900 paid for the deposit plus USD 70 at the
 current rate, and the payable is the remaining USD 70 at that rate.</p>
-<p>The column only appears on the deposit bill, the deposit being the one
-amount known outside Odoo. Everything on the final bill is derived from
-it: the offset line is read back from the posted deposit bill and the
-goods lines take the rate difference. Leave the field empty on the
-deposit bill to keep the standard conversion.</p>
+<p>The column only appears on a deposit bill in a foreign currency, the
+deposit being the one amount known outside Odoo. In the company currency
+there is no conversion to override, so the field is refused there.</p>
+<p>Everything on the final bill is derived from what was entered: the
+offset line is read back from the posted deposit bill and the goods
+lines take the rate difference. Leaving the field empty on the deposit
+bill opts out of all of it – the deposit, the offset and the goods are
+then converted at the exchange rate exactly as Odoo does without this
+module.</p>
 </div>
 <div class="section" id="bug-tracker">
 <h2><a class="toc-backref" href="#toc-entry-3">Bug Tracker</a></h2>

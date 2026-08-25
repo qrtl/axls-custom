@@ -158,7 +158,7 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
     DEPOSIT_DATE = "2025-10-01"  # USD 1 = JPY 150
     FINAL_DATE = "2025-11-01"  # USD 1 = JPY 160
 
-    def _create_purchase_order(self, lines=None):
+    def _create_purchase_order(self, lines=None, currency=None):
         """Confirmed USD purchase order. Defaults to a single USD 100 line;
         pass ``[(product, price), ...]`` for more, all at quantity 1 so one
         receipt validates them together.
@@ -168,7 +168,7 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
             po_form.partner_id = self.vendor
             po_form.date_order = fields.Date.from_string(self.DEPOSIT_DATE)
             po_form.company_id = self.company
-            po_form.currency_id = self.currency_usd
+            po_form.currency_id = currency or self.currency_usd
             for product, price in lines:
                 with po_form.order_line.new() as line:
                     line.product_id = product
@@ -377,6 +377,80 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
             self._goods_lines(bill).company_amount = 17000
         with self.assertRaises(ValidationError):
             self._offset_line(bill).company_amount = 3000
+
+    def test_company_currency_deposit_bill_refuses_the_override(self):
+        """In the company currency there is nothing to override: the balance
+        already is the amount paid and _get_company_amount_targets skips the
+        move. Defends the currency half of the gate -- drop it and the bill is
+        a deposit bill on every other test, so the field takes a value and then
+        quietly ignores it.
+        """
+        po = self._create_purchase_order(currency=self.company.currency_id)
+        deposit_bill = self._register_deposit(po)
+        self.assertTrue(deposit_bill.is_deposit)
+        self.assertFalse(deposit_bill.allow_company_amount)
+        with self.assertRaises(ValidationError):
+            self._deposit_line(deposit_bill).company_amount = 3900
+
+    def test_switching_the_bill_to_the_company_currency_is_rejected(self):
+        """Odoo 16 ignores dotted paths in @api.constrains, so the line-level
+        check never sees the bill turn ineligible under a value already
+        entered. Defends the account.move constraint that re-runs it: without
+        it this write succeeds and leaves a stored amount that does nothing.
+        """
+        po = self._create_purchase_order()
+        deposit_bill = self._register_deposit(po)
+        self._deposit_line(deposit_bill).company_amount = 3900
+        with self.assertRaises(ValidationError):
+            deposit_bill.currency_id = self.company.currency_id
+
+    def test_unpinned_deposit_keeps_the_standard_conversion(self):
+        """The override is opt-in. With nobody having said what the deposit
+        really cost there is no better figure than the rate, so the whole
+        module has to stand down -- the offset converts at the final bill's
+        rate like any other line and no difference reaches the goods. Defends
+        the gate in _compute_deposit_company_amount: drop it and every deposit
+        in the database silently starts pinning itself to its own bill's rate.
+        """
+        po = self._create_purchase_order()
+        deposit_bill = self._register_deposit(po)
+        deposit_bill.action_post()  # posted with the field left empty
+        deposit_po_line = po.order_line.filtered("is_deposit")
+        self.assertEqual(deposit_po_line.deposit_company_amount, 0)
+        # USD 30 at the deposit date rate of 150, purely rate-derived.
+        self.assertEqual(self._deposit_line(deposit_bill).balance, 4500)
+        bill = self._create_final_bill(po)
+        # Everything at the final bill's rate of 160, exactly as Odoo would do
+        # it without this module installed.
+        self.assertEqual(self._offset_line(bill).balance, -4800)
+        self.assertEqual(self._goods_lines(bill).balance, 16000)
+        self.assertEqual(self._payable_line(bill).balance, -11200)
+
+    def test_posted_moves_are_not_re_booked(self):
+        """currency_rate is not stored -- it is resolved from res.currency.rate
+        on every read -- so correcting a rate after the fact moves the targets
+        under a bill that is already posted. Defends the state guard: without
+        it the next write to touch these lines re-books a posted entry and
+        pushes the difference onto the payable.
+        """
+        po = self._create_purchase_order()
+        self._post_deposit_bill(po, 3900)
+        bill = self._create_final_bill(po)
+        bill.action_post()
+        before = {line: line.balance for line in bill.line_ids}
+        rate = self.env["res.currency.rate"].search(
+            [
+                ("name", "=", self.FINAL_DATE),
+                ("currency_id", "=", self.currency_usd.id),
+                ("company_id", "=", self.company.id),
+            ]
+        )
+        rate.rate = 1 / 155.0
+        bill.invalidate_recordset()
+        # Any write reaching account.move.line.write re-enters _sync_invoice.
+        bill.line_ids.write({"name": "touched"})
+        for line, balance in before.items():
+            self.assertEqual(line.balance, balance)
 
     def test_plain_vendor_bill_is_untouched(self):
         """A bill with no deposit keeps Odoo's rate-based balance and refuses

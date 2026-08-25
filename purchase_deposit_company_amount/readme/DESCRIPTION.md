@@ -9,6 +9,7 @@ This module does the following:
 - Books the resulting exchange rate difference into the product lines, and
   reflects it in the stock valuation of the received goods.
 
-The field is only available on the deposit line of the deposit bill, and
-the column is hidden on every other bill. Everything on the final bill is
-derived, and elsewhere the standard rate conversion applies.
+The field is only available on the deposit line of a deposit bill raised in
+a foreign currency, and the column is hidden everywhere else. Everything on
+the final bill is derived from it, and a deposit nobody entered an amount
+for keeps the standard rate conversion throughout.

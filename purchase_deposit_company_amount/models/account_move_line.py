@@ -19,26 +19,29 @@ class AccountMoveLine(models.Model):
         "foreign-currency amount stays untouched. Enter it unsigned -- the "
         "debit/credit direction follows the line's foreign-currency amount. "
         "Leave it empty to keep the standard conversion. Only available on "
-        "the deposit line of a deposit bill; every other line follows from it "
-        "automatically.",
+        "the deposit line of a deposit bill raised in a foreign currency; "
+        "every other line follows from it automatically.",
     )
 
     @api.constrains("company_amount", "move_id")
     def _check_company_amount_allowed(self):
-        """Only a deposit bill may carry the override.
+        """Only a foreign-currency deposit bill may carry the override.
 
-        ``is_deposit`` is enough on its own: it looks for a deposit line with a
-        positive quantity, so the final bill is out (its offset reuses the same
-        purchase order line with a negative one) and so is every other bill.
+        ``allow_company_amount`` is enough on its own: it looks for a deposit
+        line with a positive quantity, so the final bill is out (its offset
+        reuses the same purchase order line with a negative one) and so is
+        every other bill, and it requires a foreign currency, without which
+        there is no conversion to override in the first place.
         """
         for line in self.filtered("company_amount"):
-            if line.move_id.is_deposit:
+            if line.move_id.allow_company_amount:
                 continue
             raise ValidationError(
                 _(
-                    "'%(field)s' can only be set on a deposit bill. On line "
-                    "'%(line)s' of '%(move)s' the standard exchange-rate "
-                    "conversion applies; clear the value to continue."
+                    "'%(field)s' can only be set on a deposit bill raised in a "
+                    "foreign currency. On line '%(line)s' of '%(move)s' the "
+                    "standard exchange-rate conversion applies; clear the "
+                    "value to continue."
                 )
                 % {
                     "field": line._fields["company_amount"].string,
