@@ -1,0 +1,24 @@
+# Copyright 2026 Quartile (https://www.quartile.co)
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+from odoo import models
+
+
+class AccountAnalyticAccount(models.Model):
+    _inherit = "account.analytic.account"
+
+    def unlink(self):
+        # analytic_distribution holds no database reference to the accounts, so
+        # nothing else would recompute the budget number of the lines a deleted
+        # account was distributed to, and it would be lost instead of falling
+        # back to the next budget account of the distribution. Collect the lines
+        # before the delete, as the distribution is what they are found by, and
+        # in sudo, as the deletion is no reason to need access to them.
+        lines = (
+            self.env["purchase.order.line"]
+            .sudo()
+            .search([("analytic_distribution", "in", self.ids)])
+        )
+        res = super().unlink()
+        lines.modified(["analytic_distribution"])
+        return res

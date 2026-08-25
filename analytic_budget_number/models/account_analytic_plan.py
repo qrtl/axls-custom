@@ -9,9 +9,9 @@ class AccountAnalyticPlan(models.Model):
     _inherit = "account.analytic.plan"
 
     is_budget = fields.Boolean(
-        string="Use for Purchase Order Lines Budget",
-        help="The account of this plan is shown as the budget number of the "
-        "purchase order lines it is distributed to.",
+        string="Use for Budget Numbers",
+        help="The accounts of this plan, and of its subplans, stand for budget "
+        "numbers.",
     )
 
     def _get_conflicting_budget_plan(self):
@@ -37,9 +37,9 @@ class AccountAnalyticPlan(models.Model):
             if existing:
                 raise ValidationError(
                     _(
-                        "Only one analytic plan can be set for the purchase order "
-                        "lines of a company. Please disable the existing plan "
-                        "'%(plan)s' first.",
+                        "Only one analytic plan can hold the budget numbers of a "
+                        "company. Please disable the existing plan '%(plan)s' "
+                        "first.",
                         plan=existing.display_name,
                     )
                 )

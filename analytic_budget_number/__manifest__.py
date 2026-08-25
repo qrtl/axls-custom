@@ -2,17 +2,16 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 {
     "name": "Analytic Budget Number",
-    "summary": "Search analytic accounts by subsystem, component and model, and "
-    "show them as the budget number of purchase order lines",
+    "summary": "Record the subsystem, component and model of an analytic account "
+    "and mark the analytic plan that holds the budget numbers",
     "version": "16.0.1.0.0",
     "author": "Quartile",
     "website": "https://www.quartile.co",
     "category": "Analytic",
     "license": "AGPL-3",
     "maintainers": ["nobuQuartile"],
-    "depends": ["analytic", "purchase"],
+    "depends": ["analytic"],
     "data": [
-        "data/server_action.xml",
         "views/account_analytic_account_views.xml",
         "views/account_analytic_plan_views.xml",
     ],

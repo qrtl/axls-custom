@@ -21,11 +21,6 @@ msgid "Analytic Account"
 msgstr "分析勘定"
 
 #. module: analytic_budget_number
-#: model:ir.model.fields,field_description:analytic_budget_number.field_purchase_order_line__analytic_budget_id
-msgid "Analytic Budget"
-msgstr "予算番号"
-
-#. module: analytic_budget_number
 #: model:ir.model,name:analytic_budget_number.model_account_analytic_plan
 msgid "Analytic Plans"
 msgstr "分析プラン"
@@ -71,24 +66,14 @@ msgstr "予算番号が関係するモデル。分析勘定の検索ビューで
 #: code:addons/analytic_budget_number/models/account_analytic_plan.py:0
 #, python-format
 msgid ""
-"Only one analytic plan can be set for the purchase order lines of a company. "
-"Please disable the existing plan '%(plan)s' first."
-msgstr "1社の購買オーダ明細に使用できる分析プランは1つのみです。既存の分析プラン '%(plan)s' を先に無効にしてください。"
-
-#. module: analytic_budget_number
-#: model:ir.model,name:analytic_budget_number.model_purchase_order_line
-msgid "Purchase Order Line"
-msgstr "購買オーダ明細"
+"Only one analytic plan can hold the budget numbers of a company. Please "
+"disable the existing plan '%(plan)s' first."
+msgstr "1社の予算番号を保持できる分析プランは1つのみです。既存の分析プラン '%(plan)s' を先に無効にしてください。"
 
 #. module: analytic_budget_number
 #: model:ir.model.fields.selection,name:analytic_budget_number.selection__account_analytic_account__model_type__racksat
 msgid "Racksat"
 msgstr ""
-
-#. module: analytic_budget_number
-#: model:ir.actions.server,name:analytic_budget_number.purchase_order_line_recompute_budget_action
-msgid "Recompute Purchase Line Budget"
-msgstr "購買オーダ明細の予算番号の再計算"
 
 #. module: analytic_budget_number
 #: model:ir.model.fields,field_description:analytic_budget_number.field_account_analytic_account__subsystem
@@ -106,11 +91,10 @@ msgstr "予算番号が関係するサブシステム。分析勘定の検索ビ
 #. module: analytic_budget_number
 #: model:ir.model.fields,help:analytic_budget_number.field_account_analytic_plan__is_budget
 msgid ""
-"The account of this plan is shown as the budget number of the purchase order"
-" lines it is distributed to."
-msgstr "このプランの勘定が、配分先の購買オーダ明細の予算番号として表示されます。"
+"The accounts of this plan, and of its subplans, stand for budget numbers."
+msgstr "このプランおよびそのサブプランの勘定が予算番号を表します。"
 
 #. module: analytic_budget_number
 #: model:ir.model.fields,field_description:analytic_budget_number.field_account_analytic_plan__is_budget
-msgid "Use for Purchase Order Lines Budget"
-msgstr "購買オーダ明細の予算番号に使用"
+msgid "Use for Budget Numbers"
+msgstr "予算番号に使用"
