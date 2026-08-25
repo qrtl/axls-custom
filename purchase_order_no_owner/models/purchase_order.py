@@ -3,6 +3,7 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools import config
 
 
 class PurchaseOrder(models.Model):
@@ -10,7 +11,15 @@ class PurchaseOrder(models.Model):
 
     no_owner = fields.Boolean()
 
-    def button_confirm(self):
+    def _check_owner(self):
+        """The check is skipped during test runs, so that tests of other modules
+        that confirm purchase orders are not affected. Tests of this module opt in
+        with the test_purchase_order_no_owner context key.
+        """
+        if config["test_enable"] and not self.env.context.get(
+            "test_purchase_order_no_owner"
+        ):
+            return
         for record in self:
             if not record.no_owner and not record.owner_id:
                 raise UserError(
@@ -19,6 +28,9 @@ class PurchaseOrder(models.Model):
                         " this order, you can set No Owner field as True."
                     )
                 )
+
+    def button_confirm(self):
+        self._check_owner()
         return super(PurchaseOrder, self).button_confirm()
 
     @api.onchange("no_owner")
