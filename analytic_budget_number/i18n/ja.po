@@ -22,7 +22,6 @@ msgstr "分析勘定"
 
 #. module: analytic_budget_number
 #: model:ir.model.fields,field_description:analytic_budget_number.field_purchase_order_line__analytic_budget_id
-#: model_terms:ir.ui.view,arch_db:analytic_budget_number.purchase_order_line_view_search
 msgid "Analytic Budget"
 msgstr "予算番号"
 

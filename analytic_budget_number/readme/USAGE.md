@@ -11,12 +11,10 @@ covers every one of:
 - the company of the budget plan changes.
 
 After any of those changes, select the target lines in a list of purchase order
-lines and choose *Recompute Purchase Line Budget* from the *Action* menu. Odoo
-has no menu over the purchase order lines of its own; the OCA module
-`purchase_order_line_menu` adds one under *Purchase > Orders*. Selecting every
-line of the list is what brings all the budget numbers back in step, so use
-*Select all* rather than the current page when the change affects the whole
-history.
+lines and choose *Recompute Purchase Line Budget* from the *Action* menu.
+Selecting every line of the list is what brings all the budget numbers back in
+step, so use *Select all* rather than the current page when the change affects
+the whole history.
 
 The action rewrites values that were stored against the configuration in place
 at the time, so it is reserved to the *Settings* group.

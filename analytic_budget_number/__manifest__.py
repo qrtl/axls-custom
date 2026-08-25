@@ -10,12 +10,11 @@
     "category": "Analytic",
     "license": "AGPL-3",
     "maintainers": ["nobuQuartile"],
-    "depends": ["purchase"],
+    "depends": ["analytic", "purchase"],
     "data": [
         "data/server_action.xml",
         "views/account_analytic_account_views.xml",
         "views/account_analytic_plan_views.xml",
-        "views/purchase_order_line_views.xml",
     ],
     "installable": True,
 }

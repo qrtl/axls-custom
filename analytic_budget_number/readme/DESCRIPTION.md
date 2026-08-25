@@ -29,3 +29,8 @@ On the purchase order line:
   is taken, as the analytic distribution keeps them in no meaningful order. Only
   the accounts of the company of the line are considered, which matters when the
   budget plan is shared by every company.
+
+Odoo has no menu over the purchase order lines of its own, so this module shows
+the budget number in none of its views. The OCA module
+`purchase_order_line_menu` adds such a menu, and the budget number is put in the
+list and the search view it opens by `purchase_analytic_budget_number`.

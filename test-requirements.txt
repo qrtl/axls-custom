@@ -5,6 +5,7 @@ git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/mrp_stock_owner_res
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/product_lot_sequence
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_analytic
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_deposit
+git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_order_line_menu
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_order_line_sequence
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_order_owner
 git+https://github.com/qrtl/axls-oca@16.0#subdirectory=setup/purchase_reception_status
