@@ -69,6 +69,41 @@ class AccountMove(models.Model):
             and l.quantity < 0
         )
 
+    def _get_absorbed_targets(self, absorbing_lines, delta):
+        """Company-currency balance the goods lines should end up with once
+        they have taken ``delta`` between them, as ``{line: balance}``, or
+        ``{}`` when there is nothing to spread.
+        """
+        self.ensure_one()
+        company_currency = self.company_id.currency_id
+        if company_currency.is_zero(delta) or not absorbing_lines:
+            return {}
+        weights = {
+            line: abs(line._get_rate_based_balance()) for line in absorbing_lines
+        }
+        total_weight = sum(weights.values())
+        if not total_weight:
+            # Nothing to prorate against. Unreachable through the wizard, since
+            # goods worth nothing give a percentage deposit of nothing and so no
+            # difference to spread, but the division below needs the guard; the
+            # payment-term rebalance keeps the move balanced either way.
+            return {}
+        targets = {}
+        remaining = delta
+        last_line = absorbing_lines[-1]
+        for line in absorbing_lines:
+            if line == last_line:
+                # The last line takes the rounding remainder, so the shares add
+                # back up to the delta exactly and the move stays balanced.
+                share = company_currency.round(remaining)
+            else:
+                share = company_currency.round(delta * weights[line] / total_weight)
+                remaining -= share
+            targets[line] = company_currency.round(
+                line._get_rate_based_balance() + share
+            )
+        return targets
+
     def _get_company_amount_targets(self):
         """Company-currency balance every overridden line of this move should
         end up with, as ``{line: balance}``. Lines absent from the result keep
@@ -129,31 +164,15 @@ class AccountMove(models.Model):
         absorbing_lines = product_lines.filtered(
             lambda l: l.purchase_line_id and not l.purchase_line_id.is_deposit
         )
-        if company_currency.is_zero(delta) or not absorbing_lines:
-            return targets
-        weights = {
-            line: abs(line._get_rate_based_balance()) for line in absorbing_lines
-        }
-        total_weight = sum(weights.values())
-        if not total_weight:
-            # Nothing to prorate against. Unreachable through the wizard, since
-            # goods worth nothing give a percentage deposit of nothing and so no
-            # difference to spread, but the division below needs the guard; the
-            # payment-term rebalance keeps the move balanced either way.
-            return targets
-        remaining = delta
-        last_line = absorbing_lines[-1]
-        for line in absorbing_lines:
-            if line == last_line:
-                # The last line takes the rounding remainder, so the shares add
-                # back up to the delta exactly and the move stays balanced.
-                share = company_currency.round(remaining)
-            else:
-                share = company_currency.round(delta * weights[line] / total_weight)
-                remaining -= share
-            targets[line] = company_currency.round(
-                line._get_rate_based_balance() + share
-            )
+        targets.update(self._get_absorbed_targets(absorbing_lines, delta))
+        # Every remaining line this module governs goes back to the standard
+        # conversion. Odoo will not do it: its own sync recomputes balance only
+        # when amount_currency, currency_rate or move_type changes, and clearing
+        # a pinned amount changes none of the three -- so without this the
+        # override the module wrote would simply stay behind, and the bill would
+        # keep quoting a figure nobody stands behind any more.
+        for line in product_lines:
+            targets.setdefault(line, line._get_rate_based_balance())
         return targets
 
     def _rebalance_payment_term_lines(self):
@@ -199,7 +218,22 @@ class AccountMove(models.Model):
             targets = move._get_company_amount_targets()
             if not targets:
                 continue
+            rewritten = overriding = False
             for line, target in targets.items():
                 if not company_currency.is_zero(line.balance - target):
                     line.balance = target
-            move._rebalance_payment_term_lines()
+                    rewritten = True
+                if not company_currency.is_zero(
+                    target - line._get_rate_based_balance()
+                ):
+                    overriding = True
+            # Settle the payable while any target departs from the rate, and on
+            # the pass that puts the last one back. It has to keep happening
+            # rather than only when this pass wrote something: Odoo's own
+            # payment-term sync runs after this hook and rebuilds the term line
+            # from the rate, so the settlement has to be redone behind it.
+            # Outside those two cases the module is only watching the move, and
+            # rebalancing would push its transient imbalances -- taxes not yet
+            # rebuilt, say -- onto the payable.
+            if rewritten or overriding:
+                move._rebalance_payment_term_lines()

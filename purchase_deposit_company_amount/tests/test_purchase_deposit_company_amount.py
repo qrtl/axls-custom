@@ -426,6 +426,28 @@ class TestPurchaseDepositCompanyAmount(TransactionCase):
         self.assertEqual(self._goods_lines(bill).balance, 16000)
         self.assertEqual(self._payable_line(bill).balance, -11200)
 
+    def test_clearing_the_pinned_amount_restores_the_conversion(self):
+        """Clearing the field has to put the line back on the exchange rate.
+        Odoo will not do it: its sync recomputes balance only when
+        amount_currency, currency_rate or move_type changes, and clearing
+        company_amount changes none of them, so the balance the module wrote
+        stays behind unless the module takes it back. Defends the restore pass
+        in _get_company_amount_targets -- without it the bill keeps quoting
+        3900 with nothing left on the form to explain it.
+        """
+        po = self._create_purchase_order()
+        deposit_bill = self._register_deposit(po)
+        deposit_line = self._deposit_line(deposit_bill)
+        deposit_line.company_amount = 3900
+        self.assertEqual(deposit_line.balance, 3900)
+        self.assertEqual(self._payable_line(deposit_bill).balance, -3900)
+        deposit_line.company_amount = 0
+        # USD 30 at the deposit date rate of 150, as if nothing had been typed.
+        self.assertEqual(deposit_line.balance, 4500)
+        self.assertEqual(self._payable_line(deposit_bill).balance, -4500)
+        deposit_bill.action_post()
+        self.assertEqual(po.order_line.filtered("is_deposit").deposit_company_amount, 0)
+
     def test_posted_moves_are_not_re_booked(self):
         """currency_rate is not stored -- it is resolved from res.currency.rate
         on every read -- so correcting a rate after the fact moves the targets
