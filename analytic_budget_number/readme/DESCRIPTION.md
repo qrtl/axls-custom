@@ -16,7 +16,9 @@ On the analytic account:
 - **Model** — EM / FM / Racksat
 
 The three attributes appear on the analytic account form, as optional columns of
-the list, and in the search view as both fields and group-bys.
+the list, and in the search view as both fields and group-bys. On the form they
+are only shown on the accounts of the budget plan described below, as they mean
+nothing on any other account.
 
 On the analytic plan:
 

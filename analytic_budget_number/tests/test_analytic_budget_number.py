@@ -68,3 +68,22 @@ class TestAnalyticBudgetNumber(TransactionCase):
         self.assertFalse(plan.search([("is_budget", "=", True)]))
         with self.assertRaises(ValidationError):
             plan.write({"company_id": False, "is_budget": True})
+
+    def test_budget_account_follows_the_root_plan(self):
+        """is_budget_account is what the form view reads to show the three
+        attributes on the accounts of the budget plan only, and it is driven by
+        the root plan, not by the plan of the account. So an account sitting on
+        a subplan of the budget plan is a budget account as well, the way the
+        analytic distribution resolves those accounts too.
+        """
+        account_model = self.env["account.analytic.account"]
+        subplan = self.env["account.analytic.plan"].create(
+            {"name": "Budget Sub", "parent_id": self.plan.id}
+        )
+        for name, plan, expected in [
+            ("On the budget plan", self.plan, True),
+            ("On a subplan of it", subplan, True),
+            ("On another plan", self.other_plan, False),
+        ]:
+            account = account_model.create({"name": name, "plan_id": plan.id})
+            self.assertEqual(account.is_budget_account, expected, name)

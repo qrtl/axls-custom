@@ -21,3 +21,10 @@ class AccountAnalyticAccount(models.Model):
         help="Model the budget number relates to. Available in the analytic "
         "account search view as a filter and as a group-by.",
     )
+    is_budget_account = fields.Boolean(
+        related="root_plan_id.is_budget",
+        string="Is Budget Account",
+        help="Technical field: this account belongs to the plan holding the "
+        "budget numbers, or to one of its subplans, so it stands for a budget "
+        "number itself. Drives the visibility of the three attributes above.",
+    )
