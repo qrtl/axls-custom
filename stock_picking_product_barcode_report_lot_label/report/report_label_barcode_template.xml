@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_label_barcode_lot_barcode"
+        inherit_id="stock_picking_product_barcode_report.report_label_barcode"
+    >
+        <!-- The anchor sits in the non-GS1 branch on purpose: a GS1-128 barcode
+             already carries the lot in application identifier (10), so adding a
+             second symbol there would only duplicate it. -->
+        <xpath expr="//span[@t-esc='doc.product_id.barcode']" position="after">
+            <t t-if="doc.lot_id">
+                <br />
+                <img
+                    t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', doc.lot_id.name, 600, 100)"
+                    style="width:100%;height:22px"
+                    alt="Lot barcode"
+                />
+            </t>
+        </xpath>
+    </template>
+</odoo>
