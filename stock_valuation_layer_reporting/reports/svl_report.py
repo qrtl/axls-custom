@@ -28,6 +28,7 @@ class SVLReportXlsx(models.AbstractModel):
         return [
             ("actual_date", ">=", wizard.date_start),
             ("actual_date", "<=", wizard.date_end),
+            ("product_id.active", "=", True),
         ]
 
     def get_inventory_operation_categories(
@@ -41,6 +42,7 @@ class SVLReportXlsx(models.AbstractModel):
     def get_valuation_domain(self, category, wizard):
         return [
             ("product_id.categ_id", "=", category.id),
+            ("product_id.active", "=", True),
             ("actual_date", "<=", wizard.date_end),
         ]
 
