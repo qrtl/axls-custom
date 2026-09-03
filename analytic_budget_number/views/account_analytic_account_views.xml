@@ -7,7 +7,7 @@
         <field name="model">account.analytic.account</field>
         <field name="inherit_id" ref="analytic.view_account_analytic_account_form" />
         <field name="arch" type="xml">
-            <!-- The three attributes only mean something on an account of the
+            <!-- The attributes only mean something on an account of the
                  plan holding the budget numbers, so they are hidden elsewhere.
                  is_budget_account has to be materialised for the attrs to be
                  evaluated. -->
@@ -25,6 +25,10 @@
                     name="model_type"
                     attrs="{'invisible': [('is_budget_account', '=', False)]}"
                 />
+                <field
+                    name="description"
+                    attrs="{'invisible': [('is_budget_account', '=', False)]}"
+                />
             </field>
         </field>
     </record>
@@ -35,6 +39,9 @@
         <field name="model">account.analytic.account</field>
         <field name="inherit_id" ref="analytic.view_account_analytic_account_list" />
         <field name="arch" type="xml">
+            <field name="code" position="after">
+                <field name="description" optional="show" />
+            </field>
             <field name="plan_id" position="after">
                 <field name="subsystem" optional="hide" />
                 <field name="component" optional="hide" />

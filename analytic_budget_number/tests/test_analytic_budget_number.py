@@ -70,7 +70,7 @@ class TestAnalyticBudgetNumber(TransactionCase):
             plan.write({"company_id": False, "is_budget": True})
 
     def test_budget_account_follows_the_root_plan(self):
-        """is_budget_account is what the form view reads to show the three
+        """is_budget_account is what the form view reads to show the
         attributes on the accounts of the budget plan only, and it is driven by
         the root plan, not by the plan of the account. So an account sitting on
         a subplan of the budget plan is a budget account as well, the way the
