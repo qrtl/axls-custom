@@ -23,4 +23,25 @@ its own, so the list is reached through the one the OCA module
 The budget number is only shown to a user of the *Analytic Accounting* group, as
 an analytic account is of no use to anyone else.
 
+## What it keeps apart
+
+`purchase_analytic` puts an analytic distribution on the purchase order itself:
+setting it applies it to every line of the order at once, and the header shows
+what the lines have in common. A budget number stands for a single line, so the
+two have nothing to do with each other, and this module keeps the budget number
+out of the header:
+
+- the budget plan is unavailable on the header, so the widget there neither
+  offers a budget number nor shows one;
+- applying the distribution of the header to the lines carries over the budget
+  number of each line instead of overwriting it, which is what the plain write
+  of the distribution would do;
+- the header reads the lines with their budget numbers left out, so lines that
+  differ by nothing else still show their common distribution there.
+
+The header is told apart from the lines by the business domain its field passes
+to the analytic distribution widget, `purchase_order_header`, which the
+applicability of the plan is read against. The lines pass `purchase_order`, as
+Odoo has them do.
+
 This module is installed automatically once the modules it depends on are.

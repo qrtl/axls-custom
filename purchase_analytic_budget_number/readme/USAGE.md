@@ -18,3 +18,7 @@ the whole history.
 
 The action rewrites values that were stored against the configuration in place
 at the time, so it is reserved to the *Settings* group.
+
+It brings the analytic distribution of the purchase order headers back in step
+as well, as they are computed from the lines. That is what takes a budget number
+off a header it was stored on before this module was installed.

@@ -19,6 +19,49 @@ class PurchaseOrderLine(models.Model):
         self.ensure_one()
         return [int(account_id) for account_id in self.analytic_distribution or {}]
 
+    @api.model
+    def _get_budget_account_ids(self, distributions):
+        """Return the accounts of a budget plan the given distributions hold.
+
+        Every account of a budget plan counts here, without regard for the
+        company: whether or not it resolves to the budget number of a line, it
+        is not the business of the purchase order header. Archived accounts
+        count as well, and the accounts are searched rather than browsed, as
+        the json field holds no database reference and may still refer to a
+        deleted account. Takes the distributions of a whole order at once, as
+        the callers run over every line of one.
+        """
+        account_ids = set()
+        for distribution in distributions:
+            account_ids.update(int(account_id) for account_id in distribution or {})
+        if not account_ids:
+            return set()
+        return set(
+            self.env["account.analytic.account"]
+            .with_context(active_test=False)
+            .search(
+                [
+                    ("id", "in", list(account_ids)),
+                    ("is_budget_account", "=", True),
+                ]
+            )
+            .ids
+        )
+
+    @api.model
+    def _split_distribution_by_budget(self, distribution, budget_account_ids):
+        """Split a distribution into its budget number part and the rest.
+
+        The two parts are distributions of their own: a plan takes 100% of the
+        distribution on its own, so dropping the accounts of one plan leaves
+        the others whole.
+        """
+        budget, other = {}, {}
+        for account_id, percentage in (distribution or {}).items():
+            part = budget if int(account_id) in budget_account_ids else other
+            part[account_id] = percentage
+        return budget, other
+
     def _get_budget_plan(self, budget_plans):
         """Return the budget plan that applies to the company of the line.
 

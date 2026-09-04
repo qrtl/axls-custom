@@ -1,7 +1,7 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo.tests.common import TransactionCase, new_test_user, tagged
+from odoo.tests.common import Form, TransactionCase, new_test_user, tagged
 
 
 # Purchase orders cannot be created at install, as the fields the modules
@@ -253,3 +253,106 @@ class TestPurchaseAnalyticBudgetNumber(TransactionCase):
         (self.other_plan | self.plan_b).is_budget = False
         selection.run()
         self.assertFalse(line.analytic_budget_id)
+
+    def _relevant_plan_ids(self, business_domain):
+        """Return the plans the analytic distribution widget builds its columns
+        from, which is what a plan has to be among to be shown or set."""
+        return [
+            plan["id"]
+            for plan in self.env["account.analytic.plan"].get_relevant_plans(
+                company_id=self.company.id, business_domain=business_domain
+            )
+        ]
+
+    def test_budget_plan_is_unavailable_on_the_order_header(self):
+        """The budget plan is no column of the distribution of the header."""
+        header_plan_ids = self._relevant_plan_ids("purchase_order_header")
+        self.assertNotIn(self.plan.id, header_plan_ids)
+        # Only the budget plan is taken out, and only there: the lines keep it.
+        self.assertIn(self.other_plan.id, header_plan_ids)
+        line_plan_ids = self._relevant_plan_ids("purchase_order")
+        self.assertIn(self.plan.id, line_plan_ids)
+        self.assertIn(self.other_plan.id, line_plan_ids)
+        # It is the flag that takes it out, not the plan itself.
+        self.plan.is_budget = False
+        self.assertIn(self.plan.id, self._relevant_plan_ids("purchase_order_header"))
+
+    def test_header_distribution_keeps_the_budget_numbers_of_the_lines(self):
+        """Applying the distribution of the header leaves the budget numbers be."""
+        line = self._create_line({str(self.account.id): 100.0})
+        subplan_line = self._create_line({str(self.subplan_account.id): 100.0})
+        plain_line = self._create_line()
+        header_distribution = {str(self.other_account.id): 100.0}
+        self.order.analytic_distribution = header_distribution
+        self.assertEqual(
+            line.analytic_distribution,
+            {**header_distribution, str(self.account.id): 100.0},
+        )
+        self.assertEqual(
+            subplan_line.analytic_distribution,
+            {**header_distribution, str(self.subplan_account.id): 100.0},
+        )
+        # A line without budget number takes the distribution of the header as
+        # it is.
+        self.assertEqual(plain_line.analytic_distribution, header_distribution)
+        # The budget numbers came through untouched.
+        self.assertEqual(line.analytic_budget_id, self.account)
+        self.assertEqual(subplan_line.analytic_budget_id, self.subplan_account)
+        self.assertFalse(plain_line.analytic_budget_id)
+        # And the header keeps what it was given, as the lines now differ by
+        # their budget numbers only.
+        self.assertEqual(self.order.analytic_distribution, header_distribution)
+
+    def test_header_distribution_ignores_the_budget_numbers_of_the_lines(self):
+        """The header holds what the lines have in common, budget numbers apart."""
+        distribution = {str(self.other_account.id): 100.0}
+        line = self._create_line({**distribution, str(self.account.id): 100.0})
+        subplan_line = self._create_line(
+            {**distribution, str(self.subplan_account.id): 100.0}
+        )
+        self.assertEqual(self.order.analytic_distribution, distribution)
+        # What the lines do not have in common leaves the header empty, the way
+        # purchase_analytic has it.
+        subplan_line.analytic_distribution = {
+            str(self.other_subplan_account.id): 100.0,
+            str(self.subplan_account.id): 100.0,
+        }
+        self.assertFalse(self.order.analytic_distribution)
+        subplan_line.unlink()
+        self.assertEqual(self.order.analytic_distribution, distribution)
+        # A line distributed to a budget account alone has nothing to put on
+        # the header, rather than putting its budget number there.
+        line.analytic_distribution = {str(self.account.id): 100.0}
+        self.assertFalse(self.order.analytic_distribution)
+
+    def test_header_distribution_applied_on_a_form(self):
+        """The lines of a form get the distribution of the header as well.
+
+        The onchange is what carries it over there, rather than the inverse,
+        and the budget number of a line has to survive it too.
+        """
+        # The analytic distribution of a line sits behind the Analytic
+        # Accounting group in the view, and a form only holds the fields the
+        # user is shown.
+        self.env.user.groups_id |= self.env.ref("analytic.group_analytic_accounting")
+        order_form = Form(self.env["purchase.order"])
+        order_form.partner_id = self.partner
+        with order_form.order_line.new() as line_form:
+            line_form.product_id = self.product
+            line_form.analytic_distribution = {str(self.account.id): 100.0}
+        with order_form.order_line.new() as line_form:
+            line_form.product_id = self.product
+        order_form.analytic_distribution = {str(self.other_account.id): 100.0}
+        order = order_form.save()
+        budget_line, plain_line = order.order_line
+        self.assertEqual(
+            budget_line.analytic_distribution,
+            {str(self.other_account.id): 100.0, str(self.account.id): 100.0},
+        )
+        self.assertEqual(budget_line.analytic_budget_id, self.account)
+        self.assertEqual(
+            plain_line.analytic_distribution, {str(self.other_account.id): 100.0}
+        )
+        self.assertEqual(
+            order.analytic_distribution, {str(self.other_account.id): 100.0}
+        )

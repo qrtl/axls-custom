@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-13 04:42+0000\n"
-"PO-Revision-Date: 2026-08-13 04:42+0000\n"
+"POT-Creation-Date: 2026-09-03 10:12+0000\n"
+"PO-Revision-Date: 2026-09-03 10:12+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -25,6 +25,16 @@ msgstr "分析勘定"
 #: model_terms:ir.ui.view,arch_db:purchase_analytic_budget_number.purchase_order_line_view_search
 msgid "Analytic Budget"
 msgstr "予算番号"
+
+#. module: purchase_analytic_budget_number
+#: model:ir.model,name:purchase_analytic_budget_number.model_account_analytic_plan
+msgid "Analytic Plans"
+msgstr "分析プラン"
+
+#. module: purchase_analytic_budget_number
+#: model:ir.model,name:purchase_analytic_budget_number.model_purchase_order
+msgid "Purchase Order"
+msgstr "購買オーダ"
 
 #. module: purchase_analytic_budget_number
 #: model:ir.model,name:purchase_analytic_budget_number.model_purchase_order_line
