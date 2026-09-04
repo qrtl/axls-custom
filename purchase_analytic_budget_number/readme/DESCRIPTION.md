@@ -43,5 +43,3 @@ The header is told apart from the lines by the business domain its field passes
 to the analytic distribution widget, `purchase_order_header`, which the
 applicability of the plan is read against. The lines pass `purchase_order`, as
 Odoo has them do.
-
-This module is installed automatically once the modules it depends on are.

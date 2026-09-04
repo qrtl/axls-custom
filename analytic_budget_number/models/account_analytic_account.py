@@ -16,7 +16,7 @@ class AccountAnalyticAccount(models.Model):
         "account search view as a filter and as a group-by.",
     )
     model_type = fields.Selection(
-        [("EM", "EM"), ("FM", "FM"), ("Racksat", "Racksat")],
+        [("em", "EM"), ("fm", "FM"), ("racksat", "Racksat")],
         string="Model",
         help="Model the budget number relates to. Available in the analytic "
         "account search view as a filter and as a group-by.",

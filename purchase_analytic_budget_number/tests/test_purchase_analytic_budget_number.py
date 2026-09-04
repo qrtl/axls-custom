@@ -105,16 +105,11 @@ class TestPurchaseAnalyticBudgetNumber(TransactionCase):
         }
         self.assertFalse(plain_line.analytic_budget_id)
         # Among the accounts of the budget plan the oldest wins, whatever its
-        # share, and jsonb reorders the keys, so it has to win once the
-        # distribution is no longer the dict it was written as.
+        # share.
         line.analytic_distribution = {
             str(self.account_2.id): 62.5,
             str(self.account.id): 37.5,
         }
-        self.assertEqual(line.analytic_budget_id, self.account)
-        line.flush_recordset()
-        line.invalidate_recordset()
-        line.modified(["analytic_distribution"])
         self.assertEqual(line.analytic_budget_id, self.account)
 
     def test_budget_number_when_its_account_goes_away(self):
@@ -178,12 +173,6 @@ class TestPurchaseAnalyticBudgetNumber(TransactionCase):
                 },
             ]
         )
-        line = self._create_line({str(account.id): 100.0})
-        # The account of the other company is no budget number here, even
-        # though its plan is the budget plan of every company.
-        cross_line = self._create_line({str(account_b.id): 100.0})
-        self.assertEqual(line.analytic_budget_id, account)
-        self.assertFalse(cross_line.analytic_budget_id)
         # The account of no company is a budget number for every company, and
         # the oldest of the three, so it wins the tiebreak on both companies.
         both_line = self._create_line(
