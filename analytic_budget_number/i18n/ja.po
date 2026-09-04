@@ -1,0 +1,126 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* analytic_budget_number
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-03 09:35+0000\n"
+"PO-Revision-Date: 2026-09-03 09:35+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: analytic_budget_number
+#: model:ir.model,name:analytic_budget_number.model_account_analytic_account
+msgid "Analytic Account"
+msgstr "分析勘定"
+
+#. module: analytic_budget_number
+#: model:ir.model,name:analytic_budget_number.model_account_analytic_plan
+msgid "Analytic Plans"
+msgstr "分析プラン"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,field_description:analytic_budget_number.field_account_analytic_account__component
+#: model_terms:ir.ui.view,arch_db:analytic_budget_number.account_analytic_account_view_search
+msgid "Component"
+msgstr "コンポーネント"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,help:analytic_budget_number.field_account_analytic_account__component
+msgid ""
+"Component the budget number relates to. Available in the analytic account "
+"search view as a filter and as a group-by."
+msgstr "予算番号が関係するコンポーネント。分析勘定の検索ビューでフィルタおよびグループ化に使用できます。"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,field_description:analytic_budget_number.field_account_analytic_account__description
+msgid "Description"
+msgstr "説明"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields.selection,name:analytic_budget_number.selection__account_analytic_account__model_type__em
+msgid "EM"
+msgstr ""
+
+#. module: analytic_budget_number
+#: model:ir.model.fields.selection,name:analytic_budget_number.selection__account_analytic_account__model_type__fm
+msgid "FM"
+msgstr ""
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,field_description:analytic_budget_number.field_account_analytic_account__is_budget_account
+msgid "Is Budget Account"
+msgstr "予算番号の勘定"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,field_description:analytic_budget_number.field_account_analytic_account__model_type
+#: model_terms:ir.ui.view,arch_db:analytic_budget_number.account_analytic_account_view_search
+msgid "Model"
+msgstr "モデル"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,help:analytic_budget_number.field_account_analytic_account__model_type
+msgid ""
+"Model the budget number relates to. Available in the analytic account search"
+" view as a filter and as a group-by."
+msgstr "予算番号が関係するモデル。分析勘定の検索ビューでフィルタおよびグループ化に使用できます。"
+
+#. module: analytic_budget_number
+#. odoo-python
+#: code:addons/analytic_budget_number/models/account_analytic_plan.py:0
+#, python-format
+msgid ""
+"Only one analytic plan can hold the budget numbers of a company. Please "
+"disable the existing plan '%(plan)s' first."
+msgstr "1社の予算番号を保持できる分析プランは1つのみです。既存の分析プラン '%(plan)s' を先に無効にしてください。"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields.selection,name:analytic_budget_number.selection__account_analytic_account__model_type__racksat
+msgid "Racksat"
+msgstr ""
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,field_description:analytic_budget_number.field_account_analytic_account__subsystem
+#: model_terms:ir.ui.view,arch_db:analytic_budget_number.account_analytic_account_view_search
+msgid "Subsystem"
+msgstr "サブシステム"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,help:analytic_budget_number.field_account_analytic_account__subsystem
+msgid ""
+"Subsystem the budget number relates to. Available in the analytic account "
+"search view as a filter and as a group-by."
+msgstr "予算番号が関係するサブシステム。分析勘定の検索ビューでフィルタおよびグループ化に使用できます。"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,help:analytic_budget_number.field_account_analytic_account__is_budget_account
+msgid ""
+"Technical field: this account belongs to the plan holding the budget "
+"numbers, or to one of its subplans, so it stands for a budget number itself."
+" Drives the visibility of the attributes above."
+msgstr ""
+"技術的フィールド：この勘定は予算番号を保持する分析プラン、またはそのサブプランに属するため、それ自体が予算番号を表します。上記の属性の表示を制御します。"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,help:analytic_budget_number.field_account_analytic_plan__is_budget
+msgid ""
+"The accounts of this plan, and of its subplans, stand for budget numbers."
+msgstr "このプランおよびそのサブプランの勘定が予算番号を表します。"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,field_description:analytic_budget_number.field_account_analytic_plan__is_budget
+msgid "Use for Budget Numbers"
+msgstr "予算番号に使用"
+
+#. module: analytic_budget_number
+#: model:ir.model.fields,help:analytic_budget_number.field_account_analytic_account__description
+msgid ""
+"What the budget number is for, in free text. Available as a column of the "
+"analytic account list."
+msgstr "予算番号が何のためのものかを自由記述で記載します。分析勘定のリストビューの列として表示できます。"

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="purchase_order_view_form" model="ir.ui.view">
+        <field name="name">purchase.order.form (purchase_analytic_budget_number)</field>
+        <field name="model">purchase.order</field>
+        <field
+            name="inherit_id"
+            ref="purchase_analytic.purchase_order_view_form_inherit_purchase_analytic"
+        />
+        <field name="arch" type="xml">
+            <!-- The business domain is what _get_applicability tells the header
+                 apart from the lines by, which pass 'purchase_order'. It is
+                 mirrored from HEADER_BUSINESS_DOMAIN in
+                 models/account_analytic_plan.py, as a view cannot read it. The
+                 xpath goes through partner_ref, which purchase_analytic
+                 inserts the field after, because the lines of the order hold a
+                 field of the same name further down the form. -->
+            <xpath
+                expr="//field[@name='partner_ref']/following-sibling::field[@name='analytic_distribution']"
+                position="attributes"
+            >
+                <attribute
+                    name="options"
+                >{'business_domain': 'purchase_order_header'}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
