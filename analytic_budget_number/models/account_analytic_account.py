@@ -7,21 +7,27 @@ from odoo import fields, models
 class AccountAnalyticAccount(models.Model):
     _inherit = "account.analytic.account"
 
-    subsystem = fields.Char(
-        help="Subsystem the budget number relates to. Available in the analytic "
-        "account search view as a filter and as a group-by.",
+    satellite_id = fields.Many2one(
+        "analytic.budget.satellite",
+        help="Satellite the budget number relates to. Available in the "
+        "analytic account search view as a filter and as a group-by.",
     )
-    component = fields.Char(
-        help="Component the budget number relates to. Available in the analytic "
-        "account search view as a filter and as a group-by.",
+    subsystem_id = fields.Many2one(
+        "analytic.budget.subsystem",
+        help="Subsystem the budget number relates to. Available in the "
+        "analytic account search view as a filter and as a group-by.",
     )
-    model_type = fields.Selection(
-        [("em", "EM"), ("fm", "FM"), ("racksat", "Racksat")],
-        string="Model",
+    component_id = fields.Many2one(
+        "analytic.budget.component",
+        help="Component the budget number relates to. Available in the "
+        "analytic account search view as a filter and as a group-by.",
+    )
+    model_id = fields.Many2one(
+        "analytic.budget.model",
         help="Model the budget number relates to. Available in the analytic "
         "account search view as a filter and as a group-by.",
     )
-    description = fields.Char(
+    budget_description = fields.Char(
         help="What the budget number is for, in free text. Available as a "
         "column of the analytic account list.",
     )

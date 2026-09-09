@@ -1,8 +1,18 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo.exceptions import ValidationError
+from psycopg2 import IntegrityError
+
+from odoo.exceptions import AccessError, ValidationError
 from odoo.tests.common import TransactionCase, new_test_user, tagged
+from odoo.tools import mute_logger
+
+ATTRIBUTE_MODELS = [
+    "analytic.budget.satellite",
+    "analytic.budget.subsystem",
+    "analytic.budget.component",
+    "analytic.budget.model",
+]
 
 
 # A company cannot be created at install, as the fields the modules loaded
@@ -87,3 +97,37 @@ class TestAnalyticBudgetNumber(TransactionCase):
         ]:
             account = account_model.create({"name": name, "plan_id": plan.id})
             self.assertEqual(account.is_budget_account, expected, name)
+
+    def test_attribute_names_are_unique(self):
+        """Two values of the same name could not be told apart on an account."""
+        for model in ATTRIBUTE_MODELS:
+            attribute_model = self.env[model]
+            attribute_model.create({"name": "Duplicate"})
+            with self.assertRaises(IntegrityError, msg=model), mute_logger(
+                "odoo.sql_db"
+            ), self.env.cr.savepoint():
+                attribute_model.create({"name": "Duplicate"})
+
+    def test_attributes_are_maintained_by_the_analytic_users(self):
+        """Whoever maintains the analytic accounts maintains their attributes.
+
+        The values are read by every user, though, as they show on the
+        analytic account itself.
+        """
+        reader = new_test_user(
+            self.env, login="budget_attribute_reader", groups="base.group_user"
+        )
+        writer = new_test_user(
+            self.env,
+            login="budget_attribute_writer",
+            groups="base.group_user,analytic.group_analytic_accounting",
+        )
+        for model in ATTRIBUTE_MODELS:
+            attribute = self.env[model].with_user(writer).create({"name": "Attribute"})
+            attribute.name = "Renamed"
+            self.assertEqual(attribute.with_user(reader).name, "Renamed", model)
+            with self.assertRaises(AccessError, msg=model):
+                self.env[model].with_user(reader).create({"name": "Refused"})
+            with self.assertRaises(AccessError, msg=model):
+                attribute.with_user(reader).name = "Refused"
+            attribute.unlink()

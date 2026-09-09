@@ -14,19 +14,23 @@
             <field name="plan_id" position="after">
                 <field name="is_budget_account" invisible="1" />
                 <field
-                    name="subsystem"
+                    name="satellite_id"
                     attrs="{'invisible': [('is_budget_account', '=', False)]}"
                 />
                 <field
-                    name="component"
+                    name="subsystem_id"
                     attrs="{'invisible': [('is_budget_account', '=', False)]}"
                 />
                 <field
-                    name="model_type"
+                    name="component_id"
                     attrs="{'invisible': [('is_budget_account', '=', False)]}"
                 />
                 <field
-                    name="description"
+                    name="model_id"
+                    attrs="{'invisible': [('is_budget_account', '=', False)]}"
+                />
+                <field
+                    name="budget_description"
                     attrs="{'invisible': [('is_budget_account', '=', False)]}"
                 />
             </field>
@@ -39,13 +43,22 @@
         <field name="model">account.analytic.account</field>
         <field name="inherit_id" ref="analytic.view_account_analytic_account_list" />
         <field name="arch" type="xml">
-            <field name="code" position="after">
-                <field name="description" optional="show" />
+            <!-- The list is what an analytic account is looked up in, budget
+                 numbers included, and there the attributes of a budget number
+                 say more about it than the reference and the customer do. Both
+                 stay a column away, rather than out of the list for good. -->
+            <field name="code" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="optional">hide</attribute>
             </field>
             <field name="plan_id" position="after">
-                <field name="subsystem" optional="hide" />
-                <field name="component" optional="hide" />
-                <field name="model_type" optional="hide" />
+                <field name="satellite_id" optional="hide" />
+                <field name="subsystem_id" optional="hide" />
+                <field name="component_id" optional="hide" />
+                <field name="model_id" optional="hide" />
+                <field name="budget_description" optional="show" />
             </field>
         </field>
     </record>
@@ -57,28 +70,35 @@
         <field name="inherit_id" ref="analytic.view_account_analytic_account_search" />
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
-                <field name="subsystem" />
-                <field name="component" />
-                <field name="model_type" />
+                <field name="satellite_id" />
+                <field name="subsystem_id" />
+                <field name="component_id" />
+                <field name="model_id" />
             </field>
             <filter name="associatedpartner" position="after">
+                <filter
+                    string="Satellite"
+                    name="groupby_satellite"
+                    domain="[]"
+                    context="{'group_by': 'satellite_id'}"
+                />
                 <filter
                     string="Subsystem"
                     name="groupby_subsystem"
                     domain="[]"
-                    context="{'group_by': 'subsystem'}"
+                    context="{'group_by': 'subsystem_id'}"
                 />
                 <filter
                     string="Component"
                     name="groupby_component"
                     domain="[]"
-                    context="{'group_by': 'component'}"
+                    context="{'group_by': 'component_id'}"
                 />
                 <filter
                     string="Model"
-                    name="groupby_model_type"
+                    name="groupby_model"
                     domain="[]"
-                    context="{'group_by': 'model_type'}"
+                    context="{'group_by': 'model_id'}"
                 />
             </filter>
         </field>
