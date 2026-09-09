@@ -4,7 +4,7 @@
         id="report_label_barcode_lot_barcode"
         inherit_id="stock_picking_product_barcode_report.report_label_barcode"
     >
-        <!-- The anchor sits in the non-GS1 branch on purpose: a GS1-128 barcode
+        <!-- The anchor sits in the non-GS1 branch on purpose: a GS1 barcode
              already carries the lot in application identifier (10), so adding a
              second symbol there would only duplicate it. -->
         <xpath expr="//span[@t-esc='doc.product_id.barcode']" position="after">

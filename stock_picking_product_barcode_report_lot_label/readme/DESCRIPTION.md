@@ -6,6 +6,6 @@ This module adds a second, scannable Code128 barcode carrying the lot/serial
 number underneath the product barcode, on labels that have a lot/serial number
 assigned.
 
-Labels printed in GS1-128 format are left untouched: that barcode already
-carries the lot in application identifier `(10)`, so a second symbol would only
+Labels printed in a GS1 format are left untouched: those barcodes already carry
+the lot in application identifier `(10)`, so a second symbol would only
 duplicate it.
