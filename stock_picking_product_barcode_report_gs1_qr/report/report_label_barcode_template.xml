@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_label_barcode_gs1_qr"
+        inherit_id="stock_picking_product_barcode_report.report_label_barcode"
+    >
+        <!-- Inserted after the GS1-128 branch so that it becomes the t-elif of
+             that t-if, ahead of the t-else that renders a plain product barcode. -->
+        <xpath
+            expr="//t[@t-if=&quot;doc.wizard_id.barcode_format == 'gs1_128'&quot;]"
+            position="after"
+        >
+            <t t-elif="doc.wizard_id.barcode_format == 'gs1_qr'">
+                <!-- Without a product barcode there is no GTIN to put in AI (02),
+                     so no symbol is printed rather than one encoding all zeros. -->
+                <t t-if="doc.product_id.barcode">
+                    <t t-set="barcode" t-value="doc.product_id.barcode.zfill(14)" />
+                    <t t-set="lot" t-value="doc.lot_id" />
+                    <t
+                        t-set="value"
+                        t-value="('02' + barcode + '10' + lot.name) if lot else ('02' + barcode)"
+                    />
+                    <!-- quiet=0 keeps reportlab's barBorder at 4 modules. With
+                         Odoo's default quiet=1 the border is dropped, and a QR
+                         code without its quiet zone does not decode. -->
+                    <img
+                        t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=%s&amp;height=%s&amp;quiet=0' % (value, 300, 300)"
+                        style="width:16mm;height:16mm"
+                        alt="Barcode"
+                    />
+                    <br />
+                    <span
+                        t-esc="('(02)' + barcode + '(10)' + lot.name) if lot else ('(02)' + barcode)"
+                        style="font-size: 6px;"
+                    />
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>
