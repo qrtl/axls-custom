@@ -27,9 +27,9 @@ other account.
 
 The list of the analytic accounts is what an account is looked up in, budget
 numbers included, and there a budget number is recognised by its name and its
-description. The reference, the customer, the plan and the balance become
-optional columns, hidden by default, and the description takes their place,
-next to the attributes.
+description. Every other column of the list — the reference, the customer, the
+plan, the debit, the credit and the balance — becomes optional, hidden by
+default, and the description takes their place, next to the attributes.
 
 On the analytic plan:
 

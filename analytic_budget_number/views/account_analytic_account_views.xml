@@ -45,10 +45,12 @@
         <field name="arch" type="xml">
             <!-- The list is what an analytic account is looked up in, budget
                  numbers included, and there a budget number is recognised by
-                 its name and its description. The reference, the customer, the
-                 plan and the balance stay a column away, rather than out of the
-                 list for good. The debit and the credit need nothing: they are
-                 invisible in the list this extends. -->
+                 its name and its description. Everything else the list
+                 holds stays a column away, rather than out of it for good.
+                 The debit and the credit are columns of it for a user of the
+                 accounting groups only: account makes the two visible and
+                 restricts the fields themselves to those groups, which drops
+                 them from the arch of anyone else. -->
             <field name="code" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
@@ -56,6 +58,12 @@
                 <attribute name="optional">hide</attribute>
             </field>
             <field name="plan_id" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="debit" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="credit" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
             <field name="balance" position="attributes">
