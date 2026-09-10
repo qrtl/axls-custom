@@ -26,9 +26,10 @@ on the accounts of the budget plan described below, as they mean nothing on any
 other account.
 
 The list of the analytic accounts is what an account is looked up in, budget
-numbers included, and there the attributes say more about a budget number than
-the reference and the customer do. Both become optional columns, hidden by
-default, and the description takes their place, next to the attributes.
+numbers included, and there a budget number is recognised by its name and its
+description. The reference, the customer, the plan and the balance become
+optional columns, hidden by default, and the description takes their place,
+next to the attributes.
 
 On the analytic plan:
 

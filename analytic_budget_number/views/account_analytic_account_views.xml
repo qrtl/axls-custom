@@ -44,13 +44,21 @@
         <field name="inherit_id" ref="analytic.view_account_analytic_account_list" />
         <field name="arch" type="xml">
             <!-- The list is what an analytic account is looked up in, budget
-                 numbers included, and there the attributes of a budget number
-                 say more about it than the reference and the customer do. Both
-                 stay a column away, rather than out of the list for good. -->
+                 numbers included, and there a budget number is recognised by
+                 its name and its description. The reference, the customer, the
+                 plan and the balance stay a column away, rather than out of the
+                 list for good. The debit and the credit need nothing: they are
+                 invisible in the list this extends. -->
             <field name="code" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
             <field name="partner_id" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="plan_id" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="balance" position="attributes">
                 <attribute name="optional">hide</attribute>
             </field>
             <field name="plan_id" position="after">
