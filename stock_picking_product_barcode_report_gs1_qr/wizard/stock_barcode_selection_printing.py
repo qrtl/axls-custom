@@ -2,15 +2,15 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 import re
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 # GS1 "encodable character set 82", spelled exactly as Odoo's own AI (10) rule
 # pattern spells it so that what we print is what the nomenclature parses back.
 GS1_CHAR_SET_82 = re.compile(r'^[!"%-/0-9:-?A-Z_a-z]+$')
 # Maximum value length per application identifier, per the GS1 general
-# specification. AI (02) is fixed length, the other two are variable.
-GS1_MAX_LENGTH = {"02": 14, "10": 20, "240": 30}
-VARIABLE_LENGTH_AI = ("10", "240")
+# specification. Both are variable length, so both need closing with FNC1.
+GS1_MAX_LENGTH = {"10": 20, "240": 30}
 # A keyboard wedge scanner cannot type the real FNC1 (0x1D) into a web form, so
 # the payload separates elements with "#", which barcode.nomenclature accepts
 # out of the box through the default gs1_separator_fnc1 regex. "#" is outside
@@ -41,6 +41,7 @@ class ProductPrintingQty(models.TransientModel):
     gs1_qr_hri = fields.Char(
         "GS1 Human Readable Interpretation", compute="_compute_gs1_qr"
     )
+    gs1_qr_error = fields.Char("Cannot Be Printed", compute="_compute_gs1_qr")
 
     @api.depends("product_id", "location_id")
     def _compute_shelfinfo_id(self):
@@ -91,24 +92,51 @@ class ProductPrintingQty(models.TransientModel):
     def _compute_gs1_qr(self):
         for line in self:
             elements = line._get_gs1_elements()
-            line.gs1_qr_value = line._get_gs1_qr_value(elements)
+            line.gs1_qr_error = line._get_gs1_qr_error(elements)
+            line.gs1_qr_value = (
+                "" if line.gs1_qr_error else line._get_gs1_qr_value(elements)
+            )
             line.gs1_qr_hri = "".join("(%s)%s" % element for element in elements)
 
     def _get_gs1_elements(self):
-        """Return the (AI, value) pairs identifying this line's stock."""
+        """Return the (AI, value) pairs identifying this line's stock.
+
+        The product is always AI (240), the manufacturer's own identification,
+        which stock_barcodes_gs1 resolves against the internal reference. AI (02)
+        would need a GTIN, and a product barcode that merely looks like one is
+        worse than none: the AI (02) rule validates its check digit, so the whole
+        payload then fails to decompose and the label cannot be scanned at all.
+        """
         self.ensure_one()
-        product = self.product_id
         elements = []
-        if product.barcode and product.barcode.isdigit() and len(product.barcode) <= 14:
-            elements.append(("02", product.barcode.zfill(14)))
-        elif product.default_code:
-            # Without a GTIN there is nothing to put in AI (02). AI (240) carries
-            # the manufacturer's own identification instead, which
-            # stock_barcodes_gs1 resolves against the internal reference.
-            elements.append(("240", product.default_code))
+        if self.product_id.default_code:
+            elements.append(("240", self.product_id.default_code))
         if self.lot_id:
             elements.append(("10", self.lot_id.name))
         return elements
+
+    @api.model
+    def _get_gs1_qr_error(self, elements):
+        """Say why these elements cannot be encoded, or return an empty string."""
+        if not elements:
+            return _("the product has no internal reference")
+        for ai, value in elements:
+            label = _("lot/serial") if ai == "10" else _("internal reference")
+            if len(value) > GS1_MAX_LENGTH[ai]:
+                return _(
+                    "the %(label)s %(value)r is longer than the %(length)s "
+                    "characters GS1 allows here",
+                    label=label,
+                    value=value,
+                    length=GS1_MAX_LENGTH[ai],
+                )
+            if not GS1_CHAR_SET_82.match(value):
+                return _(
+                    "the %(label)s %(value)r uses characters GS1 cannot encode",
+                    label=label,
+                    value=value,
+                )
+        return ""
 
     @api.model
     def _get_gs1_qr_value(self, elements):
@@ -121,9 +149,10 @@ class ProductPrintingQty(models.TransientModel):
         parts = []
         for index, (ai, value) in enumerate(elements):
             parts.append(ai + value)
-            # A variable length element that is not the last one has to be closed
-            # with FNC1, or the parser reads the following AI as part of its value.
-            if ai in VARIABLE_LENGTH_AI and index < len(elements) - 1:
+            # Every element here is variable length, so all but the last have to
+            # be closed with FNC1, or the parser reads the following AI as part
+            # of the value.
+            if index < len(elements) - 1:
                 parts.append(FNC1)
         return "".join(parts)
 
@@ -160,16 +189,52 @@ class WizStockBarcodeSelectionPrinting(models.TransientModel):
 
     @api.model
     def _get_move_lines(self, picking):
-        # AI (240) identifies the product by its internal reference, so a product
-        # that has no barcode at all still prints. The base module drops those
-        # lines because the plain and GS1-128 formats have nothing to encode.
+        # The base module keeps only lines whose product has a barcode, which is
+        # not what a GS1 QR label needs and hides the lines that cannot print.
+        # List them all: the wizard says why each faulty one cannot be printed
+        # and print_labels refuses, which beats dropping them without a word.
         if self.barcode_format == "gs1_qr" and self.barcode_report == self.env.ref(
             "stock_picking_product_barcode_report.action_label_barcode_report"
         ):
-            return self.env["stock.move.line"].browse(
-                self.env.context.get("stock_move_line_to_print", [])
-            ) or picking.move_line_ids.filtered("product_id.default_code")
+            return (
+                self.env["stock.move.line"].browse(
+                    self.env.context.get("stock_move_line_to_print", [])
+                )
+                or picking.move_line_ids
+            )
         return super()._get_move_lines(picking)
+
+    def print_labels(self):
+        # A label whose code cannot be built is worse than no label at all: it
+        # looks complete, gets stuck on the goods, and only fails months later at
+        # the count. Refuse the whole job and name the records to fix.
+        faulty = self._get_gs1_qr_lines().filtered("gs1_qr_error")
+        if faulty:
+            raise UserError(
+                _("These labels would carry no scannable code:\n\n%s")
+                % "\n".join(
+                    "- %s%s: %s"
+                    % (
+                        line.product_id.display_name,
+                        " / %s" % line.lot_id.name if line.lot_id else "",
+                        line.gs1_qr_error,
+                    )
+                    for line in faulty
+                )
+            )
+        return super().print_labels()
+
+    def _get_gs1_qr_lines(self):
+        """The lines about to be printed with a GS1 QR code on them."""
+        if self.is_custom_label:
+            return self.env["stock.picking.line.print"]
+        # The sheet report always prints the symbol; the base report only does so
+        # when the GS1 QR format is the one selected.
+        if self.barcode_format == "gs1_qr" or self.barcode_report == self.env.ref(
+            "stock_picking_product_barcode_report_gs1_qr.action_report_stock_qr_label"
+        ):
+            return self.product_print_moves.filtered(lambda line: line.label_qty > 0)
+        return self.env["stock.picking.line.print"]
 
     @api.model
     def _prepare_data_from_move_line(self, move_line):

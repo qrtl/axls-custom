@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 06:43+0000\n"
-"PO-Revision-Date: 2026-09-11 06:43+0000\n"
+"POT-Creation-Date: 2026-09-11 08:32+0000\n"
+"PO-Revision-Date: 2026-09-11 08:32+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -30,6 +30,11 @@ msgstr "在庫ラベルに表示する分析プラン"
 #: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_print__barcode_format
 msgid "Barcode Format"
 msgstr "バーコード形式"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__gs1_qr_error
+msgid "Cannot Be Printed"
+msgstr "印刷不可"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
 #: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr.model_res_company
@@ -122,6 +127,53 @@ msgid ""
 msgstr "ロットに配賦された、このプランの分析勘定を在庫ラベルに印字します。空欄の場合はその行を印字しません。"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid ""
+"These labels would carry no scannable code:\n"
+"\n"
+"%s"
+msgstr "以下のラベルはスキャンできるコードを持てません:\n\n%s"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
 #: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr.model_stock_picking_print
 msgid "Wizard to select how many barcodes have to be printed"
 msgstr "印刷するバーコード数を選択するウィザード"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "internal reference"
+msgstr "内部参照"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "lot/serial"
+msgstr "ロット/シリアル"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid ""
+"the %(label)s %(value)r is longer than the %(length)s characters GS1 allows "
+"here"
+msgstr "%(label)s %(value)r が、ここで GS1 が許容する %(length)s 文字を超えています"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "the %(label)s %(value)r uses characters GS1 cannot encode"
+msgstr "%(label)s %(value)r に GS1 で符号化できない文字が含まれています"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "the product has no internal reference"
+msgstr "プロダクトに内部参照がありません"

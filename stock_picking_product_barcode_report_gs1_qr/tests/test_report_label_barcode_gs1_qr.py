@@ -1,5 +1,6 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
+from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 from odoo.tools import get_barcode_check_digit
 
@@ -109,8 +110,8 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
             [("240", self.product.default_code), ("10", self.lot.name)],
         )
 
-    def test_qr_falls_back_to_internal_reference(self):
-        """Without a GTIN the product is identified by AI (240), not skipped."""
+    def test_qr_identifies_the_product_by_internal_reference(self):
+        """The product goes into AI (240), which resolves to default_code."""
         line = self._create_line(lot=self.lot)
         self.assertFalse(self.product.barcode)
         self.assertEqual(
@@ -121,25 +122,51 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
             "(240)%s(10)%s" % (self.product.default_code, self.lot.name),
         )
 
-    def test_qr_uses_gtin_when_the_product_has_one(self):
-        """A product that does carry a GTIN keeps the standard AI (02)."""
+    def test_a_product_barcode_never_reaches_the_payload(self):
+        """A product barcode must not be encoded, however GTIN-shaped it looks.
+
+        AI (02) validates a check digit, so a barcode that is merely numeric
+        makes the whole payload fail to decompose - a label that looks finished
+        and that no scanner can read. The internal reference is the identifier.
+        """
+        # A valid GTIN makes the point strongest: even this one is not encoded.
         self.product.barcode = self._free_gtin14()
         line = self._create_line(lot=self.lot)
+        self.assertNotIn(self.product.barcode, line.gs1_qr_value)
         self.assertEqual(
-            line.gs1_qr_value, "02%s10%s" % (self.product.barcode, self.lot.name)
+            line.gs1_qr_value, "240%s#10%s" % (self.product.default_code, self.lot.name)
         )
 
-    def test_qr_omitted_when_the_value_is_not_gs1_encodable(self):
-        """An unencodable reference means no symbol, not an unreadable one."""
+    def test_print_refuses_a_reference_gs1_cannot_encode(self):
+        """Printing stops rather than putting an unscannable label on the goods."""
         product = self.env["product.product"].create(
             {"name": "Unencodable", "type": "product", "default_code": "10006049（削除）"}
         )
         line = self._create_line(product=product)
         self.assertFalse(line.gs1_qr_value)
-        html = self._render(SHEET_REPORT, line)
-        self.assertNotIn(QR_IMAGE, html)
-        # The label still prints, so the operator sees which stock has bad data.
-        self.assertIn("Unencodable", html)
+        self.assertIn("10006049（削除）", line.gs1_qr_error)
+        with self.assertRaises(UserError):
+            line.wizard_id.print_labels()
+
+    def test_print_refuses_a_product_without_an_internal_reference(self):
+        """Nothing identifies the stock, so there is nothing to print."""
+        product = self.env["product.product"].create(
+            {"name": "No reference", "type": "product"}
+        )
+        line = self._create_line(product=product)
+        self.assertTrue(line.gs1_qr_error)
+        with self.assertRaises(UserError):
+            line.wizard_id.print_labels()
+
+    def test_print_allows_a_line_that_can_be_encoded(self):
+        """The guard must not stand in the way of a printable job.
+
+        Without this, a check that raised on every line would look like it
+        worked: every test above asserts only that printing is refused.
+        """
+        line = self._create_line(lot=self.lot)
+        self.assertFalse(line.gs1_qr_error)
+        self.assertTrue(line.wizard_id.print_labels())
 
     def test_symbol_is_inlined_in_the_rendered_label(self):
         """The symbol has to be in the document, not fetched while rendering.
@@ -233,8 +260,9 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         self.assertEqual(line.location_id, shelf)
         self.assertEqual(line.lot_id, self.lot)
 
-    def test_receipt_lines_survive_the_missing_barcode_filter(self):
-        """The base report drops products with no barcode; AI (240) needs them."""
+    def test_receipt_lines_are_listed_whatever_the_product_carries(self):
+        """The base report keeps only products with a barcode; the QR label needs
+        every line, so that the ones it cannot print are named rather than gone."""
         picking = self.env["stock.picking"].create(
             {
                 "picking_type_id": self.env.ref("stock.picking_type_in").id,

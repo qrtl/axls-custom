@@ -14,6 +14,8 @@ The wizard lists what will be printed, with the shelf, location, purchase order
 and analytic account it resolved for each line, and a *Quantity of Labels*
 column to print more than one copy.
 
-A line whose internal reference cannot be encoded — because it is empty, or
-contains characters outside the GS1 alphanumeric set — still prints its text,
-but without a QR code, which is how bad reference data shows up.
+A line that cannot carry a code — no internal reference, or a reference or lot
+number holding characters outside the GS1 alphanumeric set — is listed with the
+reason in a *Cannot Be Printed* column, and Print raises rather than producing
+the sheet. Fix the record, or drop the line by setting its label quantity to
+zero, and print again.

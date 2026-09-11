@@ -51,18 +51,28 @@ below the 0.250mm GS1 minimum, and a 203dpi label printer cannot render
 it legibly. The same payload as a QR code decodes down to about 12mm
 square.
 
-**Why AI (240) and not AI (02).** AI (02) carries a GTIN, which most
-manufactured-part catalogues simply do not have. The label therefore
-falls back to AI (240), "additional product identification assigned by
-the manufacturer", which ``stock_barcodes_gs1`` resolves against the
-product's internal reference. AI (240) is variable length, so the
-payload separates it from the lot element with ``#`` — the FNC1 stand-in
-that ``barcode.nomenclature`` accepts out of the box, and which a
-keyboard-wedge scanner can actually transmit. Odoo ships no rule for AI
-(240), so this module adds one to the default GS1 nomenclature.
+**The product is always AI (240), never AI (02).** AI (02) carries a
+GTIN, which most manufactured-part catalogues simply do not have. AI
+(240), "additional product identification assigned by the manufacturer",
+carries the internal reference instead, and ``stock_barcodes_gs1``
+resolves it against ``default_code``. The product barcode is
+deliberately ignored even when one is set: AI (02) validates a check
+digit, so a barcode that merely looks numeric makes the whole payload
+fail to decompose — a label that looks finished and that no scanner can
+read.
 
-Products that do carry a GTIN keep the standard ``(02)GTIN(10)LOT``
-payload.
+AI (240) is variable length, so the payload separates it from the lot
+element with ``#`` — the FNC1 stand-in that ``barcode.nomenclature``
+accepts out of the box, and which a keyboard-wedge scanner can actually
+transmit. Odoo ships no rule for AI (240), so this module adds one to
+the default GS1 nomenclature.
+
+**Printing refuses rather than producing a label nothing can scan.** A
+product with no internal reference, or a reference or lot number holding
+characters outside the GS1 alphanumeric set, cannot be encoded. The
+wizard says so per line and the Print button raises, naming every record
+to fix — a label that looks complete but carries no usable code would
+otherwise be found out months later, at the count it was printed for.
 
 A 2D imager is required: a laser scanner cannot read a QR code.
 
@@ -120,10 +130,11 @@ The wizard lists what will be printed, with the shelf, location,
 purchase order and analytic account it resolved for each line, and a
 *Quantity of Labels* column to print more than one copy.
 
-A line whose internal reference cannot be encoded — because it is empty,
-or contains characters outside the GS1 alphanumeric set — still prints
-its text, but without a QR code, which is how bad reference data shows
-up.
+A line that cannot carry a code — no internal reference, or a reference
+or lot number holding characters outside the GS1 alphanumeric set — is
+listed with the reason in a *Cannot Be Printed* column, and Print raises
+rather than producing the sheet. Fix the record, or drop the line by
+setting its label quantity to zero, and print again.
 
 Bug Tracker
 ===========

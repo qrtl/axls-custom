@@ -15,6 +15,7 @@
                 <field name="shelfinfo_id" optional="show" />
                 <field name="purchase_id" optional="show" />
                 <field name="analytic_account_id" optional="show" />
+                <field name="gs1_qr_error" decoration-danger="gs1_qr_error != False" />
             </field>
         </field>
     </record>
