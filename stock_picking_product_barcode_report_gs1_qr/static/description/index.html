@@ -375,34 +375,93 @@ ul.auto-toc {
 !! source digest: sha256:774dd20215646c2020971c2bcf973a208f58ca286e458ce735dc12d60608f3bb
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 <p><a class="reference external image-reference" href="https://odoo-community.org/page/development-status"><img alt="Beta" src="https://img.shields.io/badge/maturity-Beta-yellow.png" /></a> <a class="reference external image-reference" href="http://www.gnu.org/licenses/agpl-3.0-standalone.html"><img alt="License: AGPL-3" src="https://img.shields.io/badge/license-AGPL--3-blue.png" /></a> <a class="reference external image-reference" href="https://github.com/qrtl/axls-custom/tree/16.0/stock_picking_product_barcode_report_gs1_qr"><img alt="qrtl/axls-custom" src="https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github" /></a></p>
-<p><tt class="docutils literal">stock_picking_product_barcode_report</tt> can print the product and the
-lot as a single GS1-128 barcode, which <tt class="docutils literal">stock_barcodes_gs1</tt> reads in
-one scan. At the 47mm x 29mm label size the module ships with, however,
-that barcode does not fit: a <tt class="docutils literal">(02)GTIN(10)LOT</tt> payload needs about 200
-Code 128 modules, which leaves an X-dimension of roughly 0.20mm, below
-the 0.250mm GS1 minimum, and a 203dpi label printer cannot render it
-legibly.</p>
-<p>This module adds a <tt class="docutils literal">Display GS1 QR format for barcodes</tt> option next to
-the existing GS1-128 one. It encodes the same <tt class="docutils literal">(02)GTIN(10)LOT</tt>
-payload, so nothing changes on the reading side, but as a QR code it
-decodes down to about 12mm square and therefore fits the standard label
-with room to spare.</p>
-<p>Set it on the printing wizard, or as the company default under Inventory
-/ Configuration / Settings / Barcode format.</p>
+<p>This module prints a label that identifies a specific piece of stock, so
+that an inventory count can be done by scanning rather than by keying
+references in.</p>
+<p>The label carries the internal reference, the product name, the purchase
+order, an analytic account, the lot/serial number and the location the
+stock is currently in, next to a QR code that encodes the product and
+the lot as a single GS1 payload. <tt class="docutils literal">stock_barcodes_gs1</tt> resolves both
+from one scan, so a count is “scan the shelf, then scan each item”.</p>
+<p>Two things about the encoding are worth knowing.</p>
+<p><strong>Why QR rather than GS1-128.</strong> <tt class="docutils literal">stock_picking_product_barcode_report</tt>
+can already print the product and the lot as one GS1-128 barcode, but
+that payload needs about 200 Code 128 modules. On the 47mm x 29mm label
+the base module ships that leaves an X-dimension of roughly 0.20mm,
+below the 0.250mm GS1 minimum, and a 203dpi label printer cannot render
+it legibly. The same payload as a QR code decodes down to about 12mm
+square.</p>
+<p><strong>Why AI (240) and not AI (02).</strong> AI (02) carries a GTIN, which most
+manufactured-part catalogues simply do not have. The label therefore
+falls back to AI (240), “additional product identification assigned by
+the manufacturer”, which <tt class="docutils literal">stock_barcodes_gs1</tt> resolves against the
+product’s internal reference. AI (240) is variable length, so the
+payload separates it from the lot element with <tt class="docutils literal">#</tt> — the FNC1 stand-in
+that <tt class="docutils literal">barcode.nomenclature</tt> accepts out of the box, and which a
+keyboard-wedge scanner can actually transmit. Odoo ships no rule for AI
+(240), so this module adds one to the default GS1 nomenclature.</p>
+<p>Products that do carry a GTIN keep the standard <tt class="docutils literal">(02)GTIN(10)LOT</tt>
+payload.</p>
 <p>A 2D imager is required: a laser scanner cannot read a QR code.</p>
 <p><strong>Table of contents</strong></p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#bug-tracker" id="toc-entry-1">Bug Tracker</a></li>
-<li><a class="reference internal" href="#credits" id="toc-entry-2">Credits</a><ul>
-<li><a class="reference internal" href="#authors" id="toc-entry-3">Authors</a></li>
-<li><a class="reference internal" href="#maintainers" id="toc-entry-4">Maintainers</a></li>
+<li><a class="reference internal" href="#configuration" id="toc-entry-1">Configuration</a></li>
+<li><a class="reference internal" href="#usage" id="toc-entry-2">Usage</a></li>
+<li><a class="reference internal" href="#bug-tracker" id="toc-entry-3">Bug Tracker</a></li>
+<li><a class="reference internal" href="#credits" id="toc-entry-4">Credits</a><ul>
+<li><a class="reference internal" href="#authors" id="toc-entry-5">Authors</a></li>
+<li><a class="reference internal" href="#maintainers" id="toc-entry-6">Maintainers</a></li>
 </ul>
 </li>
 </ul>
 </div>
+<div class="section" id="configuration">
+<h2><a class="toc-backref" href="#toc-entry-1">Configuration</a></h2>
+<p>Under <em>Inventory / Configuration / Settings / Barcode format</em>:</p>
+<ul class="simple">
+<li><strong>Default template for barcode labels</strong> — set it to
+<tt class="docutils literal">Stock QR Label (A4)</tt> so that the sheet is the one offered by
+default. The A4 sheet packs 40 of the 47mm x 29mm labels, four across
+and ten down.</li>
+<li><strong>Analytic plan shown on stock labels</strong> — the label prints the
+analytic account of this plan that the lot is distributed to
+(<tt class="docutils literal">stock_lot_analytic</tt> copies the distribution from the receipt onto
+the lot). Leave it empty to omit that line.</li>
+<li><strong>Method to choose the barcode formating</strong> — set it to
+<tt class="docutils literal">Display GS1 QR format for barcodes</tt> to make the QR the default
+symbology on the base module’s own label as well.</li>
+</ul>
+<p>The purchase order shown on the label comes from
+<tt class="docutils literal">stock_lot_purchase_attribute</tt>, which stamps the lot when the receipt
+is validated.</p>
+<p>Scanning needs <tt class="docutils literal">stock_barcodes_gs1</tt> installed and the company’s
+barcode nomenclature set to a GS1 one. This module’s AI (240) rule is
+added to <em>Default GS1 Nomenclature</em>; a hand-built nomenclature needs its
+own copy of the rule.</p>
+</div>
+<div class="section" id="usage">
+<h2><a class="toc-backref" href="#toc-entry-2">Usage</a></h2>
+<p>The label sheet prints from the <em>Print</em> menu of any of these:</p>
+<ul class="simple">
+<li><strong>A receipt</strong>, to label goods as they arrive. Every move line of the
+picking gets a label; the location printed is the destination of the
+move.</li>
+<li><strong>Physical inventory (quants) or lots</strong>, to label a specific
+selection.</li>
+<li><strong>A location</strong>, to reprint every label for a shelf in one go. Every
+quant stored anywhere below the selected locations is included.</li>
+</ul>
+<p>The wizard lists what will be printed, with the location, purchase order
+and analytic account it resolved for each line, and a <em>Quantity of
+Labels</em> column to print more than one copy.</p>
+<p>A line whose internal reference cannot be encoded — because it is empty,
+or contains characters outside the GS1 alphanumeric set — still prints
+its text, but without a QR code, which is how bad reference data shows
+up.</p>
+</div>
 <div class="section" id="bug-tracker">
-<h2><a class="toc-backref" href="#toc-entry-1">Bug Tracker</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-3">Bug Tracker</a></h2>
 <p>Bugs are tracked on <a class="reference external" href="https://github.com/qrtl/axls-custom/issues">GitHub Issues</a>.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
@@ -410,15 +469,15 @@ If you spotted it first, help us to smash it by providing a detailed and welcome
 <p>Do not contact contributors directly about support or help with technical issues.</p>
 </div>
 <div class="section" id="credits">
-<h2><a class="toc-backref" href="#toc-entry-2">Credits</a></h2>
+<h2><a class="toc-backref" href="#toc-entry-4">Credits</a></h2>
 <div class="section" id="authors">
-<h3><a class="toc-backref" href="#toc-entry-3">Authors</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-5">Authors</a></h3>
 <ul class="simple">
 <li>Quartile</li>
 </ul>
 </div>
 <div class="section" id="maintainers">
-<h3><a class="toc-backref" href="#toc-entry-4">Maintainers</a></h3>
+<h3><a class="toc-backref" href="#toc-entry-6">Maintainers</a></h3>
 <p>Current maintainer:</p>
 <p><a class="reference external image-reference" href="https://github.com/nobuQuartile"><img alt="nobuQuartile" src="https://github.com/nobuQuartile.png?size=40px" /></a></p>
 <p>This module is part of the <a class="reference external" href="https://github.com/qrtl/axls-custom/tree/16.0/stock_picking_product_barcode_report_gs1_qr">qrtl/axls-custom</a> project on GitHub.</p>

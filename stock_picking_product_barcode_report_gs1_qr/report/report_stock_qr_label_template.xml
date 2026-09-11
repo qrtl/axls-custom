@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="stock_qr_label">
+        <div class="o_qr_label">
+            <div class="o_qr_label_ref">
+                <span t-esc="label.product_id.default_code" />
+            </div>
+            <div class="o_qr_label_name">
+                <span t-esc="label.product_id.name" />
+            </div>
+            <table class="o_qr_label_body">
+                <tr>
+                    <td t-if="label.gs1_qr_value" class="o_qr_label_code">
+                        <!-- The barcode widget inlines the symbol as a data URI.
+                             Pointing an <img> at /report/barcode instead makes
+                             wkhtmltopdf fetch it over HTTP, which fails silently
+                             and leaves the alt text on the label. -->
+                        <span
+                            t-out="label.gs1_qr_value"
+                            t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 600, 'height': 600, 'quiet': 0, 'img_style': 'width:15mm;height:15mm;'}"
+                        />
+                    </td>
+                    <td class="o_qr_label_info">
+                        <table>
+                            <tr>
+                                <th>PO</th>
+                                <td t-esc="label.purchase_id.name" />
+                            </tr>
+                            <tr>
+                                <th>Subsidy</th>
+                                <td t-esc="label.analytic_account_id.name" />
+                            </tr>
+                            <tr>
+                                <th>S/N</th>
+                                <td t-esc="label.lot_id.name" />
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <!-- The location is on its own row because it is the longest value
+                 of the four and would otherwise be the one that gets clipped. -->
+            <table class="o_qr_label_foot">
+                <tr>
+                    <th>Loc</th>
+                    <td t-esc="label.location_id.display_name" />
+                </tr>
+            </table>
+        </div>
+    </template>
+    <template id="stock_qr_label_sheet">
+        <style type="text/css">
+/* Both report layouts wrap the body in a Bootstrap container, whose
+               max-width and gutters would squeeze the grid off its millimetres.
+               web.minimal_layout, the one wkhtmltopdf actually gets, hardcodes
+               the class, so this cannot be turned off from the template. */
+body,
+.container,
+#wrapwrap,
+#wrapwrap > main,
+.article {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.o_qr_sheet {
+    width: 210mm;
+    padding: 3.5mm 11mm;
+    overflow: hidden;
+    font-family: "Noto Sans CJK JP", "Noto Sans", sans-serif;
+    color: #000000;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.o_qr_grid {
+    width: 188mm;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+/* Scoped by class, not by descendant: ".o_qr_grid td" also matches
+               the cells of the tables inside a label and blows them up to 47mm. */
+.o_qr_cell {
+    width: 47mm;
+    height: 29mm;
+    padding: 0;
+    border: 0;
+    vertical-align: top;
+}
+.o_qr_label {
+    width: 47mm;
+    height: 29mm;
+    padding: 1mm;
+    overflow: hidden;
+    /* A cut guide thinner than one layout pixel (0.26mm at
+                   dpi 96) rounds to zero and never reaches the paper. */
+    border: 0.3mm solid #d0d0d0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.o_qr_label_ref {
+    height: 3.8mm;
+    overflow: hidden;
+    font-size: 9pt;
+    font-weight: bold;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+.o_qr_label_name {
+    height: 4.2mm;
+    overflow: hidden;
+    font-size: 5.5pt;
+    line-height: 1.1;
+}
+.o_qr_label_body {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+.o_qr_label_foot {
+    width: 100%;
+    border-collapse: collapse;
+}
+.o_qr_label_code {
+    width: 15mm;
+    padding: 0;
+    vertical-align: top;
+}
+.o_qr_label_info {
+    padding: 0 0 0 1mm;
+    vertical-align: top;
+}
+/* Old WebKit does not inherit font-size into a table, so the nested
+               one has to be told again or it falls back to the browser default. */
+.o_qr_label_info table {
+    width: 100%;
+    border-collapse: collapse;
+}
+/* Wide enough for the longest header. A header that overflows its
+               column does not clip: WebKit collapses that row's value cell
+               instead, and the value silently vanishes from the label. */
+.o_qr_label_info th,
+.o_qr_label_foot th {
+    width: 11mm;
+    padding: 0;
+    overflow: hidden;
+    color: #555555;
+    font-size: 6pt;
+    font-weight: normal;
+    line-height: 1.45;
+    text-align: left;
+    padding-right: 0.6mm;
+}
+.o_qr_label_info td,
+.o_qr_label_foot td {
+    padding: 0;
+    overflow: hidden;
+    font-size: 6.5pt;
+    line-height: 1.45;
+    white-space: nowrap;
+}
+.o_qr_label_foot th {
+    line-height: 1.2;
+}
+.o_qr_label_foot td {
+    line-height: 1.2;
+}
+        </style>
+        <t t-foreach="pages" t-as="page">
+            <div
+                class="o_qr_sheet"
+                t-attf-style="page-break-after: #{'auto' if page_last else 'always'};"
+            >
+                <table class="o_qr_grid">
+                    <tr t-foreach="page" t-as="row">
+                        <td t-foreach="row" t-as="label" class="o_qr_cell">
+                            <t
+                                t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label"
+                            />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </t>
+    </template>
+    <template id="report_stock_qr_label">
+        <t t-call="web.html_container">
+            <t t-set="pages" t-value="docs._get_label_pages()" />
+            <t
+                t-set="label_lang"
+                t-value="docs[:1].wizard_id.lang or docs.env.user.lang"
+            />
+            <!-- ir.actions.report._prepare_html splits the rendered document on
+                 .article nodes and rewraps each in web.minimal_layout. Without
+                 one it falls back to the bare children of <main>, and the body
+                 reaches wkhtmltopdf with no <meta charset> and no <base href>:
+                 non-ASCII text comes out as mojibake. -->
+            <div class="article">
+                <t
+                    t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label_sheet"
+                    t-lang="label_lang"
+                />
+            </div>
+        </t>
+    </template>
+</odoo>

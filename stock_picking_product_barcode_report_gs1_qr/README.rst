@@ -26,22 +26,38 @@ Stock Picking Product Barcode Report GS1 QR
 
 |badge1| |badge2| |badge3|
 
-``stock_picking_product_barcode_report`` can print the product and the
-lot as a single GS1-128 barcode, which ``stock_barcodes_gs1`` reads in
-one scan. At the 47mm x 29mm label size the module ships with, however,
-that barcode does not fit: a ``(02)GTIN(10)LOT`` payload needs about 200
-Code 128 modules, which leaves an X-dimension of roughly 0.20mm, below
-the 0.250mm GS1 minimum, and a 203dpi label printer cannot render it
-legibly.
+This module prints a label that identifies a specific piece of stock, so
+that an inventory count can be done by scanning rather than by keying
+references in.
 
-This module adds a ``Display GS1 QR format for barcodes`` option next to
-the existing GS1-128 one. It encodes the same ``(02)GTIN(10)LOT``
-payload, so nothing changes on the reading side, but as a QR code it
-decodes down to about 12mm square and therefore fits the standard label
-with room to spare.
+The label carries the internal reference, the product name, the purchase
+order, an analytic account, the lot/serial number and the location the
+stock is currently in, next to a QR code that encodes the product and
+the lot as a single GS1 payload. ``stock_barcodes_gs1`` resolves both
+from one scan, so a count is "scan the shelf, then scan each item".
 
-Set it on the printing wizard, or as the company default under Inventory
-/ Configuration / Settings / Barcode format.
+Two things about the encoding are worth knowing.
+
+**Why QR rather than GS1-128.** ``stock_picking_product_barcode_report``
+can already print the product and the lot as one GS1-128 barcode, but
+that payload needs about 200 Code 128 modules. On the 47mm x 29mm label
+the base module ships that leaves an X-dimension of roughly 0.20mm,
+below the 0.250mm GS1 minimum, and a 203dpi label printer cannot render
+it legibly. The same payload as a QR code decodes down to about 12mm
+square.
+
+**Why AI (240) and not AI (02).** AI (02) carries a GTIN, which most
+manufactured-part catalogues simply do not have. The label therefore
+falls back to AI (240), "additional product identification assigned by
+the manufacturer", which ``stock_barcodes_gs1`` resolves against the
+product's internal reference. AI (240) is variable length, so the
+payload separates it from the lot element with ``#`` — the FNC1 stand-in
+that ``barcode.nomenclature`` accepts out of the box, and which a
+keyboard-wedge scanner can actually transmit. Odoo ships no rule for AI
+(240), so this module adds one to the default GS1 nomenclature.
+
+Products that do carry a GTIN keep the standard ``(02)GTIN(10)LOT``
+payload.
 
 A 2D imager is required: a laser scanner cannot read a QR code.
 
@@ -49,6 +65,54 @@ A 2D imager is required: a laser scanner cannot read a QR code.
 
 .. contents::
    :local:
+
+Configuration
+=============
+
+Under *Inventory / Configuration / Settings / Barcode format*:
+
+- **Default template for barcode labels** — set it to
+  ``Stock QR Label (A4)`` so that the sheet is the one offered by
+  default. The A4 sheet packs 40 of the 47mm x 29mm labels, four across
+  and ten down.
+- **Analytic plan shown on stock labels** — the label prints the
+  analytic account of this plan that the lot is distributed to
+  (``stock_lot_analytic`` copies the distribution from the receipt onto
+  the lot). Leave it empty to omit that line.
+- **Method to choose the barcode formating** — set it to
+  ``Display GS1 QR format for barcodes`` to make the QR the default
+  symbology on the base module's own label as well.
+
+The purchase order shown on the label comes from
+``stock_lot_purchase_attribute``, which stamps the lot when the receipt
+is validated.
+
+Scanning needs ``stock_barcodes_gs1`` installed and the company's
+barcode nomenclature set to a GS1 one. This module's AI (240) rule is
+added to *Default GS1 Nomenclature*; a hand-built nomenclature needs its
+own copy of the rule.
+
+Usage
+=====
+
+The label sheet prints from the *Print* menu of any of these:
+
+- **A receipt**, to label goods as they arrive. Every move line of the
+  picking gets a label; the location printed is the destination of the
+  move.
+- **Physical inventory (quants) or lots**, to label a specific
+  selection.
+- **A location**, to reprint every label for a shelf in one go. Every
+  quant stored anywhere below the selected locations is included.
+
+The wizard lists what will be printed, with the location, purchase order
+and analytic account it resolved for each line, and a *Quantity of
+Labels* column to print more than one copy.
+
+A line whose internal reference cannot be encoded — because it is empty,
+or contains characters outside the GS1 alphanumeric set — still prints
+its text, but without a QR code, which is how bad reference data shows
+up.
 
 Bug Tracker
 ===========

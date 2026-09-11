@@ -11,28 +11,20 @@
             position="after"
         >
             <t t-elif="doc.wizard_id.barcode_format == 'gs1_qr'">
-                <!-- Without a product barcode there is no GTIN to put in AI (02),
-                     so no symbol is printed rather than one encoding all zeros. -->
-                <t t-if="doc.product_id.barcode">
-                    <t t-set="barcode" t-value="doc.product_id.barcode.zfill(14)" />
-                    <t t-set="lot" t-value="doc.lot_id" />
-                    <t
-                        t-set="value"
-                        t-value="('02' + barcode + '10' + lot.name) if lot else ('02' + barcode)"
-                    />
-                    <!-- quiet=0 keeps reportlab's barBorder at 4 modules. With
-                         Odoo's default quiet=1 the border is dropped, and a QR
-                         code without its quiet zone does not decode. -->
-                    <img
-                        t-att-src="'/report/barcode/?barcode_type=QR&amp;value=%s&amp;width=%s&amp;height=%s&amp;quiet=0' % (value, 300, 300)"
-                        style="width:16mm;height:16mm"
-                        alt="Barcode"
+                <!-- Nothing to identify the stock by means no symbol, rather than
+                     one encoding a payload no scanner can resolve. -->
+                <t t-if="doc.gs1_qr_value">
+                    <!-- Inlined as a data URI by the barcode widget: an <img>
+                         pointing at /report/barcode makes wkhtmltopdf fetch it
+                         over HTTP, which fails silently and prints the alt text.
+                         quiet=0 keeps reportlab's barBorder at 4 modules, and a
+                         QR code without its quiet zone does not decode. -->
+                    <span
+                        t-out="doc.gs1_qr_value"
+                        t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 256, 'height': 256, 'quiet': 0, 'img_style': 'width:16mm;height:16mm;'}"
                     />
                     <br />
-                    <span
-                        t-esc="('(02)' + barcode + '(10)' + lot.name) if lot else ('(02)' + barcode)"
-                        style="font-size: 6px;"
-                    />
+                    <span t-esc="doc.gs1_qr_hri" style="font-size: 6px;" />
                 </t>
             </t>
         </xpath>

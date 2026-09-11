@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.stock.qr.label</field>
+        <field name="model">res.config.settings</field>
+        <field
+            name="inherit_id"
+            ref="stock_picking_product_barcode_report.res_config_settings_view_form"
+        />
+        <field name="arch" type="xml">
+            <field name="barcode_default_report" position="after">
+                <label for="barcode_label_analytic_plan_id" class="mt16" />
+                <field name="barcode_label_analytic_plan_id" />
+            </field>
+        </field>
+    </record>
+</odoo>

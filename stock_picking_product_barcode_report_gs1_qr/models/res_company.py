@@ -10,3 +10,9 @@ class ResCompany(models.Model):
         selection_add=[("gs1_qr", "Display GS1 QR format for barcodes")],
         ondelete={"gs1_qr": "set null"},
     )
+    barcode_label_analytic_plan_id = fields.Many2one(
+        "account.analytic.plan",
+        string="Analytic plan shown on stock labels",
+        help="The stock label prints the analytic account of this plan that the "
+        "lot is distributed to. Leave empty to omit that line from the label.",
+    )

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_stock_barcode_selection_printing" model="ir.ui.view">
+        <field
+            name="name"
+        >stock.barcode.selection.printing.form.inherit.stock.qr.label</field>
+        <field name="model">stock.picking.print</field>
+        <field
+            name="inherit_id"
+            ref="stock_picking_product_barcode_report.view_stock_barcode_selection_printing"
+        />
+        <field name="arch" type="xml">
+            <field name="lot_id" position="after">
+                <field name="location_id" force_save="1" readonly="1" />
+                <field name="purchase_id" optional="show" />
+                <field name="analytic_account_id" optional="show" />
+            </field>
+        </field>
+    </record>
+</odoo>
