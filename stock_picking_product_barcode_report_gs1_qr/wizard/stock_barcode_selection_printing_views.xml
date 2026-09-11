@@ -12,6 +12,7 @@
         <field name="arch" type="xml">
             <field name="lot_id" position="after">
                 <field name="location_id" force_save="1" readonly="1" />
+                <field name="shelfinfo_id" optional="show" />
                 <field name="purchase_id" optional="show" />
                 <field name="analytic_account_id" optional="show" />
             </field>

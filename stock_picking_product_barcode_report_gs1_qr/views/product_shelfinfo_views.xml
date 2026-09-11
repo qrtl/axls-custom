@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The stock location is warehouse-wide, so selecting one is not a way to
+         pick a shelf. Binding the wizard to the shelf records themselves is:
+         filter or group Inventory / Products / Shelf Information by area, select
+         the rows, and every label for those shelves prints in one action. -->
+    <record
+        id="act_stock_barcode_selection_printing_shelfinfo"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Print barcode labels</field>
+        <field name="res_model">stock.picking.print</field>
+        <field name="view_mode">form</field>
+        <field name="binding_type">report</field>
+        <field
+            name="binding_model_id"
+            ref="stock_product_shelfinfo.model_product_shelfinfo"
+        />
+        <field name="target">new</field>
+    </record>
+</odoo>

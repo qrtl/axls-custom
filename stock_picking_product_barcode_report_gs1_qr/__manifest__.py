@@ -14,6 +14,7 @@
         "stock_lot_analytic",
         "stock_lot_purchase_attribute",
         "stock_picking_product_barcode_report",
+        "stock_product_shelfinfo",
     ],
     "data": [
         "data/barcode_rule_data.xml",
@@ -21,6 +22,7 @@
         "report/report_label_barcode_template.xml",
         "report/report_stock_qr_label.xml",
         "report/report_stock_qr_label_template.xml",
+        "views/product_shelfinfo_views.xml",
         "views/res_config_settings_views.xml",
         "views/stock_location_views.xml",
         "wizard/stock_barcode_selection_printing_views.xml",

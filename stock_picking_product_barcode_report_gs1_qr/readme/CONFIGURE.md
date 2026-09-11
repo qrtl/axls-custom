@@ -12,7 +12,10 @@ Under *Inventory / Configuration / Settings / Barcode format*:
   the base module's own label as well.
 
 The purchase order shown on the label comes from `stock_lot_purchase_attribute`,
-which stamps the lot when the receipt is validated.
+which stamps the lot when the receipt is validated. The shelf comes from
+`stock_product_shelfinfo`, which keys a shelf address on a product and a
+location; a product with no record for the location it is stored in prints no
+shelf.
 
 Scanning needs `stock_barcodes_gs1` installed and the company's barcode
 nomenclature set to a GS1 one. This module's AI (240) rule is added to

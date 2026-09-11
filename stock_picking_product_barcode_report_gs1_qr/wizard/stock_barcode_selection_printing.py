@@ -26,6 +26,9 @@ class ProductPrintingQty(models.TransientModel):
     _inherit = "stock.picking.line.print"
 
     location_id = fields.Many2one("stock.location", string="Location")
+    shelfinfo_id = fields.Many2one(
+        "product.shelfinfo", string="Shelf Info.", compute="_compute_shelfinfo_id"
+    )
     purchase_id = fields.Many2one(
         "purchase.order", string="Purchase Order", compute="_compute_purchase_id"
     )
@@ -38,6 +41,26 @@ class ProductPrintingQty(models.TransientModel):
     gs1_qr_hri = fields.Char(
         "GS1 Human Readable Interpretation", compute="_compute_gs1_qr"
     )
+
+    @api.depends("product_id", "location_id")
+    def _compute_shelfinfo_id(self):
+        # The shelf is not the stock location: locations here are warehouse-wide
+        # (one per company), and the shelf address lives on product.shelfinfo,
+        # keyed by exactly this pair. Resolved the same way stock.quant does.
+        shelfinfos = self.env["product.shelfinfo"].search(
+            [
+                ("product_id", "in", self.product_id.ids),
+                ("location_id", "in", self.location_id.ids),
+            ]
+        )
+        by_product_location = {
+            (shelfinfo.product_id.id, shelfinfo.location_id.id): shelfinfo
+            for shelfinfo in shelfinfos
+        }
+        for line in self:
+            line.shelfinfo_id = by_product_location.get(
+                (line.product_id.id, line.location_id.id)
+            )
 
     @api.depends("lot_id", "move_line_id")
     def _compute_purchase_id(self):
@@ -131,6 +154,8 @@ class WizStockBarcodeSelectionPrinting(models.TransientModel):
         ctx = self.env.context
         if ctx.get("active_ids") and ctx.get("active_model") == "stock.location":
             res.update({"product_print_moves": self._get_lines_from_locations()})
+        if ctx.get("active_ids") and ctx.get("active_model") == "product.shelfinfo":
+            res.update({"product_print_moves": self._get_lines_from_shelfinfos()})
         return res
 
     @api.model
@@ -174,6 +199,16 @@ class WizStockBarcodeSelectionPrinting(models.TransientModel):
             )
             line[2]["location_id"] = quants[:1].location_id.id
         return lines
+
+    def _get_lines_from_shelfinfos(self):
+        """One label line per quant sitting on the selected shelves."""
+        shelfinfos = self.env["product.shelfinfo"].browse(
+            self.env.context["active_ids"]
+        )
+        quants = self.env["stock.quant"].search(
+            [("shelfinfo_id", "in", shelfinfos.ids), ("quantity", ">", 0)]
+        )
+        return self.with_context(active_ids=quants.ids)._get_lines_from_quants()
 
     def _get_lines_from_locations(self):
         """One label line per quant stored anywhere under the selected locations."""

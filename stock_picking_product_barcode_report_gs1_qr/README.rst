@@ -31,10 +31,15 @@ that an inventory count can be done by scanning rather than by keying
 references in.
 
 The label carries the internal reference, the product name, the purchase
-order, an analytic account, the lot/serial number and the location the
-stock is currently in, next to a QR code that encodes the product and
-the lot as a single GS1 payload. ``stock_barcodes_gs1`` resolves both
-from one scan, so a count is "scan the shelf, then scan each item".
+order, an analytic account, the lot/serial number and the shelf the
+stock sits on, next to a QR code that encodes the product and the lot as
+a single GS1 payload.
+
+The shelf is ``product.shelfinfo``, not the stock location: an
+installation whose locations are warehouse-wide keeps the shelf address
+there instead, and printing the location would put the same string on
+every label. ``stock_barcodes_gs1`` resolves both from one scan, so a
+count is "scan the shelf, then scan each item".
 
 Two things about the encoding are worth knowing.
 
@@ -85,7 +90,9 @@ Under *Inventory / Configuration / Settings / Barcode format*:
 
 The purchase order shown on the label comes from
 ``stock_lot_purchase_attribute``, which stamps the lot when the receipt
-is validated.
+is validated. The shelf comes from ``stock_product_shelfinfo``, which
+keys a shelf address on a product and a location; a product with no
+record for the location it is stored in prints no shelf.
 
 Scanning needs ``stock_barcodes_gs1`` installed and the company's
 barcode nomenclature set to a GS1 one. This module's AI (240) rule is
@@ -102,12 +109,16 @@ The label sheet prints from the *Print* menu of any of these:
   move.
 - **Physical inventory (quants) or lots**, to label a specific
   selection.
-- **A location**, to reprint every label for a shelf in one go. Every
-  quant stored anywhere below the selected locations is included.
+- **Shelf information**, to reprint a whole shelf in one go. Filter or
+  group *Inventory / Products / Shelf Information* by area, select the
+  rows, and every quant sitting on those shelves is included.
+- **A location**, for everything stored anywhere below it. Note that
+  this is the stock location, which is often warehouse-wide — the
+  shelves above are usually the selection you want.
 
-The wizard lists what will be printed, with the location, purchase order
-and analytic account it resolved for each line, and a *Quantity of
-Labels* column to print more than one copy.
+The wizard lists what will be printed, with the shelf, location,
+purchase order and analytic account it resolved for each line, and a
+*Quantity of Labels* column to print more than one copy.
 
 A line whose internal reference cannot be encoded — because it is empty,
 or contains characters outside the GS1 alphanumeric set — still prints

@@ -379,10 +379,14 @@ ul.auto-toc {
 that an inventory count can be done by scanning rather than by keying
 references in.</p>
 <p>The label carries the internal reference, the product name, the purchase
-order, an analytic account, the lot/serial number and the location the
-stock is currently in, next to a QR code that encodes the product and
-the lot as a single GS1 payload. <tt class="docutils literal">stock_barcodes_gs1</tt> resolves both
-from one scan, so a count is “scan the shelf, then scan each item”.</p>
+order, an analytic account, the lot/serial number and the shelf the
+stock sits on, next to a QR code that encodes the product and the lot as
+a single GS1 payload.</p>
+<p>The shelf is <tt class="docutils literal">product.shelfinfo</tt>, not the stock location: an
+installation whose locations are warehouse-wide keeps the shelf address
+there instead, and printing the location would put the same string on
+every label. <tt class="docutils literal">stock_barcodes_gs1</tt> resolves both from one scan, so a
+count is “scan the shelf, then scan each item”.</p>
 <p>Two things about the encoding are worth knowing.</p>
 <p><strong>Why QR rather than GS1-128.</strong> <tt class="docutils literal">stock_picking_product_barcode_report</tt>
 can already print the product and the lot as one GS1-128 barcode, but
@@ -434,7 +438,9 @@ symbology on the base module’s own label as well.</li>
 </ul>
 <p>The purchase order shown on the label comes from
 <tt class="docutils literal">stock_lot_purchase_attribute</tt>, which stamps the lot when the receipt
-is validated.</p>
+is validated. The shelf comes from <tt class="docutils literal">stock_product_shelfinfo</tt>, which
+keys a shelf address on a product and a location; a product with no
+record for the location it is stored in prints no shelf.</p>
 <p>Scanning needs <tt class="docutils literal">stock_barcodes_gs1</tt> installed and the company’s
 barcode nomenclature set to a GS1 one. This module’s AI (240) rule is
 added to <em>Default GS1 Nomenclature</em>; a hand-built nomenclature needs its
@@ -449,12 +455,16 @@ picking gets a label; the location printed is the destination of the
 move.</li>
 <li><strong>Physical inventory (quants) or lots</strong>, to label a specific
 selection.</li>
-<li><strong>A location</strong>, to reprint every label for a shelf in one go. Every
-quant stored anywhere below the selected locations is included.</li>
+<li><strong>Shelf information</strong>, to reprint a whole shelf in one go. Filter or
+group <em>Inventory / Products / Shelf Information</em> by area, select the
+rows, and every quant sitting on those shelves is included.</li>
+<li><strong>A location</strong>, for everything stored anywhere below it. Note that
+this is the stock location, which is often warehouse-wide — the
+shelves above are usually the selection you want.</li>
 </ul>
-<p>The wizard lists what will be printed, with the location, purchase order
-and analytic account it resolved for each line, and a <em>Quantity of
-Labels</em> column to print more than one copy.</p>
+<p>The wizard lists what will be printed, with the shelf, location,
+purchase order and analytic account it resolved for each line, and a
+<em>Quantity of Labels</em> column to print more than one copy.</p>
 <p>A line whose internal reference cannot be encoded — because it is empty,
 or contains characters outside the GS1 alphanumeric set — still prints
 its text, but without a QR code, which is how bad reference data shows

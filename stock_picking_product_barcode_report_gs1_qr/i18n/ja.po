@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 06:21+0000\n"
-"PO-Revision-Date: 2026-09-11 06:21+0000\n"
+"POT-Creation-Date: 2026-09-11 06:43+0000\n"
+"PO-Revision-Date: 2026-09-11 06:43+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -39,7 +39,7 @@ msgstr "会社"
 #. module: stock_picking_product_barcode_report_gs1_qr
 #: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr.model_res_config_settings
 msgid "Config Settings"
-msgstr "設定"
+msgstr "コンフィグ設定"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
 #: model:ir.model.fields.selection,name:stock_picking_product_barcode_report_gs1_qr.selection__res_company__barcode_report_default_format__gs1_qr
@@ -56,11 +56,6 @@ msgstr "GS1可読文字列"
 #: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__gs1_qr_value
 msgid "GS1 QR Value"
 msgstr "GS1 QR値"
-
-#. module: stock_picking_product_barcode_report_gs1_qr
-#: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
-msgid "Loc"
-msgstr "棚"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
 #: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__location_id
@@ -84,6 +79,7 @@ msgstr "印刷ピッキング明細"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
 #: model:ir.actions.act_window,name:stock_picking_product_barcode_report_gs1_qr.act_stock_barcode_selection_printing_location
+#: model:ir.actions.act_window,name:stock_picking_product_barcode_report_gs1_qr.act_stock_barcode_selection_printing_shelfinfo
 msgid "Print barcode labels"
 msgstr "バーコードラベルを印刷"
 
@@ -96,6 +92,16 @@ msgstr "購買オーダ"
 #: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
 msgid "S/N"
 msgstr "S/N"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+msgid "Shelf"
+msgstr "棚"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__shelfinfo_id
+msgid "Shelf Info."
+msgstr "棚情報"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
 #: model:ir.actions.report,name:stock_picking_product_barcode_report_gs1_qr.action_report_stock_qr_label

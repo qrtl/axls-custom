@@ -38,12 +38,14 @@
                     </td>
                 </tr>
             </table>
-            <!-- The location is on its own row because it is the longest value
-                 of the four and would otherwise be the one that gets clipped. -->
+            <!-- The shelf is on its own row because it is the longest value of
+                 the four and would otherwise be the one that gets clipped. It is
+                 not the stock location: that is warehouse-wide here, and the
+                 shelf address is product.shelfinfo's generated id. -->
             <table class="o_qr_label_foot">
                 <tr>
-                    <th>Loc</th>
-                    <td t-esc="label.location_id.display_name" />
+                    <th>Shelf</th>
+                    <td t-esc="label.shelfinfo_id.name" />
                 </tr>
             </table>
         </div>
@@ -155,14 +157,25 @@ body,
 .o_qr_label_foot td {
     padding: 0;
     overflow: hidden;
-    font-size: 6.5pt;
+    font-size: 6pt;
     line-height: 1.45;
-    white-space: nowrap;
 }
+/* The analytic account is the one value here that can outrun its cell, so it
+               wraps rather than being cut off; break-all because the long ones are
+               joined with underscores and offer nowhere else to break. There is room
+               for the extra line beside the 15mm symbol. */
+.o_qr_label_info td {
+    word-break: break-all;
+}
+/* Narrower than the block above: the shelf header is one short word but
+               its value is the longest on the label, and a value too wide for its
+               cell is clipped without a sign. */
 .o_qr_label_foot th {
+    width: 8mm;
     line-height: 1.2;
 }
 .o_qr_label_foot td {
+    font-size: 6pt;
     line-height: 1.2;
 }
         </style>

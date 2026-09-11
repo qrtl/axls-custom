@@ -2,9 +2,12 @@ This module prints a label that identifies a specific piece of stock, so that an
 inventory count can be done by scanning rather than by keying references in.
 
 The label carries the internal reference, the product name, the purchase order,
-an analytic account, the lot/serial number and the location the stock is
-currently in, next to a QR code that encodes the product and the lot as a single
-GS1 payload. `stock_barcodes_gs1` resolves both from one scan, so a count is
+an analytic account, the lot/serial number and the shelf the stock sits on, next
+to a QR code that encodes the product and the lot as a single GS1 payload.
+
+The shelf is `product.shelfinfo`, not the stock location: an installation whose
+locations are warehouse-wide keeps the shelf address there instead, and printing
+the location would put the same string on every label. `stock_barcodes_gs1` resolves both from one scan, so a count is
 "scan the shelf, then scan each item".
 
 Two things about the encoding are worth knowing.
