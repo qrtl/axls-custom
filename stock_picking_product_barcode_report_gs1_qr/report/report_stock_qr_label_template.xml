@@ -89,6 +89,19 @@ body,
     border: 0;
     vertical-align: top;
 }
+/* Bootstrap's reboot leaves table cells with a solid border style at zero
+               width, so a renderer that ignores the width draws a rule under every
+               row. Nothing inside a label is ever meant to have one. */
+.o_qr_label table,
+.o_qr_label thead,
+.o_qr_label tbody,
+.o_qr_label tr,
+.o_qr_label th,
+.o_qr_label td {
+    border: 0 none !important;
+    background: none !important;
+    box-shadow: none !important;
+}
 .o_qr_label {
     width: 47mm;
     height: 29mm;
