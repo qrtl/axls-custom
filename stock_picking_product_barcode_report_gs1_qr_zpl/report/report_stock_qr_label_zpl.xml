@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- A text report, so Direct Print sends it to the printer as raw_base64
+         rather than rasterising it: the ZD421 interprets the ZPL itself. With
+         no printer configured the same action just downloads the stream, which
+         is also how the layout is checked without hardware. -->
+    <record id="action_report_stock_qr_label_zpl" model="ir.actions.report">
+        <field name="name">Stock QR Label (ZPL)</field>
+        <field name="model">stock.picking.line.print</field>
+        <field name="report_type">qweb-text</field>
+        <field
+            name="report_file"
+        >stock_picking_product_barcode_report_gs1_qr_zpl.report_stock_qr_label_zpl</field>
+        <field
+            name="report_name"
+        >stock_picking_product_barcode_report_gs1_qr_zpl.report_stock_qr_label_zpl</field>
+        <field name="is_barcode_label">True</field>
+        <!-- ^CI15 selects the printer's Shift-JIS character set, so the stream
+             has to reach it as cp932 and not as UTF-8. Declared here rather than
+             set by hand on the report record: an installation that skips this
+             prints mojibake for every Japanese value and nothing says why. -->
+        <field name="text_encoding">cp932</field>
+        <field name="text_encode_error_handling">replace</field>
+        <field name="line_ending">crlf</field>
+    </record>
+</odoo>

@@ -1,0 +1,59 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_picking_product_barcode_report_gs1_qr_zpl
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-14 02:33+0000\n"
+"PO-Revision-Date: 2026-09-14 02:33+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_picking_product_barcode_report_gs1_qr_zpl
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr_zpl/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "PO"
+msgstr "P番号"
+
+#. module: stock_picking_product_barcode_report_gs1_qr_zpl
+#: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr_zpl.model_stock_picking_line_print
+msgid "Print Picking Line"
+msgstr "印刷ピッキング明細"
+
+#. module: stock_picking_product_barcode_report_gs1_qr_zpl
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr_zpl/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "S/N"
+msgstr "S/N"
+
+#. module: stock_picking_product_barcode_report_gs1_qr_zpl
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr_zpl/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "Shelf"
+msgstr "棚"
+
+#. module: stock_picking_product_barcode_report_gs1_qr_zpl
+#: model:ir.actions.report,name:stock_picking_product_barcode_report_gs1_qr_zpl.action_report_stock_qr_label_zpl
+msgid "Stock QR Label (ZPL)"
+msgstr "在庫QRラベル (ZPL)"
+
+#. module: stock_picking_product_barcode_report_gs1_qr_zpl
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr_zpl/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "Subsidy"
+msgstr "衛星名"
+
+#. module: stock_picking_product_barcode_report_gs1_qr_zpl
+#: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr_zpl.model_stock_picking_print
+msgid "Wizard to select how many barcodes have to be printed"
+msgstr "印刷するバーコード数を選択するウィザード"
