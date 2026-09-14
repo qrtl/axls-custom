@@ -19,3 +19,7 @@ number holding characters outside the GS1 alphanumeric set — is listed with th
 reason in a *Cannot Be Printed* column, and Print raises rather than producing
 the sheet. Fix the record, or drop the line by setting its label quantity to
 zero, and print again.
+
+Pick the report on the wizard: *Stock QR Label (A4)* for a sheet, *Stock QR Label
+(ZPL)* for a label printer. Everything else -- where you print from, the per-line
+quantities, and the refusal to print a code nothing can scan -- is the same either way.

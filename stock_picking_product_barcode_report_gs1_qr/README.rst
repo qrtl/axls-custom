@@ -41,6 +41,22 @@ there instead, and printing the location would put the same string on
 every label. ``stock_barcodes_gs1`` resolves both from one scan, so a
 count is "scan the shelf, then scan each item".
 
+**Two output formats, one label.** *Stock QR Label (A4)* lays the labels
+out on an A4 sheet of 40, four across and ten down; *Stock QR Label
+(ZPL)* sends the same label to a ZPL label printer as one
+``^XA``...\ ``^XZ`` block per copy. Both are 47mm x 29mm and carry
+identical content from identical code, so they can be printed side by
+side and compared on real stock.
+
+The ZPL report needs no dependency on a print connector: it is a
+``qweb-text`` report, so where Direct Print is installed and a printer
+resolves for the user it goes to that printer as raw data, and where it
+is not the same action downloads the stream -- which is also how the
+layout can be checked without a printer. The stream is **cp932, not
+UTF-8**: ``^CI15`` selects the printer's Shift-JIS character set, so the
+report declares the encoding rather than leaving it to be set by hand on
+the report record.
+
 Two things about the encoding are worth knowing.
 
 **Why QR rather than GS1-128.** ``stock_picking_product_barcode_report``
@@ -135,6 +151,11 @@ or lot number holding characters outside the GS1 alphanumeric set — is
 listed with the reason in a *Cannot Be Printed* column, and Print raises
 rather than producing the sheet. Fix the record, or drop the line by
 setting its label quantity to zero, and print again.
+
+Pick the report on the wizard: *Stock QR Label (A4)* for a sheet, *Stock
+QR Label (ZPL)* for a label printer. Everything else -- where you print
+from, the per-line quantities, and the refusal to print a code nothing
+can scan -- is the same either way.
 
 Bug Tracker
 ===========

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="report_stock_qr_label_zpl">
+        <t t-set="labels" t-value="docs._get_zpl_labels()" />
+        <t t-set="headers" t-value="docs._get_zpl_headers()" />
+        <t t-foreach="labels" t-as="label">
+            <t t-translation="off">
+                <!-- 47mm x 29mm at 203dpi is 376 x 232 dots, and every
+                     coordinate below is in dots, so a millimetre is eight of
+                     them. The dimensions match the sheet label this module
+                     also prints, so the two can be held up against each other.
+
+                     Notes live in XML comments rather than in ^FX: QWeb drops
+                     these before rendering, where a ^FX comment would be sent
+                     to the printer on every single label.
+
+                     Field data runs from ^FD to ^FS and a newline inside that
+                     span would be printed, so each field stays on one line
+                     however long it gets.
+
+                     Font "2" with ^CI15 is what the ZD421 in use here prints
+                     Japanese with. Its cells are square, so a field ~w dots
+                     wide fits (block width / w) characters and every ^FB below
+                     is sized from that. A printer whose Japanese font sits
+                     elsewhere needs this one line changed, not the layout. -->
+                <!-- prettier-ignore-start -->
+^XA
+^CI15
+^PW376
+^LL232
+^LH0,0
+                <!-- Internal reference: the one value read at arm's length.
+                     356/20 = 17 characters on its line. -->
+^FO10,6^A2N,26,20^FB356,1,0,L,0^FD<t t-esc="label._format_zpl(label.product_id.default_code)" />^FS
+                <!-- Product name: 356/12 = 29 characters, over two lines. -->
+^FO10,36^A2N,16,12^FB356,2,2,L,0^FD<t t-esc="label._format_zpl(label.product_id.name)" />^FS
+                <!-- QR at magnification 3: a 29 module symbol lands at 87 dots,
+                     near 11mm, with a four module quiet zone left and above. -->
+^FO14,78^BQN,2,3^FDMA,<t t-esc="label.gs1_qr_value" />^FS
+                <!-- Right of the symbol, 254 dots wide: 21 characters a line.
+                     The analytic account is the one value here that can outrun
+                     that, so it is the only one given a second line. -->
+^FO112,80^A2N,16,12^FB254,1,0,L,0^FD<t t-esc="headers['purchase']" />: <t t-esc="label._format_zpl(label.purchase_id.name)" />^FS
+^FO112,100^A2N,16,12^FB254,2,2,L,0^FD<t t-esc="headers['analytic']" />: <t t-esc="label._format_zpl(label.analytic_account_id.name)" />^FS
+^FO112,140^A2N,16,12^FB254,1,0,L,0^FD<t t-esc="headers['lot']" />: <t t-esc="label._format_zpl(label.lot_id.name)" />^FS
+                <!-- The shelf spans the full width below the symbol: it is the
+                     longest value on the label and would be clipped in the
+                     column beside the QR code. -->
+^FO10,172^A2N,16,12^FB356,2,2,L,0^FD<t t-esc="headers['shelf']" />: <t t-esc="label._format_zpl(label.shelfinfo_id.name)" />^FS
+^XZ
+                <!-- prettier-ignore-end -->
+            </t>
+        </t>
+    </template>
+</odoo>

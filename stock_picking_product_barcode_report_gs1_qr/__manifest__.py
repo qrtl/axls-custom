@@ -3,7 +3,7 @@
 {
     "name": "Stock Picking Product Barcode Report GS1 QR",
     "summary": "Print a stock identification label carrying a GS1 QR code",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.1.0",
     "author": "Quartile",
     "website": "https://www.quartile.co",
     "category": "Inventory",
@@ -11,6 +11,8 @@
     "maintainers": ["nobuQuartile"],
     "depends": [
         "barcodes_gs1_nomenclature",
+        # Declares the cp932 encoding the ^CI15 ZPL label needs.
+        "report_text_format_option",
         "stock_lot_analytic",
         "stock_lot_purchase_attribute",
         "stock_picking_product_barcode_report",
@@ -22,6 +24,8 @@
         "report/report_label_barcode_template.xml",
         "report/report_stock_qr_label.xml",
         "report/report_stock_qr_label_template.xml",
+        "report/report_stock_qr_label_zpl.xml",
+        "report/report_stock_qr_label_zpl_template.xml",
         "views/product_shelfinfo_views.xml",
         "views/res_config_settings_views.xml",
         "views/stock_location_views.xml",

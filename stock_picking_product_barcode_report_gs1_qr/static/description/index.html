@@ -387,6 +387,20 @@ installation whose locations are warehouse-wide keeps the shelf address
 there instead, and printing the location would put the same string on
 every label. <tt class="docutils literal">stock_barcodes_gs1</tt> resolves both from one scan, so a
 count is “scan the shelf, then scan each item”.</p>
+<p><strong>Two output formats, one label.</strong> <em>Stock QR Label (A4)</em> lays the labels
+out on an A4 sheet of 40, four across and ten down; <em>Stock QR Label
+(ZPL)</em> sends the same label to a ZPL label printer as one
+<tt class="docutils literal">^XA</tt>…<tt class="docutils literal">^XZ</tt> block per copy. Both are 47mm x 29mm and carry
+identical content from identical code, so they can be printed side by
+side and compared on real stock.</p>
+<p>The ZPL report needs no dependency on a print connector: it is a
+<tt class="docutils literal"><span class="pre">qweb-text</span></tt> report, so where Direct Print is installed and a printer
+resolves for the user it goes to that printer as raw data, and where it
+is not the same action downloads the stream – which is also how the
+layout can be checked without a printer. The stream is <strong>cp932, not
+UTF-8</strong>: <tt class="docutils literal">^CI15</tt> selects the printer’s Shift-JIS character set, so the
+report declares the encoding rather than leaving it to be set by hand on
+the report record.</p>
 <p>Two things about the encoding are worth knowing.</p>
 <p><strong>Why QR rather than GS1-128.</strong> <tt class="docutils literal">stock_picking_product_barcode_report</tt>
 can already print the product and the lot as one GS1-128 barcode, but
@@ -479,6 +493,10 @@ or lot number holding characters outside the GS1 alphanumeric set — is
 listed with the reason in a <em>Cannot Be Printed</em> column, and Print raises
 rather than producing the sheet. Fix the record, or drop the line by
 setting its label quantity to zero, and print again.</p>
+<p>Pick the report on the wizard: <em>Stock QR Label (A4)</em> for a sheet, <em>Stock
+QR Label (ZPL)</em> for a label printer. Everything else – where you print
+from, the per-line quantities, and the refusal to print a code nothing
+can scan – is the same either way.</p>
 </div>
 <div class="section" id="bug-tracker">
 <h2><a class="toc-backref" href="#toc-entry-3">Bug Tracker</a></h2>

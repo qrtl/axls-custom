@@ -16,6 +16,11 @@ GS1_MAX_LENGTH = {"10": 20, "240": 30}
 # out of the box through the default gs1_separator_fnc1 regex. "#" is outside
 # character set 82, so it can never occur inside an element value.
 FNC1 = "#"
+# ZPL reads "^" and "~" as command introducers wherever they occur, field data
+# included, so either one in a free-text value truncates the label instead of
+# printing it. Neither is in GS1 character set 82, so only the free-text fields
+# -- the product name and the shelf -- can ever carry one.
+ZPL_CONTROL_CHARACTERS = re.compile(r"[\^~]")
 # Grid of the A4 label sheet. Keep in step with the margins of
 # paperformat_stock_qr_label_a4: 4 * 47mm across and 10 * 29mm down.
 LABEL_COLUMNS = 4
@@ -118,7 +123,10 @@ class ProductPrintingQty(models.TransientModel):
     @api.model
     def _get_gs1_qr_error(self, elements):
         """Say why these elements cannot be encoded, or return an empty string."""
-        if not elements:
+        # The product has to be identified, whatever else is on the label: a
+        # payload carrying only AI (10) names a lot of nothing in particular,
+        # and scanning it resolves no product at all.
+        if not any(ai == "240" for ai, _value in elements):
             return _("the product has no internal reference")
         for ai, value in elements:
             label = _("lot/serial") if ai == "10" else _("internal reference")
@@ -155,6 +163,34 @@ class ProductPrintingQty(models.TransientModel):
             if index < len(elements) - 1:
                 parts.append(FNC1)
         return "".join(parts)
+
+    def _get_zpl_labels(self):
+        """Return one entry per physical label.
+
+        A roll printer has no grid to page into, so the only thing to expand
+        here is the quantity asked for on the line.
+        """
+        return [line for line in self for _copy in range(max(line.label_qty, 0))]
+
+    def _get_zpl_headers(self):
+        """Return the row headers, kept out of the ZPL literal.
+
+        The template body is t-translation="off" -- the ZPL commands around the
+        values must never reach a .pot file -- and that also switches off
+        translation for the headers sitting between them. Naming them here puts
+        them back in the catalogue, with the same wording as the sheet label so
+        the two can be compared side by side.
+        """
+        return {
+            "purchase": _("PO"),
+            "analytic": _("Subsidy"),
+            "lot": _("S/N"),
+            "shelf": _("Shelf"),
+        }
+
+    def _format_zpl(self, value):
+        """Return a value that is safe to drop into a ^FD field."""
+        return ZPL_CONTROL_CHARACTERS.sub(" ", value or "").replace("\n", " ").strip()
 
     def _get_label_pages(self):
         """Lay the labels of these lines out as sheets of rows of cells."""
@@ -230,8 +266,15 @@ class WizStockBarcodeSelectionPrinting(models.TransientModel):
             return self.env["stock.picking.line.print"]
         # The sheet report always prints the symbol; the base report only does so
         # when the GS1 QR format is the one selected.
-        if self.barcode_format == "gs1_qr" or self.barcode_report == self.env.ref(
-            "stock_picking_product_barcode_report_gs1_qr.action_report_stock_qr_label"
+        if self.barcode_format == "gs1_qr" or self.barcode_report in (
+            self.env.ref(
+                "stock_picking_product_barcode_report_gs1_qr."
+                "action_report_stock_qr_label"
+            )
+            | self.env.ref(
+                "stock_picking_product_barcode_report_gs1_qr."
+                "action_report_stock_qr_label_zpl"
+            )
         ):
             return self.product_print_moves.filtered(lambda line: line.label_qty > 0)
         return self.env["stock.picking.line.print"]

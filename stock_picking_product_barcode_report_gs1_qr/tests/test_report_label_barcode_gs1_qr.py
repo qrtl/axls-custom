@@ -6,6 +6,9 @@ from odoo.tools import get_barcode_check_digit
 
 BASE_REPORT = "stock_picking_product_barcode_report.label_barcode_report"
 SHEET_REPORT = "stock_picking_product_barcode_report_gs1_qr.report_stock_qr_label"
+ZPL_REPORT = (
+    "stock_picking_product_barcode_report_gs1_qr.action_report_stock_qr_label_zpl"
+)
 QR_IMAGE = "data:image/png;base64,"
 
 
@@ -317,3 +320,97 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         self.env.company.barcode_report_default_format = "gs1_qr"
         wizard = self.env["stock.picking.print"].create({})
         self.assertEqual(wizard.barcode_format, "gs1_qr")
+
+    # -- the same label, printed as ZPL on a roll rather than on an A4 sheet --
+
+    def _render_zpl(self, lines):
+        content, _content_type = self.env["ir.actions.report"]._render_qweb_text(
+            self.env.ref(ZPL_REPORT), lines.ids
+        )
+        return content
+
+    def _zpl_wizard(self, line):
+        """Point the line's wizard at the ZPL report.
+
+        Not "gs1_qr": that format alone already routes a line through the
+        refusal check, which would hide whether selecting the report does so.
+        """
+        line.wizard_id.write(
+            {
+                "barcode_format": "gs1_128",
+                "barcode_report": self.env.ref(ZPL_REPORT).id,
+            }
+        )
+        return line
+
+    def test_zpl_is_one_block_per_label_copy(self):
+        """A roll printer takes a flat stream, so label_qty is the block count."""
+        line = self._create_line(lot=self.lot, label_qty=3)
+        zpl = self._render_zpl(line).decode("cp932")
+        self.assertEqual(zpl.count("^XA"), 3)
+        self.assertEqual(zpl.count("^XZ"), 3)
+
+    def test_zpl_carries_the_same_fields_as_the_sheet(self):
+        """The ZPL output is a second medium, not a second label."""
+        line = self._create_line(lot=self.lot, location_id=self.location.id)
+        zpl = self._render_zpl(line).decode("cp932")
+        self.assertIn(self.product.default_code, zpl)
+        self.assertIn(self.product.name, zpl)
+        self.assertIn(self.purchase.name, zpl)
+        self.assertIn(self.analytic_account.name, zpl)
+        self.assertIn(self.lot.name, zpl)
+        self.assertIn("Workshop/SDG-PS1-C14-手前", zpl)
+        self.assertIn("^BQN,2,3^FDMA,%s^FS" % line.gs1_qr_value, zpl)
+
+    def test_zpl_stream_reaches_the_printer_as_cp932(self):
+        """^CI15 selects Shift-JIS on the printer, so UTF-8 would be mojibake."""
+        content = self._render_zpl(
+            self._create_line(lot=self.lot, location_id=self.location.id)
+        )
+        self.assertIn("手前".encode("cp932"), content)
+        self.assertNotIn("手前".encode("utf-8"), content)
+        self.assertIn(b"\r\n", content)
+
+    def test_zpl_neutralises_a_caret_in_free_text(self):
+        """ZPL reads ^ as a command introducer even inside ^FD."""
+        product = self.env["product.product"].create(
+            {
+                "name": "Bracket ^FS injected",
+                "type": "product",
+                "default_code": "CARET-0001",
+            }
+        )
+        zpl = self._render_zpl(self._create_line(product=product)).decode("cp932")
+        self.assertIn("Bracket  FS injected", zpl)
+        self.assertNotIn("Bracket ^FS injected", zpl)
+
+    def test_zpl_print_refuses_a_line_that_cannot_be_encoded(self):
+        """Selecting the ZPL report must refuse exactly what the sheet refuses."""
+        product = self.env["product.product"].create(
+            {"name": "No reference", "type": "product"}
+        )
+        line = self._zpl_wizard(self._create_line(product=product))
+        self.assertTrue(line.gs1_qr_error)
+        with self.assertRaises(UserError):
+            line.wizard_id.print_labels()
+
+    def test_zpl_print_allows_a_line_that_can_be_encoded(self):
+        """Guards the test above: it would pass on a wizard that never prints."""
+        line = self._zpl_wizard(self._create_line(lot=self.lot))
+        self.assertFalse(line.gs1_qr_error)
+        self.assertTrue(line.wizard_id.print_labels())
+
+    def test_a_lot_alone_is_not_an_identification(self):
+        """A payload of AI (10) only names a lot of nothing in particular.
+
+        The product has to be identified whatever else is on the label, so the
+        rule is "there must be an AI (240) element", not "there must be some
+        element" - a product with no internal reference but with a lot used to
+        slip through and print a code that resolves to no product.
+        """
+        product = self.env["product.product"].create(
+            {"name": "No reference", "type": "product"}
+        )
+        line = self._create_line(product=product, lot=self.lot)
+        self.assertTrue(line.gs1_qr_error)
+        self.assertFalse(line.gs1_qr_value)

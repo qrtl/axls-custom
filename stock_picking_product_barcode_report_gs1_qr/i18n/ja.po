@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-11 08:32+0000\n"
-"PO-Revision-Date: 2026-09-11 08:32+0000\n"
+"POT-Creation-Date: 2026-09-14 05:17+0000\n"
+"PO-Revision-Date: 2026-09-14 05:17+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -73,7 +73,10 @@ msgid "Method to choose the barcode formating"
 msgstr "バーコード形式の選択方法"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
 #: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+#, python-format
 msgid "PO"
 msgstr "P番号"
 
@@ -94,12 +97,18 @@ msgid "Purchase Order"
 msgstr "購買オーダ"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
 #: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+#, python-format
 msgid "S/N"
 msgstr "S/N"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
 #: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+#, python-format
 msgid "Shelf"
 msgstr "棚"
 
@@ -114,7 +123,15 @@ msgid "Stock QR Label (A4)"
 msgstr "在庫QRラベル (A4)"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.actions.report,name:stock_picking_product_barcode_report_gs1_qr.action_report_stock_qr_label_zpl
+msgid "Stock QR Label (ZPL)"
+msgstr "在庫QRラベル (ZPL)"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
 #: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+#, python-format
 msgid "Subsidy"
 msgstr "衛星名"
 
@@ -134,7 +151,10 @@ msgid ""
 "These labels would carry no scannable code:\n"
 "\n"
 "%s"
-msgstr "以下のラベルはスキャンできるコードを持てません:\n\n%s"
+msgstr ""
+"以下のラベルはスキャンできるコードを持てません:\n"
+"\n"
+"%s"
 
 #. module: stock_picking_product_barcode_report_gs1_qr
 #: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr.model_stock_picking_print
