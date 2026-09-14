@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="stock_qr_label">
+        <div class="o_qr_label">
+            <div class="o_qr_label_ref">
+                <span t-esc="label.product_id.default_code" />
+            </div>
+            <div class="o_qr_label_name">
+                <span t-esc="label.product_id.name" />
+            </div>
+            <table class="o_qr_label_body">
+                <tr>
+                    <td t-if="label.gs1_qr_value" class="o_qr_label_code">
+                        <!-- The barcode widget inlines the symbol as a data URI.
+                             Pointing an <img> at /report/barcode instead makes
+                             wkhtmltopdf fetch it over HTTP, which fails silently
+                             and leaves the alt text on the label. -->
+                        <span
+                            t-out="label.gs1_qr_value"
+                            t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 600, 'height': 600, 'quiet': 0, 'img_style': 'width:20mm;height:20mm;'}"
+                        />
+                    </td>
+                    <td class="o_qr_label_info">
+                        <table>
+                            <tr>
+                                <th>PO</th>
+                                <td t-esc="label.purchase_id.name" />
+                            </tr>
+                            <tr>
+                                <th>Subsidy</th>
+                                <td t-esc="label.analytic_account_id.name" />
+                            </tr>
+                            <tr>
+                                <th>S/N</th>
+                                <td t-esc="label.lot_id.name" />
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <!-- The shelf is on its own row because it is the longest value of
+                 the four and would otherwise be the one that gets clipped. It is
+                 not the stock location: that is warehouse-wide here, and the
+                 shelf address is product.shelfinfo's generated id. -->
+            <table class="o_qr_label_foot">
+                <tr>
+                    <th>Shelf</th>
+                    <td t-esc="label.shelfinfo_id.name" />
+                </tr>
+            </table>
+        </div>
+    </template>
+    <template id="stock_qr_label_sheet">
+        <style type="text/css">
+/* Both report layouts wrap the body in a Bootstrap container, whose
+               max-width and gutters would squeeze the grid off its millimetres.
+               web.minimal_layout, the one wkhtmltopdf actually gets, hardcodes
+               the class, so this cannot be turned off from the template. */
+body,
+.container,
+#wrapwrap,
+#wrapwrap > main,
+.article {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.o_qr_sheet {
+    width: 210mm;
+    /* The 3 x 7 grid of 63.5mm x 38.1mm labels is 190.5mm x 266.7mm, so the
+               padding is what centres it on the 210mm x 297mm sheet. */
+    padding: 15.15mm 9.75mm;
+    overflow: hidden;
+    font-family: "Noto Sans CJK JP", "Noto Sans", sans-serif;
+    color: #000000;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.o_qr_grid {
+    width: 190.5mm;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+/* The grid carries no rule of its own: the cut guide on each label is the
+               only line meant to print. Without this the outer table draws a box
+               around any run of cells skipped by the starting position, where no
+               label border is there to sit on top of it. */
+.o_qr_grid,
+.o_qr_grid > tbody,
+.o_qr_grid > tbody > tr,
+.o_qr_cell {
+    border: 0 none !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+/* Scoped by class, not by descendant: ".o_qr_grid td" also matches
+               the cells of the tables inside a label and blows them up to 63.5mm. */
+.o_qr_cell {
+    width: 63.5mm;
+    height: 38.1mm;
+    padding: 0;
+    border: 0;
+    vertical-align: top;
+}
+/* Bootstrap's reboot leaves table cells with a solid border style at zero
+               width, so a renderer that ignores the width draws a rule under every
+               row. Nothing inside a label is ever meant to have one. */
+.o_qr_label table,
+.o_qr_label thead,
+.o_qr_label tbody,
+.o_qr_label tr,
+.o_qr_label th,
+.o_qr_label td {
+    border: 0 none !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+/* Holds a skipped cell open at full size, with no cut guide: there is no
+               label left on that part of the sheet to guide a cut around. */
+.o_qr_blank {
+    width: 63.5mm;
+    height: 38.1mm;
+}
+.o_qr_label {
+    width: 63.5mm;
+    height: 38.1mm;
+    padding: 1.5mm;
+    overflow: hidden;
+    /* A cut guide thinner than one layout pixel (0.26mm at
+                   dpi 96) rounds to zero and never reaches the paper. */
+    border: 0.3mm solid #d0d0d0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.o_qr_label_ref {
+    height: 5.2mm;
+    overflow: hidden;
+    font-size: 12pt;
+    font-weight: bold;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+.o_qr_label_name {
+    height: 5.6mm;
+    overflow: hidden;
+    font-size: 7pt;
+    line-height: 1.1;
+}
+.o_qr_label_body {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+.o_qr_label_foot {
+    width: 100%;
+    border-collapse: collapse;
+}
+.o_qr_label_code {
+    width: 20mm;
+    padding: 0;
+    vertical-align: top;
+}
+.o_qr_label_info {
+    padding: 0 0 0 1.5mm;
+    vertical-align: top;
+}
+/* Old WebKit does not inherit font-size into a table, so the nested
+               one has to be told again or it falls back to the browser default. */
+.o_qr_label_info table {
+    width: 100%;
+    border-collapse: collapse;
+}
+/* Wide enough for the longest header. A header that overflows its
+               column does not clip: WebKit collapses that row's value cell
+               instead, and the value silently vanishes from the label. */
+.o_qr_label_info th,
+.o_qr_label_foot th {
+    width: 14mm;
+    padding: 0;
+    overflow: hidden;
+    color: #555555;
+    font-size: 8pt;
+    font-weight: normal;
+    line-height: 1.45;
+    text-align: left;
+    padding-right: 0.8mm;
+}
+.o_qr_label_info td,
+.o_qr_label_foot td {
+    padding: 0;
+    overflow: hidden;
+    font-size: 8pt;
+    line-height: 1.45;
+}
+/* The analytic account is the one value here that can outrun its cell, so it
+               wraps rather than being cut off; break-all because the long ones are
+               joined with underscores and offer nowhere else to break. There is room
+               for the extra line beside the 20mm symbol. */
+.o_qr_label_info td {
+    word-break: break-all;
+}
+/* Narrower than the block above: the shelf header is one short word but
+               its value is the longest on the label, and a value too wide for its
+               cell is clipped without a sign. */
+.o_qr_label_foot th {
+    width: 10mm;
+    line-height: 1.2;
+}
+.o_qr_label_foot td {
+    font-size: 8pt;
+    line-height: 1.2;
+}
+        </style>
+        <t t-foreach="pages" t-as="page">
+            <div
+                class="o_qr_sheet"
+                t-attf-style="page-break-after: #{'auto' if page_last else 'always'};"
+            >
+                <table class="o_qr_grid">
+                    <tr t-foreach="page" t-as="row">
+                        <td t-foreach="row" t-as="label" class="o_qr_cell">
+                            <!-- A cell skipped by the starting position holds a
+                                 spacer rather than nothing: an empty cell in a
+                                 row that is entirely blank collapses, and every
+                                 label below it then moves up a row. -->
+                            <t
+                                t-if="label"
+                                t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label"
+                            />
+                            <div t-else="" class="o_qr_blank" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </t>
+    </template>
+    <template id="report_stock_qr_label">
+        <t t-call="web.html_container">
+            <t t-set="pages" t-value="docs._get_label_pages()" />
+            <t
+                t-set="label_lang"
+                t-value="docs[:1].wizard_id.lang or docs.env.user.lang"
+            />
+            <!-- ir.actions.report._prepare_html splits the rendered document on
+                 .article nodes and rewraps each in web.minimal_layout. Without
+                 one it falls back to the bare children of <main>, and the body
+                 reaches wkhtmltopdf with no <meta charset> and no <base href>:
+                 non-ASCII text comes out as mojibake. -->
+            <div class="article">
+                <t
+                    t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label_sheet"
+                    t-lang="label_lang"
+                />
+            </div>
+        </t>
+    </template>
+</odoo>

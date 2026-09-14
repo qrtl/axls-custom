@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- The base module binds the wizard to pickings, move lines, quants and lots.
+         Binding it to locations as well is what makes "print every label for this
+         shelf" a single action instead of a quant selection. -->
+    <record
+        id="act_stock_barcode_selection_printing_location"
+        model="ir.actions.act_window"
+    >
+        <field name="name">Print barcode labels</field>
+        <field name="res_model">stock.picking.print</field>
+        <field name="view_mode">form</field>
+        <field name="binding_type">report</field>
+        <field name="binding_model_id" ref="stock.model_stock_location" />
+        <field name="target">new</field>
+    </record>
+</odoo>

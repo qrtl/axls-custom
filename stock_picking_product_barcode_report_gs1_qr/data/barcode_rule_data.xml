@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- stock_barcodes_gs1 implements _process_ai_240 and resolves it against the
+         product's internal reference, but Odoo ships no rule for AI (240), so the
+         nomenclature never hands it that element. The rule is kept updatable on
+         purpose: the label payload this module prints and the pattern that parses
+         it back have to stay in step. -->
+    <record id="barcode_rule_gs1_240" model="barcode.rule">
+        <field name="name">Additional Product Identification</field>
+        <field
+            name="barcode_nomenclature_id"
+            ref="barcodes_gs1_nomenclature.default_gs1_nomenclature"
+        />
+        <field name="sequence">103</field>
+        <field name="encoding">gs1-128</field>
+        <field name="pattern">(240)([!"%-/0-9:-?A-Z_a-z]{0,30})</field>
+        <field name="type">product</field>
+        <field name="gs1_content_type">alpha</field>
+    </record>
+</odoo>
