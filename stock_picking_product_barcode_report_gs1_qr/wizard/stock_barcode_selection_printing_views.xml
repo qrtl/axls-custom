@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_stock_barcode_selection_printing" model="ir.ui.view">
+        <field
+            name="name"
+        >stock.barcode.selection.printing.form.inherit.stock.qr.label</field>
+        <field name="model">stock.picking.print</field>
+        <field
+            name="inherit_id"
+            ref="stock_picking_product_barcode_report.view_stock_barcode_selection_printing"
+        />
+        <field name="arch" type="xml">
+            <!-- Only the sheet report lays labels out in a grid, so only it has
+                 a cell to start at. The anchor is the block holding the
+                 language field, not the field itself, so the new block is its
+                 sibling rather than nested inside it. -->
+            <xpath expr="//field[@name='lang']/.." position="after">
+                <field name="is_label_sheet" invisible="1" />
+                <div attrs="{'invisible': [('is_label_sheet', '=', False)]}">
+                    <strong>Start at Label</strong>
+                    <br />
+                    <field name="first_label_position" />
+                </div>
+            </xpath>
+            <field name="lot_id" position="after">
+                <field name="location_id" force_save="1" readonly="1" />
+                <field name="shelfinfo_id" optional="show" />
+                <field name="purchase_id" optional="show" />
+                <field name="analytic_account_id" optional="show" />
+                <field name="gs1_qr_error" decoration-danger="gs1_qr_error != False" />
+            </field>
+        </field>
+    </record>
+</odoo>
