@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_analytic_budget_satellite_user,analytic.budget.satellite user,model_analytic_budget_satellite,base.group_user,1,0,0,0
+access_analytic_budget_satellite_analytic_accounting,analytic.budget.satellite analytic accounting,model_analytic_budget_satellite,analytic.group_analytic_accounting,1,1,1,1
+access_analytic_budget_subsystem_user,analytic.budget.subsystem user,model_analytic_budget_subsystem,base.group_user,1,0,0,0
+access_analytic_budget_subsystem_analytic_accounting,analytic.budget.subsystem analytic accounting,model_analytic_budget_subsystem,analytic.group_analytic_accounting,1,1,1,1
+access_analytic_budget_component_user,analytic.budget.component user,model_analytic_budget_component,base.group_user,1,0,0,0
+access_analytic_budget_component_analytic_accounting,analytic.budget.component analytic accounting,model_analytic_budget_component,analytic.group_analytic_accounting,1,1,1,1
+access_analytic_budget_model_user,analytic.budget.model user,model_analytic_budget_model,base.group_user,1,0,0,0
+access_analytic_budget_model_analytic_accounting,analytic.budget.model analytic accounting,model_analytic_budget_model,analytic.group_analytic_accounting,1,1,1,1

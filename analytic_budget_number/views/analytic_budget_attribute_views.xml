@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="analytic_budget_satellite_view_tree" model="ir.ui.view">
+        <field name="name">analytic.budget.satellite.tree</field>
+        <field name="model">analytic.budget.satellite</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record id="analytic_budget_satellite_view_search" model="ir.ui.view">
+        <field name="name">analytic.budget.satellite.search</field>
+        <field name="model">analytic.budget.satellite</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
+    <record id="analytic_budget_satellite_action" model="ir.actions.act_window">
+        <field name="name">Budget Satellites</field>
+        <field name="res_model">analytic.budget.satellite</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <menuitem
+        id="analytic_budget_satellite_menu"
+        action="analytic_budget_satellite_action"
+        parent="account.menu_analytic_accounting"
+        groups="analytic.group_analytic_accounting"
+        sequence="10"
+    />
+    <record id="analytic_budget_subsystem_view_tree" model="ir.ui.view">
+        <field name="name">analytic.budget.subsystem.tree</field>
+        <field name="model">analytic.budget.subsystem</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record id="analytic_budget_subsystem_view_search" model="ir.ui.view">
+        <field name="name">analytic.budget.subsystem.search</field>
+        <field name="model">analytic.budget.subsystem</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
+    <record id="analytic_budget_subsystem_action" model="ir.actions.act_window">
+        <field name="name">Budget Subsystems</field>
+        <field name="res_model">analytic.budget.subsystem</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <menuitem
+        id="analytic_budget_subsystem_menu"
+        action="analytic_budget_subsystem_action"
+        parent="account.menu_analytic_accounting"
+        groups="analytic.group_analytic_accounting"
+        sequence="11"
+    />
+    <record id="analytic_budget_component_view_tree" model="ir.ui.view">
+        <field name="name">analytic.budget.component.tree</field>
+        <field name="model">analytic.budget.component</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record id="analytic_budget_component_view_search" model="ir.ui.view">
+        <field name="name">analytic.budget.component.search</field>
+        <field name="model">analytic.budget.component</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
+    <record id="analytic_budget_component_action" model="ir.actions.act_window">
+        <field name="name">Budget Components</field>
+        <field name="res_model">analytic.budget.component</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <menuitem
+        id="analytic_budget_component_menu"
+        action="analytic_budget_component_action"
+        parent="account.menu_analytic_accounting"
+        groups="analytic.group_analytic_accounting"
+        sequence="12"
+    />
+    <record id="analytic_budget_model_view_tree" model="ir.ui.view">
+        <field name="name">analytic.budget.model.tree</field>
+        <field name="model">analytic.budget.model</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record id="analytic_budget_model_view_search" model="ir.ui.view">
+        <field name="name">analytic.budget.model.search</field>
+        <field name="model">analytic.budget.model</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <filter
+                    name="inactive"
+                    string="Archived"
+                    domain="[('active', '=', False)]"
+                />
+            </search>
+        </field>
+    </record>
+    <record id="analytic_budget_model_action" model="ir.actions.act_window">
+        <field name="name">Budget Models</field>
+        <field name="res_model">analytic.budget.model</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <menuitem
+        id="analytic_budget_model_menu"
+        action="analytic_budget_model_action"
+        parent="account.menu_analytic_accounting"
+        groups="analytic.group_analytic_accounting"
+        sequence="13"
+    />
+</odoo>

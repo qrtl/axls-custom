@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- noupdate, so that turning the rule on survives an update of the module. -->
+<odoo noupdate="1">
+    <record id="purchase_order_line_budget_required_automation" model="base.automation">
+        <field name="name">Budget Number Required on Purchase Order Lines</field>
+        <field name="model_id" ref="purchase.model_purchase_order_line" />
+        <!-- Off by default: a database that predates the rule holds purchase
+             order lines without a budget number. -->
+        <field name="active" eval="False" />
+        <field name="trigger">on_create_or_write</field>
+        <!-- Without a trigger field, receiving or billing a line that predates
+             the rule would run it too. A creation is checked either way. -->
+        <field
+            name="trigger_field_ids"
+            eval="[Command.set([ref('purchase.field_purchase_order_line__analytic_distribution')])]"
+        />
+        <!-- purchase_analytic takes the budget number off a line for the length
+             of the write that applies the distribution of the order header. -->
+        <field name="filter_pre_domain">[('analytic_budget_id', '=', False)]</field>
+        <field
+            name="filter_domain"
+        >[('display_type', '=', False), ('analytic_budget_id', '=', False)]</field>
+        <field name="state">code</field>
+        <field name="code">(records or model)._check_analytic_budget()</field>
+    </record>
+</odoo>
