@@ -148,6 +148,26 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         with self.assertRaises(UserError):
             line.wizard_id.print_labels()
 
+    def test_print_refuses_a_reference_with_a_trailing_newline(self):
+        """A value the nomenclature cannot read back has to be caught here.
+
+        Python's "$" matches before a trailing newline, and Char only trims in
+        the web client, so a reference imported with one would otherwise pass
+        the character-set check and leave a payload that cannot decompose.
+        """
+        product = self.env["product.product"].create(
+            {
+                "name": "Trailing newline",
+                "type": "product",
+                "default_code": "ABC123\n",
+            }
+        )
+        line = self._create_line(product=product)
+        self.assertTrue(line.gs1_qr_error)
+        self.assertFalse(line.gs1_qr_value)
+        with self.assertRaises(UserError):
+            line.wizard_id.print_labels()
+
     def test_print_refuses_a_product_without_an_internal_reference(self):
         """Nothing identifies the stock, so there is nothing to print."""
         product = self.env["product.product"].create(
@@ -279,6 +299,59 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         # The receipt destination is the location the shelves are keyed on, so a
         # label printed at receipt already carries the shelf.
         self.assertEqual(wizard.product_print_moves.shelfinfo_id, self.shelfinfo)
+
+    def test_outgoing_lines_carry_the_location_the_stock_leaves(self):
+        """Going out, only the source location is one a shelf is keyed on.
+
+        The destination of an outgoing move is the customer, so stamping it
+        would blank the shelf on every delivery label and put
+        "Partners/Customers" in the wizard's own location column.
+        """
+        shelf = self.env["stock.location"].create(
+            {"name": "A-03", "location_id": self.location.id, "usage": "internal"}
+        )
+        shelfinfo = self.env["product.shelfinfo"].create(
+            {
+                "product_id": self.product.id,
+                "location_id": shelf.id,
+                "area1_id": self.env["product.shelf.area1"]
+                .create({"name": "Shipping/SDG-PS2"})
+                .id,
+            }
+        )
+        self.env["stock.quant"]._update_available_quantity(
+            self.product, shelf, 1.0, lot_id=self.lot
+        )
+        customers = self.env.ref("stock.stock_location_customers")
+        picking = self.env["stock.picking"].create(
+            {
+                "picking_type_id": self.env.ref("stock.picking_type_out").id,
+                "location_id": self.location.id,
+                "location_dest_id": customers.id,
+                "move_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "name": self.product.name,
+                            "product_id": self.product.id,
+                            "product_uom_qty": 1.0,
+                            "product_uom": self.product.uom_id.id,
+                            "location_id": self.location.id,
+                            "location_dest_id": customers.id,
+                        },
+                    )
+                ],
+            }
+        )
+        picking.action_confirm()
+        picking.action_assign()
+        wizard = self.env["stock.picking.print"].create(
+            {"barcode_format": "gs1_qr", "picking_ids": [(6, 0, picking.ids)]}
+        )
+        wizard._onchange_picking_ids()
+        self.assertEqual(wizard.product_print_moves.location_id, shelf)
+        self.assertEqual(wizard.product_print_moves.shelfinfo_id, shelfinfo)
 
     def test_sheet_breaks_pages_at_the_grid_size(self):
         """Labels past the 21st cell start a new sheet instead of overflowing."""

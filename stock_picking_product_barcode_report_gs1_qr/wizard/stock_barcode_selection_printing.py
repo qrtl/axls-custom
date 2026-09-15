@@ -7,7 +7,10 @@ from odoo.exceptions import UserError, ValidationError
 
 # GS1 "encodable character set 82", spelled exactly as Odoo's own AI (10) rule
 # pattern spells it so that what we print is what the nomenclature parses back.
-GS1_CHAR_SET_82 = re.compile(r'^[!"%-/0-9:-?A-Z_a-z]+$')
+# Anchored \A to \Z rather than ^ to $: "$" also matches before a trailing
+# newline, and Char only trims in the web client, so a reference imported with
+# one would pass the check and then fail to decompose.
+GS1_CHAR_SET_82 = re.compile(r'\A[!"%-/0-9:-?A-Z_a-z]+\Z')
 # Maximum value length per application identifier, per the GS1 general
 # specification. Both are variable length, so both need closing with FNC1.
 GS1_MAX_LENGTH = {"10": 20, "240": 30}
@@ -265,11 +268,14 @@ class WizStockBarcodeSelectionPrinting(models.TransientModel):
         return super().print_labels()
 
     def _get_gs1_qr_lines(self):
-        """The lines about to be printed with a GS1 QR code on them."""
+        """The lines the GS1 encoding check applies to."""
         if self.is_custom_label:
             return self.env["stock.picking.line.print"]
-        # The sheet report always prints the symbol; the base report only does so
-        # when the GS1 QR format is the one selected.
+        # The sheet report always prints the symbol, whatever the format. The
+        # format itself is a statement about the job rather than about one
+        # report, so while it is selected the check holds for every report the
+        # wizard can reach: a reference GS1 cannot encode is a record to fix
+        # before any label of that job is stuck on the goods.
         if self.barcode_format == "gs1_qr" or self.barcode_report == self.env.ref(
             "stock_picking_product_barcode_report_gs1_qr.action_report_stock_qr_label"
         ):
@@ -280,8 +286,13 @@ class WizStockBarcodeSelectionPrinting(models.TransientModel):
     def _prepare_data_from_move_line(self, move_line):
         values = super()._prepare_data_from_move_line(move_line)
         # At receipt the stock is not on its shelf yet, so the destination of the
-        # move is the best "where is it now" the label can carry.
-        values["location_id"] = move_line.location_dest_id.id
+        # move is the best "where is it now" the label can carry. Going out it is
+        # the other way round: the destination is the customer or the vendor, and
+        # only the source is a place a shelf can be keyed on.
+        location = move_line.location_dest_id
+        if location.usage != "internal":
+            location = move_line.location_id
+        values["location_id"] = location.id
         return values
 
     def _get_lines_from_quants(self):
