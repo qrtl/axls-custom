@@ -12,10 +12,14 @@
     "maintainers": ["nobuQuartile"],
     "depends": [
         "analytic_budget_number",
+        # base_automation, for the rule that refuses a purchase order line
+        # without a budget number. It ships off, see data/base_automation.xml.
+        "base_automation",
         "purchase_analytic",
         "purchase_order_line_menu",
     ],
     "data": [
+        "data/base_automation.xml",
         "data/server_action.xml",
         "views/purchase_order_line_views.xml",
         "views/purchase_order_views.xml",

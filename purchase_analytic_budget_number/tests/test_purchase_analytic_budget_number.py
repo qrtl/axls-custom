@@ -1,6 +1,7 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from odoo.exceptions import UserError
 from odoo.tests.common import Form, TransactionCase, new_test_user, tagged
 
 
@@ -345,3 +346,94 @@ class TestPurchaseAnalyticBudgetNumber(TransactionCase):
         self.assertEqual(
             order.analytic_distribution, {str(self.other_account.id): 100.0}
         )
+
+    def _activate_budget_rule(self):
+        """Turn the automated action on for the length of the test.
+
+        Switching it re-installs the create and write patches base_automation
+        puts on the registry, so it is switched back when the test is over: the
+        rollback of the transaction would put the record back but leave the
+        registry patched for the tests that follow.
+        """
+        automation = self.env.ref(
+            "purchase_analytic_budget_number."
+            "purchase_order_line_budget_required_automation"
+        )
+        automation.active = True
+        self.addCleanup(automation.write, {"active": False})
+        return automation
+
+    def test_the_budget_rule_ships_off(self):
+        """The rule is a decision of the database, so the module ships it off."""
+        automation = self.env.ref(
+            "purchase_analytic_budget_number."
+            "purchase_order_line_budget_required_automation"
+        )
+        self.assertFalse(automation.active)
+        self.assertFalse(self._create_line().analytic_budget_id)
+
+    def test_the_budget_rule_refuses_a_line_without_a_budget_number(self):
+        """With the rule on, a line stands or falls by its budget number."""
+        self._activate_budget_rule()
+        line = self._create_line({str(self.account.id): 100.0})
+        self.assertEqual(line.analytic_budget_id, self.account)
+        # A savepoint around each refusal: the insert of the line is done by
+        # the time the rule runs, and only the rollback of the request takes it
+        # back in production.
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            self._create_line()
+        # A distribution that holds no account of the budget plan is no budget
+        # number either.
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            self._create_line({str(self.other_account.id): 100.0})
+
+    def test_the_budget_rule_leaves_the_other_writes_of_a_line_alone(self):
+        """A line that predates the rule is not held up by every write.
+
+        Trigger Fields is what keeps the rule to the writes of the analytic
+        distribution, receiving and billing the goods aside.
+        """
+        line = self._create_line()
+        self._activate_budget_rule()
+        line.product_qty = 2.0
+        self.assertEqual(line.product_qty, 2.0)
+        # Writing a distribution on it is another matter: the line is given a
+        # distribution that still holds no budget number.
+        with self.assertRaises(UserError), self.env.cr.savepoint():
+            line.analytic_distribution = {str(self.other_account.id): 100.0}
+        # And the budget number is what settles it.
+        line.analytic_distribution = {str(self.account.id): 100.0}
+        self.assertEqual(line.analytic_budget_id, self.account)
+
+    def test_the_budget_rule_leaves_the_header_distribution_alone(self):
+        """Applying the distribution of the header is no line losing its budget.
+
+        purchase_analytic writes the distribution of the header over the one of
+        each line, budget number included, before it is put back. The
+        precondition of the rule is what tells that intermediate state from a
+        line that carries no budget number at all.
+        """
+        self._activate_budget_rule()
+        line = self._create_line({str(self.account.id): 100.0})
+        header_distribution = {str(self.other_account.id): 100.0}
+        self.order.analytic_distribution = header_distribution
+        self.assertEqual(
+            line.analytic_distribution,
+            {**header_distribution, str(self.account.id): 100.0},
+        )
+        self.assertEqual(line.analytic_budget_id, self.account)
+
+    def test_the_budget_rule_leaves_the_section_lines_alone(self):
+        """A section carries no analytic distribution to hold a budget number."""
+        self._activate_budget_rule()
+        section = self.env["purchase.order.line"].create(
+            {
+                "order_id": self.order.id,
+                "display_type": "line_section",
+                "name": "Section",
+                # create() nulls the fields a section may not carry, but
+                # product_qty is required and has no default of its own.
+                "product_qty": 0.0,
+            }
+        )
+        self.assertFalse(section.analytic_budget_id)

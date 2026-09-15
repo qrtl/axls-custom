@@ -32,6 +32,11 @@ msgid "Analytic Plans"
 msgstr "分析プラン"
 
 #. module: purchase_analytic_budget_number
+#: model:base.automation,name:purchase_analytic_budget_number.purchase_order_line_budget_required_automation
+msgid "Budget Number Required on Purchase Order Lines"
+msgstr "購買オーダ明細に予算番号を必須にする"
+
+#. module: purchase_analytic_budget_number
 #: model:ir.model,name:purchase_analytic_budget_number.model_purchase_order
 msgid "Purchase Order"
 msgstr "購買オーダ"
@@ -45,3 +50,15 @@ msgstr "購買オーダ明細"
 #: model:ir.actions.server,name:purchase_analytic_budget_number.purchase_order_line_recompute_budget_action
 msgid "Recompute Purchase Line Budget"
 msgstr "購買オーダ明細の予算番号の再計算"
+
+#. module: purchase_analytic_budget_number
+#. odoo-python
+#: code:addons/purchase_analytic_budget_number/models/purchase_order_line.py:0
+#, python-format
+msgid ""
+"The purchase order line '%(line)s' of %(order)s carries no budget number. "
+"Please distribute the line to an account of the analytic plan that holds the "
+"budget numbers."
+msgstr ""
+"購買オーダ %(order)s の明細 '%(line)s' に予算番号が指定されていません。予算番号を保持する分析プランの分析勘定に分配してくださ"
+"い。"

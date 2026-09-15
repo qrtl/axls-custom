@@ -1,7 +1,8 @@
 # Copyright 2026 Quartile (https://www.quartile.co)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
 
 
 class PurchaseOrderLine(models.Model):
@@ -129,4 +130,29 @@ class PurchaseOrderLine(models.Model):
             line.analytic_budget_id = min(
                 budget_account_ids.intersection(line._get_distribution_account_ids()),
                 default=False,
+            )
+
+    def _check_analytic_budget(self):
+        """Refuse a line that carries no budget number.
+
+        Run from the automated action the module ships, which an administrator
+        turns on, rather than from a constraint of the model. A constraint
+        would be checked on the write purchase_analytic makes to apply the
+        analytic distribution of the order header, which takes the budget
+        number off a line for the length of that write, and it would refuse a
+        header the user is entitled to set. The precondition of the automated
+        action is what tells that intermediate state apart, and a constraint
+        has no equivalent of it.
+        """
+        for line in self:
+            if line.display_type or line.analytic_budget_id:
+                continue
+            raise UserError(
+                _(
+                    "The purchase order line '%(line)s' of %(order)s carries no "
+                    "budget number. Please distribute the line to an account of "
+                    "the analytic plan that holds the budget numbers.",
+                    line=line.product_id.display_name or line.name,
+                    order=line.order_id.name,
+                )
             )

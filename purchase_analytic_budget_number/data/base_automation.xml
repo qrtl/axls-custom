@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- noupdate, so that an update of the module leaves the rule the way the
+     administrator left it: it ships off, and turning it on is a decision of
+     the database, not of the module. -->
+<odoo noupdate="1">
+    <record id="purchase_order_line_budget_required_automation" model="base.automation">
+        <field name="name">Budget Number Required on Purchase Order Lines</field>
+        <field name="model_id" ref="purchase.model_purchase_order_line" />
+        <!-- Off by default. A database that predates the rule holds purchase
+             order lines without a budget number, and the flows that write on
+             them have to keep working until those lines are dealt with. -->
+        <field name="active" eval="False" />
+        <field name="trigger">on_create_or_write</field>
+        <!-- On update the rule runs only when the analytic distribution is
+             written. base_automation fires on a plain write and on the
+             recomputation of a stored computed field alike, so with no trigger
+             field every receipt (qty_received) and every vendor bill
+             (qty_invoiced) would run it, and the lines that predate the rule
+             would block those flows. A creation is checked whatever the
+             trigger fields say. -->
+        <field
+            name="trigger_field_ids"
+            eval="[Command.set([ref('purchase.field_purchase_order_line__analytic_distribution')])]"
+        />
+        <!-- The precondition leaves the line that already carries a budget
+             number alone. purchase_analytic applies the analytic distribution
+             of the order header to every line with a plain write, which takes
+             the budget number off the line for the length of that write -
+             _restore_line_budget_numbers puts it back straight after - and
+             without the precondition the rule would fire on that intermediate
+             state and refuse a header the user is entitled to set. The price
+             of it: taking the budget number off a line that carries one is
+             only caught on the next write of its distribution. -->
+        <field name="filter_pre_domain">[('analytic_budget_id', '=', False)]</field>
+        <!-- Section and note lines carry no analytic distribution. -->
+        <field
+            name="filter_domain"
+        >[('display_type', '=', False), ('analytic_budget_id', '=', False)]</field>
+        <field name="state">code</field>
+        <field name="code">(records or model)._check_analytic_budget()</field>
+    </record>
+</odoo>
