@@ -1,0 +1,217 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_picking_product_barcode_report_gs1_qr
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-14 08:09+0000\n"
+"PO-Revision-Date: 2026-09-14 08:09+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.view_stock_barcode_selection_printing
+msgid ""
+"<strong>Start at Label</strong>\n"
+"                    <br/>"
+msgstr ""
+"<strong>開始位置</strong>\n"
+"                    <br/>"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__analytic_account_id
+msgid "Analytic Account"
+msgstr "衛星名"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_res_company__barcode_label_analytic_plan_id
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_res_config_settings__barcode_label_analytic_plan_id
+msgid "Analytic plan shown on stock labels"
+msgstr "在庫ラベルに表示する分析プラン"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_print__barcode_format
+msgid "Barcode Format"
+msgstr "バーコード形式"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__gs1_qr_error
+msgid "Cannot Be Printed"
+msgstr "印刷不可"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,help:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_print__first_label_position
+msgid ""
+"Cell of the first sheet to start printing at, counted left to right and top "
+"to bottom, so 4 is the leftmost cell of the second row. Use it to fill up a "
+"sheet that has already had labels taken off it."
+msgstr ""
+"1枚目のシートで印刷を開始するセルです。左から右、上から下の順に数えるため、4 は"
+"2段目の一番左のセルになります。すでにラベルを剥がした使いかけのシートを使い切る"
+"ときに指定します。"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr.model_res_company
+msgid "Companies"
+msgstr "会社"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr.model_res_config_settings
+msgid "Config Settings"
+msgstr "コンフィグ設定"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields.selection,name:stock_picking_product_barcode_report_gs1_qr.selection__res_company__barcode_report_default_format__gs1_qr
+#: model:ir.model.fields.selection,name:stock_picking_product_barcode_report_gs1_qr.selection__stock_picking_print__barcode_format__gs1_qr
+msgid "Display GS1 QR format for barcodes"
+msgstr "バーコードをGS1 QR形式で表示"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__gs1_qr_hri
+msgid "GS1 Human Readable Interpretation"
+msgstr "GS1可読文字列"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__gs1_qr_value
+msgid "GS1 QR Value"
+msgstr "GS1 QR値"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_print__is_label_sheet
+msgid "Is Label Sheet"
+msgstr "ラベルシートか"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__location_id
+msgid "Location"
+msgstr "ロケーション"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_res_company__barcode_report_default_format
+msgid "Method to choose the barcode formating"
+msgstr "バーコード形式の選択方法"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+msgid "PO"
+msgstr "P番号"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr.model_stock_picking_line_print
+msgid "Print Picking Line"
+msgstr "印刷ピッキング明細"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__purchase_id
+msgid "Purchase Order"
+msgstr "P番号"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+msgid "S/N"
+msgstr "S/N"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+msgid "Shelf"
+msgstr "棚"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_line_print__shelfinfo_id
+msgid "Shelf Info."
+msgstr "棚情報"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,field_description:stock_picking_product_barcode_report_gs1_qr.field_stock_picking_print__first_label_position
+msgid "Start at Label"
+msgstr "開始位置"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.actions.report,name:stock_picking_product_barcode_report_gs1_qr.action_report_stock_qr_label
+msgid "Stock QR Label (A4)"
+msgstr "在庫QRラベル (A4)"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model_terms:ir.ui.view,arch_db:stock_picking_product_barcode_report_gs1_qr.stock_qr_label
+msgid "Subsidy"
+msgstr "衛星名"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid ""
+"The starting label has to be a cell of the sheet, so between 1 and "
+"%(cells)s, not %(value)s."
+msgstr ""
+"開始位置はシート上のセルを指す必要があります。1 から %(cells)s の間で指定して"
+"ください (%(value)s は範囲外です)。"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model.fields,help:stock_picking_product_barcode_report_gs1_qr.field_res_company__barcode_label_analytic_plan_id
+#: model:ir.model.fields,help:stock_picking_product_barcode_report_gs1_qr.field_res_config_settings__barcode_label_analytic_plan_id
+msgid ""
+"The stock label prints the analytic account of this plan that the lot is "
+"distributed to. Leave empty to omit that line from the label."
+msgstr "ロットに配賦された、このプランの分析勘定を在庫ラベルに印字します。空欄の場合はその行を印字しません。"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid ""
+"These labels would carry no scannable code:\n"
+"\n"
+"%s"
+msgstr ""
+"以下のラベルはスキャンできるコードを持てません:\n"
+"\n"
+"%s"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#: model:ir.model,name:stock_picking_product_barcode_report_gs1_qr.model_stock_picking_print
+msgid "Wizard to select how many barcodes have to be printed"
+msgstr "印刷するバーコード数を選択するウィザード"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "internal reference"
+msgstr "内部参照"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "lot/serial"
+msgstr "ロット/シリアル"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid ""
+"the %(label)s %(value)r is longer than the %(length)s characters GS1 allows "
+"here"
+msgstr "%(label)s %(value)r が、ここで GS1 が許容する %(length)s 文字を超えています"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "the %(label)s %(value)r uses characters GS1 cannot encode"
+msgstr "%(label)s %(value)r に GS1 で符号化できない文字が含まれています"
+
+#. module: stock_picking_product_barcode_report_gs1_qr
+#. odoo-python
+#: code:addons/stock_picking_product_barcode_report_gs1_qr/wizard/stock_barcode_selection_printing.py:0
+#, python-format
+msgid "the product has no internal reference"
+msgstr "プロダクトに内部参照がありません"
