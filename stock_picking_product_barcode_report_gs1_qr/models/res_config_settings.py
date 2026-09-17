@@ -10,5 +10,11 @@ class ResConfigSettings(models.TransientModel):
         "account.analytic.plan",
         related="company_id.barcode_label_analytic_plan_id",
         string="Analytic plan shown on stock labels",
+        domain="[('company_id', 'in', [False, company_id])]",
+        # account.analytic.plan is readable only by the analytic accounting
+        # group, so without this the field raises an AccessError out of its own
+        # name_get for anyone else - including a settings administrator on a
+        # database where analytic accounting is switched off.
+        groups="analytic.group_analytic_accounting",
         readonly=False,
     )

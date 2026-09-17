@@ -19,10 +19,6 @@
             <table class="o_qr_label_body">
                 <tr>
                     <td t-if="label.gs1_qr_value" class="o_qr_label_code">
-                        <!-- The barcode widget inlines the symbol as a data URI.
-                             Pointing an <img> at /report/barcode instead makes
-                             wkhtmltopdf fetch it over HTTP, which fails silently
-                             and leaves the alt text on the label. -->
                         <span
                                         t-out="label.gs1_qr_value"
                                         t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 600, 'height': 600, 'quiet': 0, 'img_style': 'width:15mm;height:15mm;'}"
@@ -46,10 +42,8 @@
                     </td>
                 </tr>
             </table>
-            <!-- The shelf is on its own row because it is the longest value of
-                 the four and would otherwise be the one that gets clipped. It is
-                 not the stock location: that is warehouse-wide here, and the
-                 shelf address is product.shelfinfo's generated id. -->
+            <!-- The shelf is on its own row: it is the longest of the four
+                 values and would otherwise be the one that gets clipped. -->
             <table class="o_qr_label_foot">
                 <tr>
                     <th>Shelf</th>

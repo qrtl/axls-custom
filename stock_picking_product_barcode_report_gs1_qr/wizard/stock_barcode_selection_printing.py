@@ -29,9 +29,8 @@ class ProductPrintingQty(models.TransientModel):
 
     @api.depends("product_id", "location_id")
     def _compute_shelfinfo_id(self):
-        # The shelf is not the stock location: locations here are warehouse-wide
-        # (one per company), and the shelf address lives on product.shelfinfo,
-        # keyed by exactly this pair. Resolved the same way stock.quant does.
+        # The shelf is not the stock location: locations here are warehouse-wide,
+        # and the shelf address lives on product.shelfinfo, keyed by this pair.
         shelfinfos = self.env["product.shelfinfo"].search(
             [
                 ("product_id", "in", self.product_id.ids),
@@ -50,27 +49,45 @@ class ProductPrintingQty(models.TransientModel):
     @api.depends("lot_id", "move_line_id")
     def _compute_purchase_id(self):
         for line in self:
-            # stock_lot_purchase_attribute stamps the lot at receipt, which is the
-            # only source available when printing from a quant or a lot. Fall back
-            # to the move line so a receipt prints even before that is stamped.
+            # The lot is stamped at receipt, which is the only source available
+            # when printing from a quant or a lot. Fall back to the move line so
+            # that a receipt prints before the stamp is there.
             line.purchase_id = (
                 line.lot_id.purchase_id
                 or line.move_line_id.move_id.purchase_line_id.order_id
             )
 
-    @api.depends("lot_id")
+    @api.depends(
+        "lot_id.analytic_distribution",
+        "lot_id.company_id",
+        "move_line_id.company_id",
+    )
     def _compute_analytic_account_id(self):
-        plan = self.env.company.barcode_label_analytic_plan_id
         for line in self:
-            distribution = line.lot_id.analytic_distribution if plan else None
-            accounts = (
-                self.env["account.analytic.account"]
-                .browse(int(key) for key in distribution or {})
-                .exists()
+            line.analytic_account_id = False
+            # The plan is configured on the company whose stock is being
+            # labelled, which is not necessarily the active one: the wizard is
+            # reachable from quants and lots across every allowed company.
+            company = (
+                line.lot_id.company_id
+                or line.move_line_id.company_id
+                or self.env.company
             )
-            line.analytic_account_id = accounts.filtered(
-                lambda account: plan in (account.plan_id | account.root_plan_id)
-            )[:1]
+            plan = company.barcode_label_analytic_plan_id
+            distribution = line.lot_id.analytic_distribution if plan else None
+            if not distribution:
+                continue
+            # child_of so that a plan configured as the root also matches the
+            # accounts of its sub-plans. search() rather than browse().filtered()
+            # so that the record rules drop what the user may not see instead of
+            # raising out of a compute.
+            line.analytic_account_id = self.env["account.analytic.account"].search(
+                [
+                    ("id", "in", [int(key) for key in distribution]),
+                    ("plan_id", "child_of", plan.id),
+                ],
+                limit=1,
+            )
 
     @api.depends("product_id", "lot_id")
     def _compute_gs1_qr(self):
@@ -101,11 +118,7 @@ class ProductPrintingQty(models.TransientModel):
 
     @api.model
     def _get_gs1_qr_error(self, elements):
-        """Say why these elements cannot be encoded, or return an empty string.
-
-        This is the only place a value is judged encodable: _get_gs1_qr_value
-        joins whatever it is given.
-        """
+        """Say why these elements cannot be encoded, or return an empty string."""
         # GS1 "encodable character set 82", spelled exactly as Odoo's own AI (10)
         # rule pattern spells it so that what we print is what the nomenclature
         # parses back. Anchored \A to \Z rather than ^ to $: "$" also matches
@@ -113,8 +126,6 @@ class ProductPrintingQty(models.TransientModel):
         # reference imported with one would pass the check and then fail to
         # decompose.
         char_set_82 = re.compile(r'\A[!"%-/0-9:-?A-Z_a-z]+\Z')
-        # Maximum value length per application identifier, per the GS1 general
-        # specification. Both are variable length, so both need closing with FNC1.
         max_length = {"10": 20, "240": 30}
         # AI (240) is what identifies the product, so a payload without it cannot
         # be resolved to one. A lot on its own is not enough: AI (10) decomposes
@@ -142,34 +153,25 @@ class ProductPrintingQty(models.TransientModel):
 
     @api.model
     def _get_gs1_qr_value(self, elements):
-        """Join the elements into the GS1 payload the symbol carries.
-
-        The caller encodes nothing _get_gs1_qr_error has rejected, so there is
-        no check here: one place judges a value, this one spells it out.
-        """
         # A keyboard wedge scanner cannot type the real FNC1 (0x1D) into a web
         # form, so the payload separates elements with "#", which
         # barcode.nomenclature accepts out of the box through the default
         # gs1_separator_fnc1 regex. "#" is outside character set 82, so it can
-        # never occur inside an element value.
+        # never occur inside an element value. Every element here is variable
+        # length, so all but the last have to be closed with it, or the parser
+        # reads the following AI as part of the value.
         fnc1 = "#"
         parts = []
         for index, (ai, value) in enumerate(elements):
             parts.append(ai + value)
-            # Every element here is variable length, so all but the last have to
-            # be closed with FNC1, or the parser reads the following AI as part
-            # of the value.
             if index < len(elements) - 1:
                 parts.append(fnc1)
         return "".join(parts)
 
     @api.model
     def _get_label_grid(self):
-        """Columns and rows of the A4 label sheet the template lays out.
-
-        Keep in step with the cell size in the sheet template: 3 * 63.5mm
-        across and 7 * 38.1mm down.
-        """
+        # Keep in step with the cell size in the sheet template: 3 * 63.5mm
+        # across and 7 * 38.1mm down.
         return 3, 7
 
     def _get_label_pages(self):
@@ -228,6 +230,14 @@ class WizStockBarcodeSelectionPrinting(models.TransientModel):
                         value=wizard.first_label_position,
                     )
                 )
+
+    @api.onchange("barcode_format")
+    def _onchange_barcode_format(self):
+        # Which lines belong in the job depends on the format, so the list has to
+        # be rebuilt when it changes: the base onchange fires on the report but
+        # not on the format, and a line kept for a GS1 QR label has no barcode to
+        # give the base template once the format is switched back off it.
+        self._onchange_picking_ids()
 
     @api.model
     def _get_move_lines(self, picking):

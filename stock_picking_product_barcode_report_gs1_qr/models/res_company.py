@@ -13,6 +13,7 @@ class ResCompany(models.Model):
     barcode_label_analytic_plan_id = fields.Many2one(
         "account.analytic.plan",
         string="Analytic plan shown on stock labels",
+        domain="[('company_id', 'in', [False, id])]",
         help="The stock label prints the analytic account of this plan that the "
         "lot is distributed to. Leave empty to omit that line from the label.",
     )
