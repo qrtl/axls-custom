@@ -10,10 +10,6 @@
             ref="stock_picking_product_barcode_report.view_stock_barcode_selection_printing"
         />
         <field name="arch" type="xml">
-            <!-- Only the sheet report lays labels out in a grid, so only it has
-                 a cell to start at. The anchor is the block holding the
-                 language field, not the field itself, so the new block is its
-                 sibling rather than nested inside it. -->
             <xpath expr="//field[@name='lang']/.." position="after">
                 <field name="is_label_sheet" invisible="1" />
                 <div attrs="{'invisible': [('is_label_sheet', '=', False)]}">

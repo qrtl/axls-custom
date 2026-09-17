@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Zero margins and dpi 96 leave the sheet template in charge of the whole
-         A4 page, so a millimetre in the CSS is a millimetre on the paper. Smart
-         shrinking has to be off: it scales the page to fit whatever wkhtmltopdf
-         thinks the content width is, which silently shrinks the label grid. -->
     <record id="paperformat_stock_qr_label_a4" model="report.paperformat">
         <field name="name">Stock QR label sheet (A4)</field>
         <field name="format">A4</field>
@@ -14,6 +10,8 @@
         <field name="margin_right">0</field>
         <field name="header_line" eval="False" />
         <field name="header_spacing">0</field>
+        <!-- Shrinking scales the page to the content width and silently shrinks
+             the label grid. -->
         <field name="disable_shrinking" eval="True" />
         <field name="dpi">96</field>
     </record>

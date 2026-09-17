@@ -2,19 +2,15 @@
 <odoo>
     <template id="stock_qr_label">
         <div class="o_qr_label">
-            <!-- A sheet fed a little off centre still has to land the whole
-                 label inside its die cut, so the block is centred in the cell
-                 rather than pinned to the top: the slack left over by the text
-                 becomes margin above and below it. A table is the centring that
-                 old WebKit honours; flexbox is not. -->
+            <!-- A table is the vertical centring old WebKit honours; flexbox is not. -->
             <table class="o_qr_label_frame">
                 <tr>
                     <td>
             <div class="o_qr_label_ref">
-                <span t-esc="label.product_id.default_code" />
+                <span t-out="label.product_id.default_code" />
             </div>
             <div class="o_qr_label_name">
-                <span t-esc="label.product_id.name" />
+                <span t-out="label.product_id.name" />
             </div>
             <table class="o_qr_label_body">
                 <tr>
@@ -28,26 +24,25 @@
                         <table>
                             <tr>
                                 <th>PO</th>
-                                <td t-esc="label.purchase_id.name" />
+                                <td t-out="label.purchase_id.name" />
                             </tr>
                             <tr>
                                 <th>Subsidy</th>
-                                <td t-esc="label.analytic_account_id.name" />
+                                <td t-out="label.analytic_account_id.name" />
                             </tr>
                             <tr>
                                 <th>S/N</th>
-                                <td t-esc="label.lot_id.name" />
+                                <td t-out="label.lot_id.name" />
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <!-- The shelf is on its own row: it is the longest of the four
-                 values and would otherwise be the one that gets clipped. -->
+            <!-- The shelf is the longest of the values, so it gets its own row. -->
             <table class="o_qr_label_foot">
                 <tr>
                     <th>Shelf</th>
-                    <td t-esc="label.shelfinfo_id.name" />
+                    <td t-out="label.shelfinfo_id.name" />
                 </tr>
             </table>
                     </td>
@@ -57,10 +52,8 @@
     </template>
     <template id="stock_qr_label_sheet">
         <style type="text/css">
-/* Both report layouts wrap the body in a Bootstrap container, whose
-               max-width and gutters would squeeze the grid off its millimetres.
-               web.minimal_layout, the one wkhtmltopdf actually gets, hardcodes
-               the class, so this cannot be turned off from the template. */
+/* web.minimal_layout hardcodes the Bootstrap container, whose max-width and
+               gutters would squeeze the grid off its millimetres. */
 body,
 .container,
 #wrapwrap,
@@ -73,8 +66,6 @@ body,
 }
 .o_qr_sheet {
     width: 210mm;
-    /* The 3 x 7 grid of 63.5mm x 38.1mm labels is 190.5mm x 266.7mm, so the
-               padding is what centres it on the 210mm x 297mm sheet. */
     padding: 15.15mm 9.75mm;
     overflow: hidden;
     font-family: "Noto Sans CJK JP", "Noto Sans", sans-serif;
@@ -87,30 +78,13 @@ body,
     table-layout: fixed;
     border-collapse: collapse;
 }
-/* The grid carries no rule of its own: the cut guide on each label is the
-               only line meant to print. Without this the outer table draws a box
-               around any run of cells skipped by the starting position, where no
-               label border is there to sit on top of it. */
+/* Bootstrap's reboot leaves table cells with a solid border style at zero
+               width, so a renderer that rounds the width up draws a rule. The cut
+               guide on each label is the only line meant to print. */
 .o_qr_grid,
 .o_qr_grid > tbody,
 .o_qr_grid > tbody > tr,
-.o_qr_cell {
-    border: 0 none !important;
-    background: none !important;
-    box-shadow: none !important;
-}
-/* Scoped by class, not by descendant: ".o_qr_grid td" also matches
-               the cells of the tables inside a label and blows them up to 63.5mm. */
-.o_qr_cell {
-    width: 63.5mm;
-    height: 38.1mm;
-    padding: 0;
-    border: 0;
-    vertical-align: top;
-}
-/* Bootstrap's reboot leaves table cells with a solid border style at zero
-               width, so a renderer that ignores the width draws a rule under every
-               row. Nothing inside a label is ever meant to have one. */
+.o_qr_cell,
 .o_qr_label table,
 .o_qr_label thead,
 .o_qr_label tbody,
@@ -121,8 +95,16 @@ body,
     background: none !important;
     box-shadow: none !important;
 }
-/* Holds a skipped cell open at full size, with no cut guide: there is no
-               label left on that part of the sheet to guide a cut around. */
+/* Scoped by class, not by descendant: ".o_qr_grid td" also matches the
+               cells of the tables inside a label. */
+.o_qr_cell {
+    width: 63.5mm;
+    height: 38.1mm;
+    padding: 0;
+    border: 0;
+    vertical-align: top;
+}
+/* Holds a skipped cell open at full size, with no cut guide. */
 .o_qr_blank {
     width: 63.5mm;
     height: 38.1mm;
@@ -130,25 +112,18 @@ body,
 .o_qr_label {
     width: 63.5mm;
     height: 38.1mm;
-    /* Wider at the sides than at the top: the vertical slack is spent by the
-               centring frame instead, which leaves about 2.5mm clear all round. */
     padding: 1.5mm 2mm;
     overflow: hidden;
-    /* A cut guide thinner than one layout pixel (0.26mm at
-                   dpi 96) rounds to zero and never reaches the paper. */
+    /* Thinner than one layout pixel (0.26mm at dpi 96) rounds to zero. */
     border: 0.3mm solid #d0d0d0;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
 }
-/* The frame that centres the block in the cell. Height has to be stated for
-               the middle alignment to have anything to centre within. */
+/* table-layout: fixed throughout - an auto-layout table grows to the minimum
+               width of its content, so nothing inside it ever wraps. */
 .o_qr_label_frame {
     width: 100%;
     height: 100%;
-    /* Fixed for the same reason as the tables it holds: an auto-layout table
-               grows to the minimum width of its content, so the frame would widen to
-               whatever the longest unbroken value wants and nothing inside it would
-               ever wrap. */
     table-layout: fixed;
     border-collapse: collapse;
 }
@@ -156,14 +131,6 @@ body,
     padding: 0;
     vertical-align: middle;
 }
-/* 10pt is the largest the body text can be and still hold every field at the
-               longest value the database holds: the internal reference (8), the
-               purchase order (9), the lot (10), the analytic account (22,
-               "METI-VHR STM/EFM_Spare") and the shelf (26, "部品棚(Parts Shelf)
-               0-A1-ジャンパ"). The last two need two lines each at this size, which
-               is what fills the cell; 10.5pt overruns it once the report asset
-               bundle's border-box rule applies. The reference and the product name
-               are short enough to stay at 12pt whatever the rest does. */
 .o_qr_label_ref {
     overflow: hidden;
     font-size: 12pt;
@@ -171,11 +138,6 @@ body,
     line-height: 1.1;
     white-space: nowrap;
 }
-/* One line, cut on the right. Sized against the names the data holds rather
-               than against the longest: they run to 80 characters but average 9.5em,
-               being mostly half-width, so 92% of them print in full at 12pt (96% at
-               10.5pt, 81% at 14pt). Room is not the constraint here - the line holds
-               16pt with the block still centred - the share that would be cut is. */
 .o_qr_label_name {
     overflow: hidden;
     font-size: 12pt;
@@ -187,9 +149,6 @@ body,
     table-layout: fixed;
     border-collapse: collapse;
 }
-/* Fixed, not auto: a nested table left on auto layout grows to fit its
-               content and is then cut off by the parent's overflow, so a long value
-               is clipped instead of wrapping onto the line budgeted for it. */
 .o_qr_label_foot {
     width: 100%;
     table-layout: fixed;
@@ -204,21 +163,16 @@ body,
     padding: 0 0 0 1.5mm;
     vertical-align: top;
 }
-/* Old WebKit does not inherit font-size into a table, so the nested
-               one has to be told again or it falls back to the browser default. */
+/* Old WebKit does not inherit font-size into a table. */
 .o_qr_label_info table {
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
 }
-/* Wide enough for the longest header, with the box model stated rather
-               than inherited. "Subsidy" is 13.7mm at 10.5pt, so a 14.5mm column
-               plus 0.8mm of padding either fits it or wraps it to a second line
-               depending on whether the report asset bundle - which is fetched over
-               HTTP and does not always arrive - got its border-box rule in first.
-               Neither outcome is allowed: a header that wraps takes the row with
-               it, and one that overflows makes WebKit collapse that row's value
-               cell so the value vanishes from the label without a sign. */
+/* The box model is stated rather than inherited: the report asset bundle is
+               fetched over HTTP while rendering and does not always arrive. A header
+               that wraps takes the row with it, and one that overflows makes WebKit
+               collapse that row's value cell so the value vanishes. */
 .o_qr_label_info th,
 .o_qr_label_foot th {
     width: 14.5mm;
@@ -234,28 +188,17 @@ body,
     text-align: left;
     padding-right: 0.8mm;
 }
+/* break-all because the long values are underscore-joined and offer nowhere
+               else to break. */
 .o_qr_label_info td,
 .o_qr_label_foot td {
     padding: 0;
     overflow: hidden;
     font-size: 10pt;
     line-height: 1.1;
-}
-/* The analytic account is the one value here that can outrun its cell, so it
-               wraps rather than being cut off; break-all because the long ones are
-               joined with underscores and offer nowhere else to break. WebKit still
-               breaks at a space first and only splits a word that will not fit on a
-               line of its own, so the column has to hold the longest word rather
-               than half the longest value: "STM/EFM_Spare" is 26.8mm at 10pt, and
-               a narrower column spills that account onto a third line and off the
-               label. That width is what sizes the symbol beside it. */
-.o_qr_label_info td,
-.o_qr_label_foot td {
     word-break: break-all;
 }
-/* Narrower than the block above: the shelf header is one short word but
-               its value is the longest on the label, and a value too wide for its
-               cell is clipped without a sign. */
+/* Narrower: the shelf header is one short word but its value is the longest. */
 .o_qr_label_foot th {
     width: 11mm;
 }
@@ -268,10 +211,9 @@ body,
                 <table class="o_qr_grid">
                     <tr t-foreach="page" t-as="row">
                         <td t-foreach="row" t-as="label" class="o_qr_cell">
-                            <!-- A cell skipped by the starting position holds a
-                                 spacer rather than nothing: an empty cell in a
-                                 row that is entirely blank collapses, and every
-                                 label below it then moves up a row. -->
+                            <!-- A spacer, not nothing: an empty cell in an
+                                 entirely blank row collapses, and every label
+                                 below it moves up a row. -->
                             <t
                                 t-if="label"
                                 t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label"
@@ -290,11 +232,9 @@ body,
                 t-set="label_lang"
                 t-value="docs[:1].wizard_id.lang or docs.env.user.lang"
             />
-            <!-- ir.actions.report._prepare_html splits the rendered document on
-                 .article nodes and rewraps each in web.minimal_layout. Without
-                 one it falls back to the bare children of <main>, and the body
-                 reaches wkhtmltopdf with no <meta charset> and no <base href>:
-                 non-ASCII text comes out as mojibake. -->
+            <!-- Without a .article node _prepare_html falls back to the bare
+                 children of <main>, and the body reaches wkhtmltopdf with no
+                 <meta charset>: non-ASCII comes out as mojibake. -->
             <div class="article">
                 <t
                     t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label_sheet"
