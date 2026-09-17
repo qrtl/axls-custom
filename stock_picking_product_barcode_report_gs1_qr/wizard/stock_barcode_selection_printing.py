@@ -152,6 +152,10 @@ class ProductPrintingQty(models.TransientModel):
         labels = [line for line in self for _ in range(max(line.label_qty, 0))]
         start = max(self[:1].wizard_id.first_label_position, 1)
         cells = [False] * (start - 1) + labels
+        # A fixed-layout table derives its columns from its first row. Pad an
+        # incomplete row so that a two-label sheet still has three equal-width
+        # columns instead of spreading its two cells over the whole grid.
+        cells += [False] * (-len(cells) % columns)
         rows = [
             cells[index : index + columns] for index in range(0, len(cells), columns)
         ]

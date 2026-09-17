@@ -329,7 +329,13 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         pages = line._get_label_pages()
         self.assertEqual([len(page) for page in pages], [7, 1])
         self.assertEqual([len(row) for row in pages[0]], [3] * 7)
-        self.assertEqual([len(row) for row in pages[1]], [1])
+        self.assertEqual(pages[1][0], [line, False, False])
+
+    def test_sheet_pads_an_incomplete_first_row(self):
+        """Two labels keep the first two positions of a three-column sheet."""
+        line = self._create_line(lot=self.lot, label_qty=2)
+        pages = line._get_label_pages()
+        self.assertEqual(pages[0][0], [line, line, False])
 
     def test_sheet_starts_at_the_requested_cell(self):
         line = self._create_line(lot=self.lot, label_qty=2)
@@ -338,13 +344,14 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         pages = line._get_label_pages()
         self.assertEqual(len(pages), 1)
         self.assertEqual(pages[0][0], [False, False, False])
-        self.assertEqual(pages[0][1], [line, line])
+        self.assertEqual(pages[0][1], [line, line, False])
 
     def test_starting_cell_pushes_the_overflow_onto_a_second_sheet(self):
         line = self._create_line(lot=self.lot, label_qty=21)
         line.wizard_id.first_label_position = 2
         pages = line._get_label_pages()
-        self.assertEqual([sum(len(row) for row in page) for page in pages], [21, 1])
+        self.assertEqual([len(page) for page in pages], [7, 1])
+        self.assertEqual(pages[1][0], [line, False, False])
         self.assertEqual(pages[0][0][0], False)
         self.assertEqual(pages[0][0][1], line)
 
