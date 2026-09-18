@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="account_analytic_account_view_tree" model="ir.ui.view">
+        <field name="name">account.analytic.account.tree</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_list" />
+        <field name="arch" type="xml">
+            <!-- An analytic account is looked up by what it is called, and the
+                 rest of the list is noise around that. Optional rather than
+                 removed, so a user who does want a column is one menu away
+                 from it, and their choice then sticks. -->
+            <field name="code" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="plan_id" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="debit" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="credit" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+            <field name="balance" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>
