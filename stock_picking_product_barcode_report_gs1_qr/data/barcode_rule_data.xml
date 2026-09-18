@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!-- Odoo ships no rule for AI (240). Kept updatable on purpose: the payload
+         this module prints and the pattern that parses it back must stay in step. -->
+    <record id="barcode_rule_gs1_240" model="barcode.rule">
+        <field name="name">Additional product identifier</field>
+        <field
+            name="barcode_nomenclature_id"
+            ref="barcodes_gs1_nomenclature.default_gs1_nomenclature"
+        />
+        <field name="sequence">103</field>
+        <field name="encoding">gs1-128</field>
+        <field name="pattern">(240)([!"%-/0-9:-?A-Z_a-z]{0,30})</field>
+        <field name="type">product</field>
+        <field name="gs1_content_type">alpha</field>
+    </record>
+</odoo>

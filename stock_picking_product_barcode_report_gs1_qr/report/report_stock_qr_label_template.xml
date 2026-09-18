@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="stock_qr_label">
+        <div class="o_qr_label">
+            <!-- A table is the vertical centring old WebKit honours; flexbox is not. -->
+            <table class="o_qr_label_frame">
+                <tr>
+                    <td>
+            <div class="o_qr_label_ref">
+                <span t-out="label.product_id.default_code" />
+            </div>
+            <div class="o_qr_label_name">
+                <span t-out="label.product_id.name" />
+            </div>
+            <table class="o_qr_label_body">
+                <tr>
+                    <td t-if="label.gs1_qr_value" class="o_qr_label_code">
+                        <span
+                                        t-out="label.gs1_qr_value"
+                                        t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 600, 'height': 600, 'quiet': 0, 'img_style': 'width:15mm;height:15mm;'}"
+                                    />
+                    </td>
+                    <td class="o_qr_label_info">
+                        <table>
+                            <tr>
+                                <th>PO</th>
+                                <td t-out="label.purchase_id.name" />
+                            </tr>
+                            <tr>
+                                <th>Subsidy</th>
+                                <td t-out="label.analytic_account_id.name" />
+                            </tr>
+                            <tr>
+                                <th>S/N</th>
+                                <td t-out="label.lot_id.name" />
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <!-- The shelf is the longest of the values, so it gets its own row. -->
+            <table class="o_qr_label_foot">
+                <tr>
+                    <th>Shelf</th>
+                    <td t-out="label.shelfinfo_id.name" />
+                </tr>
+            </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+    <template id="stock_qr_label_sheet">
+        <style type="text/css">
+/* web.minimal_layout hardcodes the Bootstrap container, whose max-width and
+               gutters would squeeze the grid off its millimetres. */
+body,
+.container,
+#wrapwrap,
+#wrapwrap > main,
+.article {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.o_qr_sheet {
+    width: 210mm;
+    padding: 15.15mm 9.75mm;
+    overflow: hidden;
+    font-family: "Noto Sans CJK JP", "Noto Sans", sans-serif;
+    color: #000000;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.o_qr_grid {
+    width: 190.5mm;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+/* Bootstrap's reboot leaves table cells with a solid border style at zero
+               width, so a renderer that rounds the width up draws a rule. The cut
+               guide on each label is the only line meant to print. */
+.o_qr_grid,
+.o_qr_grid > tbody,
+.o_qr_grid > tbody > tr,
+.o_qr_cell,
+.o_qr_label table,
+.o_qr_label thead,
+.o_qr_label tbody,
+.o_qr_label tr,
+.o_qr_label th,
+.o_qr_label td {
+    border: 0 none !important;
+    background: none !important;
+    box-shadow: none !important;
+}
+/* Scoped by class, not by descendant: ".o_qr_grid td" also matches the
+               cells of the tables inside a label. */
+.o_qr_cell {
+    width: 63.5mm;
+    height: 38.1mm;
+    padding: 0;
+    border: 0;
+    vertical-align: top;
+}
+/* Holds a skipped cell open at full size, with no cut guide. */
+.o_qr_blank {
+    width: 63.5mm;
+    height: 38.1mm;
+}
+.o_qr_label {
+    width: 63.5mm;
+    height: 38.1mm;
+    padding: 1.5mm 2mm;
+    overflow: hidden;
+    /* Thinner than one layout pixel (0.26mm at dpi 96) rounds to zero. */
+    border: 0.3mm solid #d0d0d0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+/* table-layout: fixed throughout - an auto-layout table grows to the minimum
+               width of its content, so nothing inside it ever wraps. */
+.o_qr_label_frame {
+    width: 100%;
+    height: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+.o_qr_label_frame > tbody > tr > td {
+    padding: 0;
+    vertical-align: middle;
+}
+.o_qr_label_ref {
+    overflow: hidden;
+    font-size: 12pt;
+    font-weight: bold;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+.o_qr_label_name {
+    overflow: hidden;
+    font-size: 12pt;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+.o_qr_label_body {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+.o_qr_label_foot {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+.o_qr_label_code {
+    width: 15mm;
+    padding: 0;
+    vertical-align: top;
+}
+.o_qr_label_info {
+    padding: 0 0 0 1.5mm;
+    vertical-align: top;
+}
+/* Old WebKit does not inherit font-size into a table. */
+.o_qr_label_info table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+/* The box model is stated rather than inherited: the report asset bundle is
+               fetched over HTTP while rendering and does not always arrive. A header
+               that wraps takes the row with it, and one that overflows makes WebKit
+               collapse that row's value cell so the value vanishes. */
+.o_qr_label_info th,
+.o_qr_label_foot th {
+    width: 14.5mm;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    color: #555555;
+    font-size: 10pt;
+    font-weight: normal;
+    line-height: 1.1;
+    text-align: left;
+    padding-right: 0.8mm;
+}
+/* break-all because the long values are underscore-joined and offer nowhere
+               else to break. */
+.o_qr_label_info td,
+.o_qr_label_foot td {
+    padding: 0;
+    overflow: hidden;
+    font-size: 10pt;
+    line-height: 1.1;
+    word-break: break-all;
+}
+/* Narrower: the shelf header is one short word but its value is the longest. */
+.o_qr_label_foot th {
+    width: 11mm;
+}
+        </style>
+        <t t-foreach="pages" t-as="page">
+            <div
+                class="o_qr_sheet"
+                t-attf-style="page-break-after: #{'auto' if page_last else 'always'};"
+            >
+                <table class="o_qr_grid">
+                    <tr t-foreach="page" t-as="row">
+                        <td t-foreach="row" t-as="label" class="o_qr_cell">
+                            <!-- A spacer, not nothing: an empty cell in an
+                                 entirely blank row collapses, and every label
+                                 below it moves up a row. -->
+                            <t
+                                t-if="label"
+                                t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label"
+                            />
+                            <div t-else="" class="o_qr_blank" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </t>
+    </template>
+    <template id="report_stock_qr_label">
+        <t t-call="web.html_container">
+            <t t-set="pages" t-value="docs._get_label_pages()" />
+            <t
+                t-set="label_lang"
+                t-value="docs[:1].wizard_id.lang or docs.env.user.lang"
+            />
+            <!-- Without a .article node _prepare_html falls back to the bare
+                 children of <main>, and the body reaches wkhtmltopdf with no
+                 <meta charset>: non-ASCII comes out as mojibake. -->
+            <div class="article">
+                <t
+                    t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label_sheet"
+                    t-lang="label_lang"
+                />
+            </div>
+        </t>
+    </template>
+</odoo>

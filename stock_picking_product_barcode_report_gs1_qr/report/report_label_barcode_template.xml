@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="report_label_barcode_gs1_qr"
+        inherit_id="stock_picking_product_barcode_report.report_label_barcode"
+    >
+        <xpath
+            expr="//t[@t-if=&quot;doc.wizard_id.barcode_format == 'gs1_128'&quot;]"
+            position="after"
+        >
+            <t t-elif="doc.wizard_id.barcode_format == 'gs1_qr'">
+                <t t-if="doc.gs1_qr_value">
+                    <!-- The widget inlines the symbol as a data URI: an <img> on
+                         /report/barcode makes wkhtmltopdf fetch it over HTTP,
+                         which fails silently. quiet=0 keeps the quiet zone. -->
+                    <span
+                        t-out="doc.gs1_qr_value"
+                        t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 256, 'height': 256, 'quiet': 0, 'img_style': 'width:16mm;height:16mm;'}"
+                    />
+                    <br />
+                    <span t-out="doc.gs1_qr_hri" style="font-size: 6px;" />
+                </t>
+            </t>
+        </xpath>
+    </template>
+</odoo>
