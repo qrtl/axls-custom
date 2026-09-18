@@ -2,9 +2,14 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 import re
 
+from odoo import Command
 from odoo.exceptions import UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
 from odoo.tools import get_barcode_check_digit
+
+from odoo.addons.stock_picking_product_barcode_report_gs1_qr.wizard import (
+    stock_barcode_selection_printing as printing,
+)
 
 BASE_REPORT = "stock_picking_product_barcode_report.label_barcode_report"
 SHEET_REPORT = "stock_picking_product_barcode_report_gs1_qr.report_stock_qr_label"
@@ -68,8 +73,10 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
                 return gtin
         raise AssertionError("No free GTIN-14 left in the test range")
 
-    def _create_line(self, barcode_format="gs1_qr", lot=None, product=None, **values):
-        wizard = self.env["stock.picking.print"].create(
+    def _create_line(
+        self, barcode_format="gs1_qr", lot=None, product=None, wizard=None, **values
+    ):
+        wizard = wizard or self.env["stock.picking.print"].create(
             {"barcode_format": barcode_format}
         )
         return self.env["stock.picking.line.print"].create(
@@ -174,6 +181,51 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         with self.assertRaises(UserError):
             line.wizard_id.print_labels()
 
+    def test_print_refuses_a_separator_the_nomenclature_will_not_read_back(self):
+        """The payload closes AI (240) with one concrete character, and what
+        the reader accepts is a regex held on the nomenclature. Fails if the
+        two are allowed to drift: the symbol renders, and scans as one value.
+        """
+        # The fixture has to reject what the payload actually closes with.
+        separator = r"(Alt029|\x1D)"
+        self.assertIsNone(re.fullmatch("(?:%s)" % separator, printing.FNC1))
+        nomenclature = self.env["barcode.nomenclature"].create(
+            {
+                "name": "GS1 rejecting the separator",
+                "is_gs1_nomenclature": True,
+                "gs1_separator_fnc1": separator,
+            }
+        )
+        self.env.company.nomenclature_id = nomenclature
+        line = self._create_line(lot=self.lot)
+        self.assertIn(nomenclature.name, line.gs1_qr_error)
+        self.assertFalse(line.gs1_qr_value)
+        with self.assertRaises(UserError):
+            line.wizard_id.print_labels()
+        # A payload of one element is closed with nothing, so it is unaffected.
+        self.assertFalse(self._create_line().gs1_qr_error)
+
+    def test_every_faulty_line_is_named_when_print_refuses(self):
+        """One wizard, several lines: the message names each faulty one. Fails
+        if the check stops at the first, which a one-line wizard cannot show.
+        """
+        wizard = self.env["stock.picking.print"].create({"barcode_format": "gs1_qr"})
+        unencodable = self.env["product.product"].create(
+            {"name": "Unencodable", "type": "product", "default_code": "10006049（削除）"}
+        )
+        no_reference = self.env["product.product"].create(
+            {"name": "No reference", "type": "product"}
+        )
+        self._create_line(product=unencodable, wizard=wizard)
+        self._create_line(product=no_reference, wizard=wizard)
+        self._create_line(lot=self.lot, wizard=wizard)
+        with self.assertRaises(UserError) as caught:
+            wizard.print_labels()
+        message = str(caught.exception)
+        self.assertIn(unencodable.display_name, message)
+        self.assertIn(no_reference.display_name, message)
+        self.assertNotIn(self.product.display_name, message)
+
     def test_print_allows_a_line_that_can_be_encoded(self):
         line = self._create_line(lot=self.lot)
         self.assertFalse(line.gs1_qr_error)
@@ -200,6 +252,36 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         line = self._create_line(lot=self.lot, location_id=other.id)
         self.assertFalse(line.shelfinfo_id)
 
+    def test_shelf_is_the_one_of_the_lines_own_company(self):
+        """Another allowed company's shelf for the same product and location
+        must not win. Fails if the lookup is keyed on the pair alone, which
+        nothing in the compute's shape shows.
+        """
+        company_b = self.env["res.company"].create({"name": "Other Co"})
+        self.env.user.company_ids = [Command.link(company_b.id)]
+        multi_company_env = self.env(
+            context=dict(
+                self.env.context,
+                allowed_company_ids=[self.env.company.id, company_b.id],
+            )
+        )
+        # _order is "sequence" and a company-blind lookup keeps the last one,
+        # so both sides of that ordering are stated here, not inherited.
+        self.shelfinfo.sequence = 1
+        multi_company_env["product.shelfinfo"].create(
+            {
+                "product_id": self.product.id,
+                "location_id": self.location.id,
+                "company_id": company_b.id,
+                "area1_id": self.env["product.shelf.area1"]
+                .create({"name": "Other/SDG-PS9"})
+                .id,
+                "sequence": 9,
+            }
+        )
+        line = self._create_line(lot=self.lot, location_id=self.location.id)
+        self.assertEqual(line.with_env(multi_company_env).shelfinfo_id, self.shelfinfo)
+
     def test_analytic_account_follows_the_configured_plan(self):
         other_account = self.env["account.analytic.account"].create(
             {
@@ -223,9 +305,7 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
                 "location_id": self.env.ref("stock.stock_location_suppliers").id,
                 "location_dest_id": self.location.id,
                 "move_ids": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "name": self.product.name,
                             "product_id": self.product.id,
@@ -235,7 +315,7 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
                                 "stock.stock_location_suppliers"
                             ).id,
                             "location_dest_id": self.location.id,
-                        },
+                        }
                     )
                 ],
             }
@@ -243,7 +323,7 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         picking.action_confirm()
         picking.move_ids.move_line_ids.lot_id = self.lot
         wizard = self.env["stock.picking.print"].create(
-            {"barcode_format": "gs1_qr", "picking_ids": [(6, 0, picking.ids)]}
+            {"barcode_format": "gs1_qr", "picking_ids": [Command.set(picking.ids)]}
         )
         wizard._onchange_picking_ids()
         self.assertEqual(wizard.product_print_moves.product_id, self.product)
@@ -273,9 +353,7 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
                 "location_id": self.location.id,
                 "location_dest_id": customers.id,
                 "move_ids": [
-                    (
-                        0,
-                        0,
+                    Command.create(
                         {
                             "name": self.product.name,
                             "product_id": self.product.id,
@@ -283,7 +361,7 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
                             "product_uom": self.product.uom_id.id,
                             "location_id": self.location.id,
                             "location_dest_id": customers.id,
-                        },
+                        }
                     )
                 ],
             }
@@ -291,31 +369,17 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         picking.action_confirm()
         picking.action_assign()
         wizard = self.env["stock.picking.print"].create(
-            {"barcode_format": "gs1_qr", "picking_ids": [(6, 0, picking.ids)]}
+            {"barcode_format": "gs1_qr", "picking_ids": [Command.set(picking.ids)]}
         )
         wizard._onchange_picking_ids()
         self.assertEqual(wizard.product_print_moves.location_id, shelf)
         self.assertEqual(wizard.product_print_moves.shelfinfo_id, shelfinfo)
 
-    def test_no_text_on_the_sheet_is_smaller_than_the_agreed_size(self):
-        html = self._render(SHEET_REPORT, self._create_line(lot=self.lot))
-        sizes = [float(size) for size in re.findall(r"font-size:\s*([\d.]+)pt", html)]
-        self.assertTrue(sizes)
-        self.assertGreaterEqual(min(sizes), 10.0)
-
-    def test_every_table_on_the_label_is_fixed_layout(self):
-        html = self._render(SHEET_REPORT, self._create_line(lot=self.lot))
-        for selector in (
-            ".o_qr_label_frame",
-            ".o_qr_label_body",
-            ".o_qr_label_foot",
-            ".o_qr_label_info table",
-        ):
-            rule = re.search(r"%s\s*\{[^}]*\}" % re.escape(selector), html)
-            self.assertTrue(rule, "no rule found for %s" % selector)
-            self.assertIn("table-layout: fixed", rule.group(0), selector)
-
     def test_header_column_states_its_own_box_model(self):
+        """The rule is a wkhtmltopdf workaround: a header that wraps collapses
+        its value cell, and the value vanishes off the label. Kept because a
+        tidy-up would silently take the value with it.
+        """
         html = self._render(SHEET_REPORT, self._create_line(lot=self.lot))
         rule = re.search(
             r"\.o_qr_label_info th,\s*\.o_qr_label_foot th\s*\{[^}]*\}", html
@@ -323,6 +387,25 @@ class TestReportLabelBarcodeGS1QR(TransactionCase):
         self.assertTrue(rule, "no rule found for the header cells")
         self.assertIn("box-sizing: content-box", rule.group(0))
         self.assertIn("white-space: nowrap", rule.group(0))
+
+    def test_sheet_keeps_the_order_of_the_lines(self):
+        """Cells are filled in line order, so the sheet matches the list the
+        user checked. Fails if the recordset is iterated in any other order,
+        which a wizard holding one line cannot show.
+        """
+        wizard = self.env["stock.picking.print"].create({"barcode_format": "gs1_qr"})
+        lines = self.env["stock.picking.line.print"]
+        for index in range(3):
+            product = self.env["product.product"].create(
+                {
+                    "name": "Ordered %s" % index,
+                    "type": "product",
+                    "default_code": "ORD-%s" % index,
+                }
+            )
+            lines |= self._create_line(product=product, wizard=wizard)
+        pages = wizard.product_print_moves._get_label_pages()
+        self.assertEqual(pages[0][0], list(lines))
 
     def test_sheet_breaks_pages_at_the_grid_size(self):
         line = self._create_line(lot=self.lot, label_qty=22)

@@ -35,21 +35,35 @@ class ProductPrintingQty(models.TransientModel):
     )
     gs1_qr_error = fields.Char("Cannot Be Printed", compute="_compute_gs1_qr")
 
-    @api.depends("product_id", "location_id")
+    @api.depends(
+        "product_id",
+        "location_id",
+        "lot_id.company_id",
+        "move_line_id.company_id",
+    )
     def _compute_shelfinfo_id(self):
+        # A shelf is unique per (product, location, company) and the search sees all.
         shelfinfos = self.env["product.shelfinfo"].search(
             [
                 ("product_id", "in", self.product_id.ids),
                 ("location_id", "in", self.location_id.ids),
             ]
         )
-        by_product_location = {
-            (shelfinfo.product_id.id, shelfinfo.location_id.id): shelfinfo
+        by_product_location_company = {
+            (
+                shelfinfo.product_id.id,
+                shelfinfo.location_id.id,
+                shelfinfo.company_id.id,
+            ): shelfinfo
             for shelfinfo in shelfinfos
         }
         for line in self:
-            line.shelfinfo_id = by_product_location.get(
-                (line.product_id.id, line.location_id.id)
+            line.shelfinfo_id = by_product_location_company.get(
+                (
+                    line.product_id.id,
+                    line.location_id.id,
+                    line._get_label_company().id,
+                )
             )
 
     @api.depends("lot_id", "move_line_id")
@@ -68,12 +82,7 @@ class ProductPrintingQty(models.TransientModel):
     def _compute_analytic_account_id(self):
         for line in self:
             line.analytic_account_id = False
-            company = (
-                line.lot_id.company_id
-                or line.move_line_id.company_id
-                or self.env.company
-            )
-            plan = company.barcode_label_analytic_plan_id
+            plan = line._get_label_company().barcode_label_analytic_plan_id
             distribution = line.lot_id.analytic_distribution if plan else None
             if not distribution:
                 continue
@@ -85,7 +94,12 @@ class ProductPrintingQty(models.TransientModel):
                 limit=1,
             )
 
-    @api.depends("product_id", "lot_id")
+    @api.depends(
+        "product_id",
+        "lot_id",
+        "lot_id.company_id",
+        "move_line_id.company_id",
+    )
     def _compute_gs1_qr(self):
         for line in self:
             elements = line._get_gs1_elements()
@@ -94,6 +108,13 @@ class ProductPrintingQty(models.TransientModel):
                 "" if line.gs1_qr_error else line._get_gs1_qr_value(elements)
             )
             line.gs1_qr_hri = "".join("(%s)%s" % element for element in elements)
+
+    def _get_label_company(self):
+        # The line has no company of its own: take the stock's, else the active one.
+        self.ensure_one()
+        return (
+            self.lot_id.company_id or self.move_line_id.company_id or self.env.company
+        )
 
     def _get_gs1_elements(self):
         # AI (02) would need a GTIN, and its rule validates a check digit, so a
@@ -107,7 +128,28 @@ class ProductPrintingQty(models.TransientModel):
             elements.append(("10", self.lot_id.name))
         return elements
 
-    @api.model
+    def _get_gs1_nomenclature(self):
+        # The same resolution stock_barcodes_gs1.process_barcode reads a scan with.
+        self.ensure_one()
+        return self._get_label_company().nomenclature_id.filtered(
+            "is_gs1_nomenclature"
+        ) or self.env.ref("barcodes_gs1_nomenclature.default_gs1_nomenclature")
+
+    def _get_separator_error(self):
+        # gs1_separator_fnc1 is a configurable regex, not kept in step with FNC1.
+        self.ensure_one()
+        nomenclature = self._get_gs1_nomenclature()
+        # Empty means the reader takes the real FNC1 only.
+        separator = nomenclature.gs1_separator_fnc1 or "\x1D"
+        if re.fullmatch("(?:%s)" % separator, FNC1):
+            return ""
+        return _(
+            "the barcode nomenclature %(nomenclature)s does not read %(separator)r "
+            "back as an FNC1 separator",
+            nomenclature=nomenclature.display_name,
+            separator=FNC1,
+        )
+
     def _get_gs1_qr_error(self, elements):
         # AI (10) decomposes on its own, so a payload without AI (240) would look
         # scannable and resolve only while that lot name is unique everywhere.
@@ -129,6 +171,9 @@ class ProductPrintingQty(models.TransientModel):
                     label=label,
                     value=value,
                 )
+        # Only a multi-element payload is closed with a separator.
+        if len(elements) > 1:
+            return self._get_separator_error()
         return ""
 
     @api.model
