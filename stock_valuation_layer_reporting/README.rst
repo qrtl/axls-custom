@@ -1,3 +1,7 @@
+.. image:: https://odoo-community.org/readme-banner-image
+   :target: https://odoo-community.org/get-involved?utm_source=readme
+   :alt: Odoo Community Association
+
 ===============================
 Stock Valuation Layer Reporting
 ===============================
@@ -13,7 +17,7 @@ Stock Valuation Layer Reporting
 .. |badge1| image:: https://img.shields.io/badge/maturity-Beta-yellow.png
     :target: https://odoo-community.org/page/development-status
     :alt: Beta
-.. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
+.. |badge2| image:: https://img.shields.io/badge/license-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-qrtl%2Faxls--custom-lightgray.png?logo=github
@@ -40,11 +44,11 @@ SVL Report Categories
 1. Go to Inventory > Configuration > SVL Report Categories.
 2. Create categories with:
 
-   - Name
-   - Sequence
-   - Report Type (Storable/Consumable/Both)
-   - Domain (stock.valuation.layer domain)
-   - Other Category (set ``is_other`` for the fallback category)
+   -  Name
+   -  Sequence
+   -  Report Type (Storable/Consumable/Both)
+   -  Domain (stock.valuation.layer domain)
+   -  Other Category (set ``is_other`` for the fallback category)
 
 Other Category Behavior
 -----------------------
@@ -86,10 +90,10 @@ To assign a report category to SVL records:
 3. New SVL records are categorized automatically on creation.
 4. For existing SVL records, select them in the list and use:
 
-   - Action > Update SVL Report Category to manually set a specific
-     category.
-   - Action > Recompute Report Categories to auto-assign based on
-     current category domains.
+   -  Action > Update SVL Report Category to manually set a specific
+      category.
+   -  Action > Recompute Report Categories to auto-assign based on
+      current category domains.
 
 Bug Tracker
 ===========
