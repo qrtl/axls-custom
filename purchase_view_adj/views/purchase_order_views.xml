@@ -8,6 +8,33 @@
             <xpath expr="//field[@name='picking_type_id']" position="attributes">
                 <attribute name="widget">selection</attribute>
             </xpath>
+            <!--<xpath expr="//button[contains(@name,'button_confirm') and contains(@states,'draft')]" position="attributes">-->
+            <!--  <attribute name="groups">purchase.group_purchase_manager</attribute>-->
+            <!--</xpath>-->
+            <!--<xpath expr="//button[contains(@name,'print_quotation') and contains(@states,'draft')]" position="attributes">-->
+            <!--  <attribute name="groups">purchase.group_purchase_manager</attribute>-->
+            <!--</xpath>-->
+            <!--<xpath expr="//button[contains(@name,'action_rfq_send') and contains(@states,'draft')]" position="attributes">-->
+            <!--  <attribute name="groups">purchase.group_purchase_manager</attribute>-->
+            <!--</xpath>-->
+            <!--<xpath expr="//button[contains(@name,'action_rfq_send') and contains(@states,'sent')]" position="attributes">-->
+            <!--  <attribute name="groups">purchase.group_purchase_manager</attribute>-->
+            <!--</xpath>-->
+
+            <xpath expr="//field[@name='partner_ref']" position="after">
+                <field
+                    name="x_purchase_ax_no"
+                    attrs="{'invisible':[['state','in',['draft','sent']]]}"
+                />
+            </xpath>
+
+            <xpath expr="//field[@name='taxes_id']" position="after">
+                <field name="x_purchase_budget_id" optional="show" />
+            </xpath>
+
+            <xpath expr="//field[@name='picking_type_id']" position="after">
+                <field name="x_subsidy_summary" />
+            </xpath>
             <xpath
                 expr="//field[@name='order_line']/tree/field[@name='name']"
                 position="attributes"
