@@ -14,6 +14,15 @@
             >
                 <attribute name="optional">show</attribute>
             </xpath>
+            <!-- The analytic distribution of a line is what carries the
+                 analytic accounts it is booked against, and Odoo ships that
+                 column hidden. -->
+            <xpath
+                expr="//field[@name='order_line']/tree/field[@name='analytic_distribution']"
+                position="attributes"
+            >
+                <attribute name="optional">show</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>
