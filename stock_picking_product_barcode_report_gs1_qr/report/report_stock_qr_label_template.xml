@@ -66,7 +66,7 @@ body,
 }
 .o_qr_sheet {
     width: 210mm;
-    padding: 15.15mm 9.75mm;
+    padding: 15.15mm 7.2mm;
     overflow: hidden;
     font-family: "Noto Sans CJK JP", "Noto Sans", sans-serif;
     color: #000000;
@@ -74,7 +74,7 @@ body,
     box-sizing: border-box;
 }
 .o_qr_grid {
-    width: 190.5mm;
+    width: 195.6mm;
     table-layout: fixed;
     border-collapse: collapse;
 }
@@ -85,6 +85,7 @@ body,
 .o_qr_grid > tbody,
 .o_qr_grid > tbody > tr,
 .o_qr_cell,
+.o_qr_gutter,
 .o_qr_label table,
 .o_qr_label thead,
 .o_qr_label tbody,
@@ -103,6 +104,10 @@ body,
     padding: 0;
     border: 0;
     vertical-align: top;
+}
+.o_qr_gutter {
+    width: 2.55mm;
+    padding: 0;
 }
 /* Holds a skipped cell open at full size, with no cut guide. */
 .o_qr_blank {
@@ -210,16 +215,19 @@ body,
             >
                 <table class="o_qr_grid">
                     <tr t-foreach="page" t-as="row">
-                        <td t-foreach="row" t-as="label" class="o_qr_cell">
-                            <!-- A spacer, not nothing: an empty cell in an
-                                 entirely blank row collapses, and every label
-                                 below it moves up a row. -->
-                            <t
-                                t-if="label"
-                                t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label"
-                            />
-                            <div t-else="" class="o_qr_blank" />
-                        </td>
+                        <t t-foreach="row" t-as="label">
+                            <td t-if="not label_first" class="o_qr_gutter" />
+                            <td class="o_qr_cell">
+                                <!-- A spacer, not nothing: an empty cell in an
+                                     entirely blank row collapses, and every
+                                     label below it moves up a row. -->
+                                <t
+                                    t-if="label"
+                                    t-call="stock_picking_product_barcode_report_gs1_qr.stock_qr_label"
+                                />
+                                <div t-else="" class="o_qr_blank" />
+                            </td>
+                        </t>
                     </tr>
                 </table>
             </div>
