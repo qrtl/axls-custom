@@ -35,9 +35,6 @@ class TestStockValuationLotAllocation(TestStockValuationFifoCommon):
         )
 
     def _create_value_only_layer(self, value, move=None, layer=None):
-        """Create a layer with the vals landed costs and price differences use,
-        i.e. value only, with the scope expressed either by the move or by the
-        layer it corrects, and the value added to that layer's remaining value."""
         new_layer = self.env["stock.valuation.layer"].create(
             {
                 "product_id": self.product.id,
@@ -64,12 +61,6 @@ class TestStockValuationLotAllocation(TestStockValuationFifoCommon):
         return self.env["stock.valuation.lot.allocation"]._get_integrity_issues()
 
     def _assert_invariant(self):
-        """The acceptance criteria of the ledger, as checked by the health check:
-        per layer, the allocations add up to the layer value; per lot, what the
-        ledger says a lot is worth is what the FIFO valuation says it is worth.
-
-        On top of that, each row shadows a per-lot layer, so per lot the allocated
-        quantities add up to the remaining quantity."""
         self.assertEqual(self._get_issues(), [])
         layers = self.env["stock.valuation.layer"].search(
             [("product_id", "=", self.product.id)]

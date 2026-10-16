@@ -8,9 +8,9 @@
             <tree create="false" edit="false">
                 <field name="actual_date" />
                 <field name="product_id" />
-                <field name="lot_id" />
+                <field name="lot_id" widget="many2one" />
                 <field name="description" />
-                <field name="valuation_layer_id" />
+                <field name="valuation_layer_id" widget="many2one" />
                 <field name="allocated_quantity" sum="Allocated Quantity" />
                 <field name="product_uom_id" groups="uom.group_uom" />
                 <field name="allocated_amount" sum="Allocated Amount" />

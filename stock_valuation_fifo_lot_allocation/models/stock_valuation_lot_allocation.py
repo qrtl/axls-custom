@@ -27,28 +27,18 @@ class StockValuationLotAllocation(models.Model):
         ondelete="cascade",
     )
     allocated_amount = fields.Monetary(
-        help="Share of the valuation layer value that is charged to the lot/serial. "
-        "Written once when the layer is created and never recomputed."
+        help="Share of the valuation layer value charged to the lot/serial."
     )
-    # Together with allocated_amount, each row is the per-lot layer Odoo 18.0+
-    # would have created, which is what lets the upgrade convert rows into layers.
     allocated_quantity = fields.Float(
         digits="Product Unit of Measure",
         help="Share of the valuation layer quantity that belongs to the lot/serial, "
-        "in the product UoM and signed as the layer quantity: the quantity received "
-        "for an incoming layer, the quantity consumed from the lot's FIFO balance "
-        "for an outgoing one, and zero for value-only layers.",
+        "in the product UoM and signed as the layer quantity.",
     )
     is_opening_adjustment = fields.Boolean(
         help="Balancing row created by the backfill. It is attached to an incoming "
         "layer of the lot but is not part of that layer's value."
     )
-    # Related and stored rather than copied: for landed costs and revaluations the
-    # journal entry is created after the layer, and the layer prefers the posted
-    # entry's date, so the actual date is only settled later.
     actual_date = fields.Date(related="valuation_layer_id.actual_date", store=True)
-    # Not related to the layer's description, as the balancing rows created by the
-    # backfill (see stock.valuation.layer) need a label of their own.
     description = fields.Char()
     product_id = fields.Many2one(related="valuation_layer_id.product_id", store=True)
     product_uom_id = fields.Many2one(related="product_id.uom_id")
@@ -57,7 +47,6 @@ class StockValuationLotAllocation(models.Model):
 
     @api.model
     def _get_lot_gaps(self, company_ids=None):
-        """Return {lot_id: value_remaining - allocated_amount} per lot."""
         ml_domain = [("qty_remaining", ">", 0)]
         allocation_domain = []
         if company_ids is not None:
@@ -81,18 +70,6 @@ class StockValuationLotAllocation(models.Model):
 
     @api.model
     def _get_integrity_issues(self):
-        """Check the two invariants the ledger is built on.
-
-        * Per layer, the allocations add up to the layer value, exactly (the
-          rounding remainder is given to one lot). Opening adjustments are left
-          out, as they are attached to a layer without being part of its value.
-        * Per lot, the allocations add up to the lot's remaining value. The per-lot
-          rounding of each layer can leave a drift of one rounding unit, which is
-          tolerated.
-
-        Meaningful once the backfill has completed; before that, lots carrying
-        value from layers not yet allocated are reported.
-        """
         issues = []
         company_ids = self.env.companies.ids
         groups = self.sudo().read_group(

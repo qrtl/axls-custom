@@ -9,8 +9,6 @@
         <field name="interval_number">1</field>
         <field name="interval_type">hours</field>
         <field name="numbercall">-1</field>
-        <!-- Activated by the post_init_hook, and deactivated by the cron itself
-             once the backlog is drained. -->
         <field name="active" eval="False" />
     </record>
 
