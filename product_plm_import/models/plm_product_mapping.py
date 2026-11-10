@@ -10,7 +10,7 @@ from odoo.exceptions import ValidationError
 class PlmProductMapping(models.Model):
     _name = "plm.product.mapping"
     _description = "PLM-Product Mapping"
-    _order = "item_type_id"
+    _order = "item_type_id, id"
     _rec_name = "item_type_id"
 
     item_type_id = fields.Many2one("plm.item.type", string="Item Type", required=True)
@@ -87,22 +87,30 @@ class PlmProductMapping(models.Model):
         """Gives the score of the mapping record with field values of self."""
         self.ensure_one()
         score = 0.0
-        if plm.category:
-            category_names = self.category_ids.mapped("name")
-            if category_names:
-                if plm.category in category_names:
-                    score += 1.0
-                # Wildcard matching with `*`/`?`
-                elif any(
-                    fnmatch.fnmatch(plm.category, pattern) for pattern in category_names
-                ):
-                    score += 0.5
-                else:
-                    score -= 1.0
-        if plm.procure_flag:
-            procure_flag_names = self.procure_flag_ids.mapped("name")
-            if plm.procure_flag in procure_flag_names:
-                score += 1
-            elif procure_flag_names and plm.procure_flag not in procure_flag_names:
-                score -= 1
+        category_names = self.category_ids.mapped("name")
+        if category_names:
+            if plm.category in category_names:
+                score += 1.0
+            # Wildcard matching with `*`/`?`
+            elif plm.category and any(
+                fnmatch.fnmatch(plm.category, pattern) for pattern in category_names
+            ):
+                score += 0.5
+            else:
+                return None
+        procure_flag_names = self.procure_flag_ids.mapped("name")
+        if procure_flag_names:
+            if plm.procure_flag not in procure_flag_names:
+                return None
+            score += 1.0
         return score
+
+    def _get_description(self):
+        self.ensure_one()
+        return " / ".join(
+            [
+                self.item_type_id.name,
+                ", ".join(self.category_ids.mapped("name")) or "-",
+                ", ".join(self.procure_flag_ids.mapped("name")) or "-",
+            ]
+        )
