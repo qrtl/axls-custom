@@ -81,6 +81,8 @@ class ProductPlm(models.Model):
                 )
             else:
                 error_message = _("No PLM-product mapping record found.")
+            if record.error_message:
+                error_message = f"{record.error_message}\n{error_message}"
             record.write({"error_message": error_message, "state": "failed"})
 
     def _get_name(self):
