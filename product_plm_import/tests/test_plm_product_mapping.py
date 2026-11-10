@@ -1,6 +1,8 @@
 # Copyright 2026 Quartile Limited
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
+from base64 import b64encode
+
 from odoo import Command
 from odoo.tests.common import TransactionCase
 
@@ -118,13 +120,11 @@ class TestPlmProductMapping(TransactionCase):
 
     def test_result_does_not_depend_on_record_order(self):
         consumable = self._create_mapping(procure_flags=self.buy)
-        storable = self._create_mapping(
-            categories=self.categ_a, procure_flags=self.buy, product_type="product"
-        )
-        self.assertEqual(self.plm._get_plm_product_mapping(), storable)
+        storable = self._create_mapping(categories=self.categ_a, product_type="product")
+        self.assertEqual(self.plm._get_plm_product_mapping(), storable | consumable)
         storable.write({"default_active": True})
         consumable.write({"default_active": True})
-        self.assertEqual(self.plm._get_plm_product_mapping(), storable)
+        self.assertEqual(self.plm._get_plm_product_mapping(), storable | consumable)
 
     def test_mapping_order_does_not_change_on_save(self):
         first = self._create_mapping()
@@ -134,3 +134,22 @@ class TestPlmProductMapping(TransactionCase):
             [("item_type_id", "=", self.item_type.id)]
         )
         self.assertEqual(mappings.ids, [first.id, second.id])
+
+    def test_import_keeps_row_errors(self):
+        self._create_mapping(categories=self.categ_a)
+        self._create_mapping(procure_flags=self.buy)
+        self.env["product.product"].create({"name": "Part", "default_code": "P-1"})
+        csv = (
+            "Part Number,Name,ESC ID,Procure flag,Item Type,Category,"
+            "Unit of Material,Acceptance Test Category,Description,Spec,"
+            "Drawing No,Generic Name\n"
+            "P-1,Part,,Buy,Test Type,Categ A,,,Part,,,\n"
+        )
+        wizard = self.env["product.plm.import"].create(
+            {"import_file": b64encode(csv.encode()), "file_name": "plm.csv"}
+        )
+        wizard.import_product_plm()
+        plm = self.env["product.plm"].search([("part_number", "=", "P-1")])
+        self.assertEqual(plm.state, "failed")
+        self.assertIn("There is already a product for P-1.", plm.error_message)
+        self.assertIn("Several PLM-product mappings match equally", plm.error_message)
