@@ -64,7 +64,7 @@ class TestPlmProductMapping(TransactionCase):
         self.assertEqual(plm.state, "failed")
         self.assertIn("There is already a product for P-1.", plm.error_message)
         self.assertIn(
-            "Several PLM-product mappings match equally: "
+            "Multiple PLM-product mappings match equally: "
             "Test Type / Categ A, Categ B / Buy; Test Type / Categ A / Buy",
             plm.error_message,
         )
