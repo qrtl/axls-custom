@@ -90,7 +90,6 @@ class ProductPlm(models.Model):
 
     def _create_product(self):
         self.ensure_one()
-        product = self.env["product.product"]
         description_purchase = self._get_description_purchase()
         uom = self._get_uom()
         mapping = self.mapping_id
@@ -113,12 +112,12 @@ class ProductPlm(models.Model):
             "is_draft": True,
         }
         try:
-            product = self.env["product.product"].create(vals)
+            return self.env["product.product"].create(vals)
         except Exception as e:
             _logger.error(
                 "ProductPlm._create_product - failed to create product: %s", str(e)
             )
-        return product
+            return self.env["product.product"]
 
     @api.model
     def _get_create_products_domain(self):
@@ -144,7 +143,11 @@ class ProductPlm(models.Model):
             if mapping.lot_sequence_padding:
                 product.lot_sequence_id.padding = mapping.lot_sequence_padding
             if mapping.lot_sequence_prefix:
-                product.lot_sequence_id.prefix = mapping.lot_sequence_prefix
+                prefix = mapping.lot_sequence_prefix.format(
+                    esc_code=plm_rec.esc_code or "",
+                )
+                if prefix:
+                    product.lot_sequence_id.prefix = prefix
             product.product_tmpl_id.active = mapping.default_active
             plm_rec.write({"state": "done", "product_id": product.id})
         # This step fails with CasheMiss error in case product creation in
