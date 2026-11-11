@@ -47,15 +47,19 @@ class TestPlmProductMapping(TransactionCase):
 
     def test_tie_fails_the_record(self):
         storable = self._create_mapping(
-            categories=self.categ_a | self.categ_b, product_type="product"
+            categories=self.categ_a | self.categ_b,
+            procure_flags=self.buy,
+            product_type="product",
         )
-        consumable = self._create_mapping(procure_flags=self.buy)
+        consumable = self._create_mapping(
+            categories=self.categ_a, procure_flags=self.buy
+        )
         self.assertEqual(self.plm._get_plm_product_mapping(), storable | consumable)
         self.plm._assign_mapping()
         self.assertFalse(self.plm.mapping_id)
         self.assertEqual(self.plm.state, "failed")
-        self.assertIn("Test Type / Categ A, Categ B / -", self.plm.error_message)
-        self.assertIn("Test Type / - / Buy", self.plm.error_message)
+        self.assertIn("Test Type / Categ A, Categ B / Buy", self.plm.error_message)
+        self.assertIn("Test Type / Categ A / Buy", self.plm.error_message)
 
     def test_category_mapping_with_procure_flag_wins(self):
         storable = self._create_mapping(
@@ -98,29 +102,26 @@ class TestPlmProductMapping(TransactionCase):
         self.assertEqual(self.plm.state, "failed")
         self.assertEqual(self.plm.error_message, "No PLM-product mapping record found.")
 
-    def test_wildcard_scores_half(self):
-        self._create_mapping(categories=self.categ_a)
-        wildcard = self._create_mapping(
-            categories=self.categ_wildcard, procure_flags=self.buy
-        )
-        # 0.5 + 1 against 1 + 0
-        self.assertEqual(wildcard._get_score(self.plm), 1.5)
-        self.assertEqual(self.plm._get_plm_product_mapping(), wildcard)
-        exact = self._create_mapping(categories=self.categ_a, procure_flags=self.buy)
-        # 1 + 1 against the two above
-        self.assertEqual(self.plm._get_plm_product_mapping(), exact)
-
-    def test_identical_mappings_tie(self):
-        first = self._create_mapping(categories=self.categ_a, procure_flags=self.buy)
-        second = self._create_mapping(categories=self.categ_a, procure_flags=self.buy)
-        self.assertEqual(self.plm._get_plm_product_mapping(), first | second)
-        self.plm._assign_mapping()
-        self.assertFalse(self.plm.mapping_id)
-        self.assertEqual(self.plm.state, "failed")
+    def test_higher_rank_wins(self):
+        # Added from rank 6 up to rank 1, each mapping beats the ones before it
+        for categories, procure_flags, score in [
+            (None, None, 0.0),
+            (None, self.buy, 0.5),
+            (self.categ_wildcard, None, 0.75),
+            (self.categ_a, None, 1.0),
+            (self.categ_wildcard, self.buy, 1.25),
+            (self.categ_a, self.buy, 1.5),
+        ]:
+            with self.subTest(score=score):
+                mapping = self._create_mapping(categories, procure_flags)
+                self.assertEqual(mapping._get_score(self.plm), score)
+                self.assertEqual(self.plm._get_plm_product_mapping(), mapping)
 
     def test_result_does_not_depend_on_record_order(self):
-        consumable = self._create_mapping(procure_flags=self.buy)
-        storable = self._create_mapping(categories=self.categ_a, product_type="product")
+        consumable = self._create_mapping(categories=self.categ_a)
+        storable = self._create_mapping(
+            categories=self.categ_a | self.categ_b, product_type="product"
+        )
         self.assertEqual(self.plm._get_plm_product_mapping(), storable | consumable)
         storable.write({"default_active": True})
         consumable.write({"default_active": True})
@@ -137,7 +138,7 @@ class TestPlmProductMapping(TransactionCase):
 
     def test_import_keeps_row_errors(self):
         self._create_mapping(categories=self.categ_a)
-        self._create_mapping(procure_flags=self.buy)
+        self._create_mapping(categories=self.categ_a)
         self.env["product.product"].create({"name": "Part", "default_code": "P-1"})
         csv = (
             "Part Number,Name,ESC ID,Procure flag,Item Type,Category,"

@@ -95,14 +95,14 @@ class PlmProductMapping(models.Model):
             elif plm.category and any(
                 fnmatch.fnmatch(plm.category, pattern) for pattern in category_names
             ):
-                score += 0.5
+                score += 0.75
             else:
                 return None
         procure_flag_names = self.procure_flag_ids.mapped("name")
         if procure_flag_names:
             if plm.procure_flag not in procure_flag_names:
                 return None
-            score += 1.0
+            score += 0.5
         return score
 
     def _get_description(self):
