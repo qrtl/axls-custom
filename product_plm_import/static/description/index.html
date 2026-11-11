@@ -407,33 +407,73 @@ such as Product Type, Product Category, Routes, etc., which will be
 applied to the product in Odoo. The values of item_type_id,
 category_ids, and procure_flag_ids serve as keys to identify which
 policy will be applied.</p>
-<p>For each imported PLM record, the mappings of its item type are checked
-against the category and the procure flag of the record:</p>
+<p>For each imported PLM record, the mappings of its item type are compared
+with the category and the procure flag of the record. A mapping whose
+categories or procure flags are set but do not match the record is not a
+candidate. Among the candidates, the mapping with the highest score is
+applied:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="40%" />
+<col width="34%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Rank</th>
+<th class="head">Category</th>
+<th class="head">Procure flag</th>
+<th class="head">Score</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>1</td>
+<td>Exact match</td>
+<td>Match</td>
+<td>1.5</td>
+</tr>
+<tr><td>2</td>
+<td>Wildcard match</td>
+<td>Match</td>
+<td>1.25</td>
+</tr>
+<tr><td>3</td>
+<td>Exact match</td>
+<td>Not set</td>
+<td>1</td>
+</tr>
+<tr><td>4</td>
+<td>Wildcard match</td>
+<td>Not set</td>
+<td>0.75</td>
+</tr>
+<tr><td>5</td>
+<td>Not set</td>
+<td>Match</td>
+<td>0.5</td>
+</tr>
+<tr><td>6</td>
+<td>Not set</td>
+<td>Not set</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
 <ul class="simple">
-<li>Category: 1 point when a category of the mapping equals the PLM
-category, 0.5 when it matches as a wildcard pattern (<tt class="docutils literal">*</tt>, <tt class="docutils literal">?</tt>),
-and 0 when the mapping has no category.</li>
-<li>Procure flag: 1 point when a procure flag of the mapping equals the
-PLM procure flag, and 0 when the mapping has no procure flag.</li>
+<li>Exact match: one of the categories of the mapping equals the category
+of the record.</li>
+<li>Wildcard match: the category of the record matches one of the
+categories of the mapping as a pattern with <tt class="docutils literal">*</tt> or <tt class="docutils literal">?</tt>.</li>
+<li>Not set: the mapping has no category, or no procure flag. It matches
+any record.</li>
 </ul>
-<p>A mapping with categories or procure flags that do not match the record
-is not a candidate, even when the other part matches. Among the
-candidates, the mapping with the highest total is applied.</p>
-<p>When no mapping is a candidate, or two or more candidates share the
-highest total, the record fails with an error message that names the
-mappings, and no product is created. Correct the mappings so that one
-mapping has the highest total, and import the record again. The order of
+<p>The score is the sum of 1 for an exact category match (0.75 for a
+wildcard match) and 0.5 for a procure flag match.</p>
+<p>Two candidates share the highest score only when they have the same
+rank. In that case, or when no mapping is a candidate, the record fails
+with an error message that names the mappings, and no product is
+created. Correct the mappings and import the record again. The order of
 the lines in the list does not matter.</p>
-<p>For example, for a PLM record with item type Mech, category Damper and
-procure flag Buy:</p>
-<ul class="simple">
-<li>Categories Aluminum Panel and Damper, procure flag Buy: 2 points.</li>
-<li>No category, procure flag Buy: 1 point.</li>
-<li>No category, no procure flag: 0 points.</li>
-<li>Category Aluminum Panel, procure flag Buy: not a candidate.</li>
-</ul>
-<p>The first mapping is applied. Without its procure flag, it would score 1
-point, the same as the second mapping, and the record would fail.</p>
 <p>To configure the policy, go to <em>Data Import &gt; Data Import Settings &gt;
 PLM-Product Mapping</em>.</p>
 </div>
