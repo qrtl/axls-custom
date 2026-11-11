@@ -684,7 +684,7 @@ msgstr "行番号"
 #. odoo-python
 #: code:addons/product_plm_import/models/product_plm.py:0
 #, python-format
-msgid "Several PLM-product mappings match equally: %s"
+msgid "Multiple PLM-product mappings match equally: %s"
 msgstr "同じ点数のPLM-プロダクトマッピングレコードが複数あります: %s"
 
 #. module: product_plm_import

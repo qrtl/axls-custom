@@ -55,7 +55,10 @@ class ProductPlm(models.Model):
         best_score = None
         best_mappings = self.env["plm.product.mapping"]
         mappings = self.env["plm.product.mapping"].search(
-            [("item_type_id.name", "=", self.item_type)]
+            [
+                ("item_type_id.name", "=", self.item_type),
+                ("company_id", "in", [False, self.company_id.id]),
+            ]
         )
         for mapping in mappings:
             score = mapping._get_score(self)
@@ -76,7 +79,7 @@ class ProductPlm(models.Model):
                 continue
             if mappings:
                 error_message = _(
-                    "Several PLM-product mappings match equally: %s",
+                    "Multiple PLM-product mappings match equally: %s",
                     "; ".join(m._get_description() for m in mappings),
                 )
             else:
