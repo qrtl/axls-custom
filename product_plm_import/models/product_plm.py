@@ -51,17 +51,42 @@ class ProductPlm(models.Model):
                 )
 
     def _get_plm_product_mapping(self):
-        best_score = -1
-        matched_map = self.env["plm.product.mapping"]
+        self.ensure_one()
+        best_score = None
+        best_mappings = self.env["plm.product.mapping"]
         mappings = self.env["plm.product.mapping"].search(
-            [("item_type_id.name", "=", self.item_type)]
+            [
+                ("item_type_id.name", "=", self.item_type),
+                ("company_id", "in", [False, self.company_id.id]),
+            ]
         )
         for mapping in mappings:
-            score_mapping = mapping._get_score(self)
-            if score_mapping > best_score:
-                matched_map = mapping
-                best_score = score_mapping
-        return matched_map
+            score = mapping._get_score(self)
+            if score is None:
+                continue
+            if best_score is None or score > best_score:
+                best_score = score
+                best_mappings = mapping
+            elif score == best_score:
+                best_mappings |= mapping
+        return best_mappings
+
+    def _assign_mapping(self):
+        for record in self:
+            mappings = record._get_plm_product_mapping()
+            if len(mappings) == 1:
+                record.mapping_id = mappings
+                continue
+            if mappings:
+                error_message = _(
+                    "Multiple PLM-product mappings match equally: %s",
+                    "; ".join(m._get_description() for m in mappings),
+                )
+            else:
+                error_message = _("No PLM-product mapping record found.")
+            if record.error_message:
+                error_message = f"{record.error_message}\n{error_message}"
+            record.write({"error_message": error_message, "state": "failed"})
 
     def _get_name(self):
         self.ensure_one()
@@ -90,7 +115,6 @@ class ProductPlm(models.Model):
 
     def _create_product(self):
         self.ensure_one()
-        product = self.env["product.product"]
         description_purchase = self._get_description_purchase()
         uom = self._get_uom()
         mapping = self.mapping_id
@@ -113,12 +137,12 @@ class ProductPlm(models.Model):
             "is_draft": True,
         }
         try:
-            product = self.env["product.product"].create(vals)
+            return self.env["product.product"].create(vals)
         except Exception as e:
             _logger.error(
                 "ProductPlm._create_product - failed to create product: %s", str(e)
             )
-        return product
+            return self.env["product.product"]
 
     @api.model
     def _get_create_products_domain(self):
@@ -144,7 +168,11 @@ class ProductPlm(models.Model):
             if mapping.lot_sequence_padding:
                 product.lot_sequence_id.padding = mapping.lot_sequence_padding
             if mapping.lot_sequence_prefix:
-                product.lot_sequence_id.prefix = mapping.lot_sequence_prefix
+                prefix = mapping.lot_sequence_prefix.format(
+                    esc_code=plm_rec.esc_code or "",
+                )
+                if prefix:
+                    product.lot_sequence_id.prefix = prefix
             product.product_tmpl_id.active = mapping.default_active
             plm_rec.write({"state": "done", "product_id": product.id})
         # This step fails with CasheMiss error in case product creation in

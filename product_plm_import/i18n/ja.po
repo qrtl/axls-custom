@@ -438,7 +438,7 @@ msgstr ""
 
 #. module: product_plm_import
 #. odoo-python
-#: code:addons/product_plm_import/wizards/product_plm_import.py:0
+#: code:addons/product_plm_import/models/product_plm.py:0
 #, python-format
 msgid "No PLM-product mapping record found."
 msgstr "PLM-プロダクトマッピングレコードが見つかりません。"
@@ -679,6 +679,13 @@ msgstr "ルート"
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm__row_no
 msgid "Row No."
 msgstr "行番号"
+
+#. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/models/product_plm.py:0
+#, python-format
+msgid "Multiple PLM-product mappings match equally: %s"
+msgstr "同じ点数のPLM-プロダクトマッピングレコードが複数あります: %s"
 
 #. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_product_plm__solved

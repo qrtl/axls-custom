@@ -128,15 +128,7 @@ class ProductPlmImport(models.TransientModel):
                 row_dict["error_message"] = "\n".join(error_list)
                 row_dict["state"] = "failed"
         plm_recs = self.env["product.plm"].create(vals_list)
-        for plm_rec in plm_recs:
-            plm_rec.mapping_id = plm_rec._get_plm_product_mapping()
-            if not plm_rec.mapping_id:
-                plm_rec.write(
-                    {
-                        "error_message": _("No PLM-product mapping record found."),
-                        "state": "failed",
-                    }
-                )
+        plm_recs._assign_mapping()
         self.env.ref(
             "product_plm_import.ir_cron_create_products_for_plm_import"
         )._trigger()

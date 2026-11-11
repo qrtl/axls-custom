@@ -3,13 +3,14 @@
 
 import fnmatch
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import ValidationError
 
 
 class PlmProductMapping(models.Model):
     _name = "plm.product.mapping"
     _description = "PLM-Product Mapping"
-    _order = "item_type_id"
+    _order = "item_type_id, id"
     _rec_name = "item_type_id"
 
     item_type_id = fields.Many2one("plm.item.type", string="Item Type", required=True)
@@ -43,12 +44,25 @@ class PlmProductMapping(models.Model):
     )
     auto_create_lot = fields.Boolean()
     lot_sequence_padding = fields.Integer()
-    lot_sequence_prefix = fields.Char()
+    lot_sequence_prefix = fields.Char(
+        help="Lot sequence prefix. Supports '{esc_code}' placeholder to use the ESC ID "
+        "of each PLM record (e.g. '{esc_code}')."
+    )
     default_active = fields.Boolean(
         help="Default value for active field of the created product."
     )
     company_id = fields.Many2one("res.company")
     active = fields.Boolean(default=True)
+
+    @api.constrains("lot_sequence_prefix")
+    def _check_lot_sequence_prefix(self):
+        for record in self:
+            if not record.lot_sequence_prefix:
+                continue
+            try:
+                record.lot_sequence_prefix.format(esc_code="")
+            except (ValueError, KeyError):
+                raise ValidationError(_("Lot Sequence Prefix is invalid.")) from None
 
     @api.onchange("product_type")
     def onchange_product_type(self):
@@ -73,22 +87,30 @@ class PlmProductMapping(models.Model):
         """Gives the score of the mapping record with field values of self."""
         self.ensure_one()
         score = 0.0
-        if plm.category:
-            category_names = self.category_ids.mapped("name")
-            if category_names:
-                if plm.category in category_names:
-                    score += 1.0
-                # Wildcard matching with `*`/`?`
-                elif any(
-                    fnmatch.fnmatch(plm.category, pattern) for pattern in category_names
-                ):
-                    score += 0.5
-                else:
-                    score -= 1.0
-        if plm.procure_flag:
-            procure_flag_names = self.procure_flag_ids.mapped("name")
-            if plm.procure_flag in procure_flag_names:
-                score += 1
-            elif procure_flag_names and plm.procure_flag not in procure_flag_names:
-                score -= 1
+        category_names = self.category_ids.mapped("name")
+        if category_names:
+            if plm.category in category_names:
+                score += 1.0
+            # Wildcard matching with `*`/`?`
+            elif plm.category and any(
+                fnmatch.fnmatch(plm.category, pattern) for pattern in category_names
+            ):
+                score += 0.75
+            else:
+                return None
+        procure_flag_names = self.procure_flag_ids.mapped("name")
+        if procure_flag_names:
+            if plm.procure_flag not in procure_flag_names:
+                return None
+            score += 0.5
         return score
+
+    def _get_description(self):
+        self.ensure_one()
+        return " / ".join(
+            [
+                self.item_type_id.name,
+                ", ".join(self.category_ids.mapped("name")) or "-",
+                ", ".join(self.procure_flag_ids.mapped("name")) or "-",
+            ]
+        )
