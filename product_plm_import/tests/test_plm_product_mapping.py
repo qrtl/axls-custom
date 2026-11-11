@@ -80,7 +80,8 @@ class TestPlmProductMapping(TransactionCase):
         self.assertEqual(self.plm.state, "failed")
         self.assertEqual(self.plm.error_message, "No PLM-product mapping record found.")
         default = self._create_mapping()
-        self.assertEqual(self.plm._get_plm_product_mapping(), default)
+        self.plm._assign_mapping()
+        self.assertEqual(self.plm.mapping_id, default)
 
     def test_higher_rank_wins(self):
         # Added from rank 6 up to rank 1, each mapping beats the ones before it
