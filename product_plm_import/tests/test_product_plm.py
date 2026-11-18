@@ -16,12 +16,12 @@ class TestProductPlm(TransactionCase):
             "product_lot_sequence.policy", "product"
         )
         cls.item_type = cls.env["plm.item.type"].create({"name": "Test Type"})
+        cls.lot_item_type = cls.env["plm.item.type"].create({"name": "Test PCBA"})
         cls.categ_a = cls.env["plm.category"].create({"name": "Categ A"})
         cls.categ_b = cls.env["plm.category"].create({"name": "Categ B"})
         cls.categ_wildcard = cls.env["plm.category"].create({"name": "Categ*"})
         cls.buy = cls.env["plm.procure.flag"].create({"name": "Buy"})
         cls.make = cls.env["plm.procure.flag"].create({"name": "Make"})
-        cls.lot_item_type = cls.env["plm.item.type"].create({"name": "Test PCBA"})
         cls.lot_mapping = cls.env["plm.product.mapping"].create(
             {
                 "item_type_id": cls.lot_item_type.id,
@@ -67,12 +67,23 @@ class TestProductPlm(TransactionCase):
         )
 
     def test_tie_fails_the_record(self):
+        plm = self._create_plm()
         self._create_mapping(
             categories=self.categ_a | self.categ_b,
             procure_flags=self.buy,
             product_type="product",
         )
         self._create_mapping(categories=self.categ_a, procure_flags=self.buy)
+        plm._assign_mapping()
+        self.assertFalse(plm.mapping_id)
+        self.assertEqual(plm.state, "failed")
+        self.assertEqual(
+            plm.error_message,
+            "Multiple PLM-product mappings match equally: "
+            "Test Type / Categ A, Categ B / Buy; Test Type / Categ A / Buy",
+        )
+
+    def test_mapping_error_appends_to_import_error(self):
         self.env["product.product"].create({"name": "Part", "default_code": "P-1"})
         csv = (
             "Part Number,Name,ESC ID,Procure flag,Item Type,Category,"
@@ -85,13 +96,11 @@ class TestProductPlm(TransactionCase):
         )
         wizard.import_product_plm()
         plm = self.env["product.plm"].search([("part_number", "=", "P-1")])
-        self.assertFalse(plm.mapping_id)
         self.assertEqual(plm.state, "failed")
-        self.assertIn("There is already a product for P-1.", plm.error_message)
-        self.assertIn(
-            "Multiple PLM-product mappings match equally: "
-            "Test Type / Categ A, Categ B / Buy; Test Type / Categ A / Buy",
+        self.assertEqual(
             plm.error_message,
+            "There is already a product for P-1.\n"
+            "No PLM-product mapping record found.",
         )
 
     def test_mismatch_drops_mapping(self):
