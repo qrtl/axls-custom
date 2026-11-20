@@ -82,10 +82,10 @@ The score is the sum of 1 for an exact category match (0.75 for a
 wildcard match) and 0.5 for a procure flag match.
 
 Two candidates share the highest score only when they have the same
-rank. In that case, or when no mapping is a candidate, the record fails
-with an error message that names the mappings, and no product is
-created. Correct the mappings and import the record again. The order of
-the lines in the list does not matter.
+rank. In that case, the record fails with an error message that names
+the mappings. The record also fails when no mapping is a candidate. In
+both cases, no product is created. Correct the mappings and import the
+record again. The order of the lines in the list does not matter.
 
 To configure the policy, go to *Data Import > Data Import Settings >
 PLM-Product Mapping*.
