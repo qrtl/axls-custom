@@ -373,6 +373,22 @@ msgid "Lot Sequence Prefix"
 msgstr "ロット付番プレフィクス"
 
 #. module: product_plm_import
+#. odoo-python
+#: code:addons/product_plm_import/models/plm_product_mapping.py:0
+#, python-format
+msgid "Lot Sequence Prefix is invalid."
+msgstr "ロット付番プレフィクスが無効です。"
+
+#. module: product_plm_import
+#: model:ir.model.fields,help:product_plm_import.field_plm_product_mapping__lot_sequence_prefix
+msgid ""
+"Lot sequence prefix. Supports '{esc_code}' placeholder to use the ESC ID of "
+"each PLM record (e.g. '{esc_code}')."
+msgstr ""
+"ロット付番プレフィクス。'{esc_code}' プレースホルダを使うと、各PLMレコードのESC番号を利用できます (例: "
+"'{esc_code}')。"
+
+#. module: product_plm_import
 #: model:ir.model.fields,field_description:product_plm_import.field_plm_import_log__message_main_attachment_id
 msgid "Main Attachment"
 msgstr ""

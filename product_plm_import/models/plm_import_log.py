@@ -72,7 +72,7 @@ class PlmDataImportLog(models.Model):
             notified_groups = company.plm_notif_group_ids
             notified_partners = notified_groups.users.partner_id
             if not notified_partners:
-                return
+                continue
             rec.message_subscribe(partner_ids=notified_partners.ids)
             state_desc = rec._get_state_description(
                 "plm_product_state", rec.plm_product_state
